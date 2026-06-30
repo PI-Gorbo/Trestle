@@ -1,0 +1,12 @@
+// Pipeline — the |> operator is "dumb": x |> f  ==  f(x)
+// Functions are data-last, so partial application fills the earlier
+// args and the piped value drops into the final slot.
+
+let double = (x) => x * 2;
+let add = (a, b) => a + b;
+
+let main =
+    5
+    |> add(3)    // add(3)(5)  = 8
+    |> double    // double(8)  = 16
+    |> print;    // prints 16

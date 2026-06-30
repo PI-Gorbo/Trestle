@@ -1,0 +1,10 @@
+// Currying — every function is curried.
+//   (a, b) => body   is sugar for   (a) => (b) => body
+//   f(a, b)          is sugar for   f(a)(b)
+
+let add = (a, b) => a + b;
+
+let add10 = add(10);   // partial application: a function awaiting `b`
+
+let z = add10(5);      // add(10)(5) = 15
+let w = add(3, 4);     // add(3)(4)  = 7
