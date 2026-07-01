@@ -1,0 +1,5 @@
+// Arithmetic — addition and multiplication over integers and variables.
+
+let a = 1 + 2 + 3        // left-associative: ((1 + 2) + 3) = 6
+let b = 2 * 3 * 4        // 24
+let c = a + b            // references earlier bindings

@@ -1,0 +1,6 @@
+// @skip: needs if/else expressions (tier 05) — PROPOSED syntax, not settled
+// TARGET: `if` is an expression that evaluates to one branch or the other.
+
+let abs = (n) => if n < 0 then 0 - n else n
+
+let bigger = if 3 > 2 then 10 else 20   // 10

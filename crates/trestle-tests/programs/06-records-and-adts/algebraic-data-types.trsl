@@ -1,0 +1,11 @@
+// @skip: needs ADTs + constructors + match (tiers 05/06) — PROPOSED syntax
+// TARGET: sum types with constructors, consumed by pattern matching.
+
+type Shape =
+    | Circle(Int)          // radius
+    | Rectangle(Int, Int)  // width, height
+
+let area = (shape) =>
+    match shape
+        Circle(r)        => 3 * r * r
+        Rectangle(w, h)  => w * h

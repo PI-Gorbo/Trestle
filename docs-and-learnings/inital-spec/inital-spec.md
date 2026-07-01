@@ -79,7 +79,9 @@ These design exercises are now resolved for the Phase 1 core — see [Core Synta
 ## Core Syntax Decisions (Phase 1)
 
 These are the resolved answers to the design exercises above, for the Phase 1 core surface.
-Worked examples live in [`snippets/`](snippets/).
+Worked examples live in the program corpus at
+[`crates/trestle-tests/programs/`](../../crates/trestle-tests/programs/), organised by
+difficulty tier.
 
 - **Bindings & functions:** `let name = value` — a function is just a `let` bound to an arrow.
 - **Arrow functions:** `(x) => expr`; a multi-parameter arrow `(a, b) => body` is sugar for `(a) => (b) => body`.

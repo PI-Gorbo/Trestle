@@ -1,0 +1,6 @@
+// @skip: needs string literals (tier 04)
+// TARGET: double-quoted string literals as plain values.
+
+let greeting = "hello"
+let name     = "trestle"
+let empty    = ""

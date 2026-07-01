@@ -1,0 +1,62 @@
+---
+source: crates/trestle-tests/tests/corpus.rs
+expression: program
+input_file: crates/trestle-tests/programs/01-basics/precedence-and-grouping.trsl
+---
+Program {
+    statements: [
+        Let {
+            name: "natural",
+            value: Add(
+                Int(
+                    1,
+                ),
+                Mul(
+                    Int(
+                        2,
+                    ),
+                    Int(
+                        3,
+                    ),
+                ),
+            ),
+        },
+        Let {
+            name: "grouped",
+            value: Mul(
+                Add(
+                    Int(
+                        1,
+                    ),
+                    Int(
+                        2,
+                    ),
+                ),
+                Int(
+                    3,
+                ),
+            ),
+        },
+        Let {
+            name: "nested",
+            value: Mul(
+                Add(
+                    Int(
+                        1,
+                    ),
+                    Int(
+                        2,
+                    ),
+                ),
+                Add(
+                    Int(
+                        3,
+                    ),
+                    Int(
+                        4,
+                    ),
+                ),
+            ),
+        },
+    ],
+}

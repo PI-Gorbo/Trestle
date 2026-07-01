@@ -1,3 +1,4 @@
+// @skip: needs the |> operator + leading-pipe continuation (tier 03)
 // Pipeline — the |> operator is "dumb": x |> f  ==  f(x)
 // A line that begins with |> continues the previous expression
 // (like Kotlin's leading `.`), so the chain needs no semicolons.

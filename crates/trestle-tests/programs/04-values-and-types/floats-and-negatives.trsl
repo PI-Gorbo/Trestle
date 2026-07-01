@@ -1,0 +1,7 @@
+// @skip: needs float literals + negative numbers (tier 04)
+// TARGET: floating-point literals and negative numeric literals.
+
+let pi      = 3.14
+let half    = 0.5
+let below   = -7
+let delta    = -2.5 + 1.5   // -1.0

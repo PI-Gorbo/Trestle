@@ -1,0 +1,9 @@
+// @skip: needs match / pattern matching (tier 05) — PROPOSED syntax, not settled
+// TARGET: match a value against patterns, evaluating to the first arm that fits.
+// Before ADTs (tier 06), patterns are literals + a catch-all identifier.
+
+let describe = (n) =>
+    match n
+        0 => "zero"
+        1 => "one"
+        other => "many"

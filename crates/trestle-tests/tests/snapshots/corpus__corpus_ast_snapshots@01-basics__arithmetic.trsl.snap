@@ -1,0 +1,52 @@
+---
+source: crates/trestle-tests/tests/corpus.rs
+expression: program
+input_file: crates/trestle-tests/programs/01-basics/arithmetic.trsl
+---
+Program {
+    statements: [
+        Let {
+            name: "a",
+            value: Add(
+                Add(
+                    Int(
+                        1,
+                    ),
+                    Int(
+                        2,
+                    ),
+                ),
+                Int(
+                    3,
+                ),
+            ),
+        },
+        Let {
+            name: "b",
+            value: Mul(
+                Mul(
+                    Int(
+                        2,
+                    ),
+                    Int(
+                        3,
+                    ),
+                ),
+                Int(
+                    4,
+                ),
+            ),
+        },
+        Let {
+            name: "c",
+            value: Add(
+                Var(
+                    "a",
+                ),
+                Var(
+                    "b",
+                ),
+            ),
+        },
+    ],
+}

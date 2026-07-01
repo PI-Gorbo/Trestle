@@ -1,0 +1,8 @@
+// @skip: arrow-function walker not implemented yet (tier 02) — remove to snapshot
+// TARGET: a function is just a `let` bound to an arrow. Application is curried.
+
+let identity = (x) => x
+let double   = (x) => x * 2
+
+let four = double(2)        // application: double(2) => 4
+let same = identity(four)   // => 4
