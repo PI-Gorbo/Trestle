@@ -81,12 +81,13 @@ These design exercises are now resolved for the Phase 1 core — see [Core Synta
 These are the resolved answers to the design exercises above, for the Phase 1 core surface.
 Worked examples live in [`snippets/`](snippets/).
 
-- **Bindings & functions:** `let name = value;` — a function is just a `let` bound to an arrow.
+- **Bindings & functions:** `let name = value` — a function is just a `let` bound to an arrow.
 - **Arrow functions:** `(x) => expr`; a multi-parameter arrow `(a, b) => body` is sugar for `(a) => (b) => body`.
 - **Application is curried:** `f(a, b)` is sugar for `f(a)(b)`. Parens-and-commas always mean *curried application*, **never a tuple**. This is a deliberate divergence from F#, where `f(a, b)` passes a single tupled argument. (If tuples-as-values are ever added, they get their own distinct treatment.)
 - **Partial application:** "stop early" — `add(3)` is a function awaiting the remaining argument.
 - **Pipe `|>`:** the operator is *dumb*: `x |> f` ≡ `f(x)`. Expressiveness comes from currying, not from operator magic.
-- **Statement terminator:** `;`. Newlines are insignificant (plain whitespace), so a multi-line pipe parses as one expression that ends at the `;`.
+- **`|>` is the *only* composition mechanism.** There is no `x.f()` method-call or fluent builder chaining — a `.`-call is *data-first* (`x.f()` ≡ `f(x, …)`) and would clash with the *data-last*, curried pipe. Builders are just pipelines (`config |> withHost("x") |> build`). `.` is reserved exclusively for **record field access** (`point.x`) once records land in Phase 2 — never method dispatch. *How* polymorphism/dispatch works (type classes, Go-style receivers, or multiple dispatch) is a deliberately deferred Phase 2/3 decision. In short: currying + `|>` is the whole point.
+- **Statement termination (Kotlin-style):** a **newline** ends a statement — no `;` required, and indentation is purely cosmetic (*not* significant, unlike Python). A line *continues* onto the next when it is syntactically incomplete (ends in a binary operator, `=`, `,`, or an open bracket) **or** when the next line begins with `|>` (a leading-pipe continuation, analogous to Kotlin's leading `.`). A `;` remains legal as an optional separator for placing multiple statements on one line. One consequence: a call's `(` must be on the same line as the callee (`foo(x)`, not `foo` ⏎ `(x)`).
 - **Comments:** `//` line comments.
 - **Convention (not enforced):** design functions **data-last** so partial application fills the earlier arguments and the piped value drops into the final slot.
 
@@ -105,24 +106,45 @@ type Token =
   | { kind: "LParen" }    // (
   | { kind: "RParen" }    // )
   | { kind: "Comma" }     // ,
-  | { kind: "Semicolon" } // ;
+  | { kind: "Semicolon" } // ;  (optional separator)
+  | { kind: "Newline" }   // significant: statement terminator / continuation signal
   | { kind: "Eof" };
-// skipped as trivia: whitespace, newlines, // comments
+// skipped as trivia: spaces & tabs, // comments
 ```
 
-**Lexer note.** The only subtlety in this set is *maximal munch* on the two-character
-operators: when you read `=`, peek ahead — `>` makes it `Arrow`, otherwise `Eq`; when you
-read `|`, the following `>` makes it `Pipe`. Everything else is a single character or a
-straightforward identifier/number scan.
+**Lexer notes.**
+- *Maximal munch* on the two-character operators: when you read `=`, peek ahead — `>` makes
+  it `Arrow`, otherwise `Eq`; when you read `|`, the following `>` makes it `Pipe`.
+  Everything else is a single character or a straightforward identifier/number scan.
+- *Newlines are significant.* Emit a `Newline` token per line break, collapsing runs of
+  blank lines into one and suppressing newlines while inside unclosed `(` / `[` / `{`. Keep
+  the lexer otherwise dumb — let the **parser** decide when a `Newline` separates versus
+  continues: it continues when the previous line was incomplete (ended in an operator, `=`,
+  `,`) or when the next meaningful token is `|>`.
 
 **Scope.** Strings, floats, booleans, and negative numbers are intentionally *not* in this
 first token set — they are future literals, left out to keep the initial enum honest to
-what has actually been decided.
+what has actually been decided. A `Dot` token for `.` field access will join the enum in
+Phase 2 alongside records.
+
+## Modules & Compilation
+
+- **Each file is a module.** A `.trsl` file *is* a module — no separate module declaration.
+- **Whole-program compilation.** The compiler takes all modules, compiles them together as a
+  unit, then runs the result.
+- **Pipeline (per the roadmap):** module sources flow through `lex → parse → tree-walk
+  interpret`, with `main` as the entry point. (`main` is ultimately an *effect* — see
+  [Core Idea](#core-idea) — but Phase 1 treats it as a plain entry point until the effect
+  system lands in Phase 3.)
+
+*Deferred (not yet decided):* how modules reference one another (implicit whole-program
+visibility vs. explicit imports), module naming, and how the entry module is selected —
+recorded here so they aren't silently assumed.
 
 ## Implementation Notes
 
 - **Implementation language:** TypeScript
-- **Source file extension:** `.pr` *(under consideration)*
+- **Source file extension:** `.trsl`
 
 ## Guiding Principles
 

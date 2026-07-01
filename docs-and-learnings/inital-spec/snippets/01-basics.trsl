@@ -1,5 +1,5 @@
 // Basics — let bindings, integer literals, arithmetic.
-// Statements end with `;`. Newlines are just whitespace.
+// A newline ends a statement; no semicolons needed. Indentation is cosmetic.
 
-let x = 5 + 3;     // 8
-let y = x * 2;     // 16
+let x = 5 + 3     // 8
+let y = x * 2     // 16
