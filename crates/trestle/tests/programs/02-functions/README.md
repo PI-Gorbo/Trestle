@@ -14,4 +14,5 @@ Tier 01.
 ## To un-skip
 Grammar + AST need: a `lambda`/arrow expression, a function-application form
 (`callee(args)`), and desugaring of multi-arg arrows/calls into nested
-single-arg forms. Delete each file's `// @skip:` line as it starts parsing.
+single-arg forms. Remove a program's `ignore = "…"` argument in
+[`../../corpus.rs`](../../corpus.rs) as it starts parsing.

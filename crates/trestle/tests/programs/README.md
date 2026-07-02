@@ -2,26 +2,32 @@
 
 A tiered suite of `.trsl` programs used to test the parser (and later the
 interpreter) as the language grows. The harness lives in
-[`../tests/corpus.rs`](../tests/corpus.rs); run it with:
+[`../corpus.rs`](../corpus.rs); run it with:
 
 ```sh
-cargo test -p trestle-tests                  # pass/fail
-cargo test -p trestle-tests -- --nocapture   # + the parsed/skipped checklist
+cargo test -p trestle                     # every program, one test each
+cargo test -p trestle basics_arithmetic   # a single program
+cargo test -p trestle -- --ignored        # the not-yet-supported programs
 ```
 
 ## How it works
 
-Every `.trsl` file here is **expected to parse**. A file that the parser can't
-handle *yet* opts out with a directive on any comment line:
+Each `.trsl` file gets its own `#[test]`, wired up by a single `trsl_test!` line
+in [`../corpus.rs`](../corpus.rs). Each test parses the program and snapshots its
+AST (via `insta`), so every program reports pass/fail individually.
 
-```trestle
-// @skip: needs arrow functions (tier 02)
+Every file here is **expected to parse**. A file that the parser can't handle
+*yet* is registered but marked ignored, by giving its macro line a reason:
+
+```rust
+trsl_test!(functions_arrow_functions, "02-functions/arrow-functions.trsl",
+    ignore = "arrow-function walker not implemented yet (tier 02)");
 ```
 
-`//` is grammar trivia, so the directive never affects parsing — the harness
-reads it from the raw text. **When you implement the feature, delete the
-`@skip` line** and the file joins the must-parse set. The shrinking skip list
-*is* the remaining roadmap.
+An ignored test shows as `... ignored` in the report (not silently passed).
+**When you implement the feature, delete the `ignore = "…"` argument** and the
+program joins the must-parse set (run `cargo insta accept` to record its AST
+snapshot). The shrinking ignore list *is* the remaining roadmap.
 
 ## Tiers (easy → hard, working backwards from the effect system)
 

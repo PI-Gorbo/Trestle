@@ -1,4 +1,3 @@
-// @skip: needs multi-param arrows + curried application (tier 02)
 // Currying — every function is curried.
 //   (a, b) => body   is sugar for   (a) => (b) => body
 //   f(a, b)          is sugar for   f(a)(b)

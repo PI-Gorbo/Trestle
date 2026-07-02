@@ -6,3 +6,9 @@ edition = "2024"
 [dependencies]
 pest = "2.6"
 pest_derive = "2.6"
+
+# Test-only. Snapshot testing for the parsed AST in tests/corpus.rs.
+# Dev-dependencies are compiled only for tests/examples/benches and are never
+# part of a shipped build of `trestle`, nor inherited by downstream crates.
+[dev-dependencies]
+insta = "1"

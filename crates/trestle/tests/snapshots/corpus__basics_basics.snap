@@ -1,7 +1,6 @@
 ---
-source: crates/trestle-tests/tests/corpus.rs
+source: crates/trestle/tests/corpus.rs
 expression: program
-input_file: crates/trestle-tests/programs/01-basics/basics.trsl
 ---
 Program {
     statements: [

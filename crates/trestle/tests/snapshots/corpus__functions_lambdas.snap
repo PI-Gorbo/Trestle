@@ -1,0 +1,122 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+Program {
+    statements: [
+        Let {
+            name: "identity",
+            value: Lambda(
+                Lambda {
+                    params: [
+                        Param {
+                            name: "x",
+                            type_dec: None,
+                        },
+                    ],
+                    return_type: None,
+                    body: Var(
+                        "x",
+                    ),
+                },
+            ),
+        },
+        Let {
+            name: "scale",
+            value: Lambda(
+                Lambda {
+                    params: [
+                        Param {
+                            name: "x",
+                            type_dec: None,
+                        },
+                    ],
+                    return_type: None,
+                    body: Mul(
+                        Var(
+                            "x",
+                        ),
+                        Int(
+                            2,
+                        ),
+                    ),
+                },
+            ),
+        },
+        Let {
+            name: "add",
+            value: Lambda(
+                Lambda {
+                    params: [
+                        Param {
+                            name: "a",
+                            type_dec: Some(
+                                Named(
+                                    "Int",
+                                ),
+                            ),
+                        },
+                        Param {
+                            name: "b",
+                            type_dec: Some(
+                                Named(
+                                    "Int",
+                                ),
+                            ),
+                        },
+                    ],
+                    return_type: Some(
+                        Named(
+                            "Int",
+                        ),
+                    ),
+                    body: Add(
+                        Var(
+                            "a",
+                        ),
+                        Var(
+                            "b",
+                        ),
+                    ),
+                },
+            ),
+        },
+        Let {
+            name: "curried",
+            value: Lambda(
+                Lambda {
+                    params: [
+                        Param {
+                            name: "a",
+                            type_dec: Some(
+                                Named(
+                                    "Int",
+                                ),
+                            ),
+                        },
+                    ],
+                    return_type: None,
+                    body: Lambda(
+                        Lambda {
+                            params: [
+                                Param {
+                                    name: "b",
+                                    type_dec: None,
+                                },
+                            ],
+                            return_type: None,
+                            body: Add(
+                                Var(
+                                    "a",
+                                ),
+                                Var(
+                                    "b",
+                                ),
+                            ),
+                        },
+                    ),
+                },
+            ),
+        },
+    ],
+}
