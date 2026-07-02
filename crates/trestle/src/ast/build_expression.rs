@@ -10,10 +10,20 @@ use crate::Rule;
 
 use super::{Expr, Lambda, Param, TypeDeclaration, get_bindings};
 
+pub fn build_expr(pair: Pair<Rule>) -> Expr {
+    let expr_binding = get_bindings(pair, "expression to have bindings");
+    match expr_binding.as_rule() {
+        Rule::lambda => build_lambda(expr_binding),
+        Rule::add => build_add(expr_binding),
+        rule => unreachable!("unexpected rule in build_exp: {:?}", rule),
+    }
+}
+
 fn build_lambda(pair: Pair<Rule>) -> Expr {
     let mut params = Vec::new();
     let mut return_type = None;
     let mut body = None;
+
     for p in pair.into_inner() {
         match p.as_rule() {
             Rule::identifier_with_optional_type_declaration => params.push(build_param(p)),
@@ -22,6 +32,7 @@ fn build_lambda(pair: Pair<Rule>) -> Expr {
             rule => unreachable!("unexpected rule in lambda: {:?}", rule),
         }
     }
+
     Expr::Lambda(Lambda {
         params,
         return_type,
