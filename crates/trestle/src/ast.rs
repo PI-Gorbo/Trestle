@@ -21,6 +21,7 @@ pub enum Expr {
     Add(Box<Expr>, Box<Expr>),
     Mul(Box<Expr>, Box<Expr>),
     Lambda(Lambda),
+    FunctionInvocation(String, Vec<Expr>),
 }
 
 #[derive(Debug, PartialEq)]

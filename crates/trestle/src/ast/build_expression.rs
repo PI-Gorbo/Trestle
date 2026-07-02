@@ -6,7 +6,7 @@
 
 use pest::iterators::Pair;
 
-use crate::Rule;
+use crate::{Rule, ast::Expr::FunctionInvocation};
 
 use super::{Expr, Lambda, Param, TypeDeclaration, get_bindings};
 
@@ -40,7 +40,6 @@ fn build_lambda(pair: Pair<Rule>) -> Expr {
     })
 }
 
-/// `identifier_with_optional_type_declaration = ${ identifier ~ type_declaration? }`.
 fn build_param(pair: Pair<Rule>) -> Param {
     let mut name = String::new();
     let mut ty = None;
@@ -54,12 +53,10 @@ fn build_param(pair: Pair<Rule>) -> Param {
     Param { name, type_dec: ty }
 }
 
-/// `optional_type_declaration = ${ type_declaration? }`.
 fn build_type_opt(pair: Pair<Rule>) -> Option<TypeDeclaration> {
     pair.into_inner().next().map(build_type)
 }
 
-/// `type_declaration = ${ ":" ~ identifier }` — inner yields the type name identifier.
 fn build_type(pair: Pair<Rule>) -> TypeDeclaration {
     let ident = pair
         .into_inner()
@@ -68,7 +65,6 @@ fn build_type(pair: Pair<Rule>) -> TypeDeclaration {
     TypeDeclaration::Named(ident.as_str().to_string())
 }
 
-/// `add = { mul ~ ("+" ~ mul)* }` — left-fold the `mul` children into `Add`.
 fn build_add(pair: Pair<Rule>) -> Expr {
     let mut inner = pair.into_inner();
     let mut acc = build_mul(inner.next().expect("add has at least one mul"));
@@ -78,7 +74,6 @@ fn build_add(pair: Pair<Rule>) -> Expr {
     acc
 }
 
-/// `mul = { primary ~ ("*" ~ primary)* }` — left-fold the `primary` children into `Mul`.
 fn build_mul(pair: Pair<Rule>) -> Expr {
     let mut inner = pair.into_inner();
     let mut acc = build_primary(inner.next().expect("mul has at least one primary"));
@@ -88,10 +83,36 @@ fn build_mul(pair: Pair<Rule>) -> Expr {
     acc
 }
 
-/// `primary = { int | ident | "(" ~ expr ~ ")" }`.
+fn build_comma_separated_list_of_expressions(pair: Pair<Rule>) -> Vec<Expr> {
+    let inner = pair.into_inner();
+    inner.fold(Vec::new(), |mut list, expression| {
+        list.push(build_expr(expression));
+        list
+    })
+}
+
+fn build_function_invocation(pair: Pair<Rule>) -> Expr {
+    let inner = pair.into_inner();
+    let mut identifier = String::new();
+    let mut parameters = Vec::new();
+
+    for p in inner {
+        match p.as_rule() {
+            Rule::identifier => identifier = p.as_str().to_string(),
+            Rule::comma_separated_list_of_expressions => {
+                parameters = build_comma_separated_list_of_expressions(p)
+            }
+            rule => unreachable!("Unexpected rule in function_invocation: {:?}", rule),
+        }
+    }
+
+    FunctionInvocation(identifier, parameters)
+}
+
 fn build_primary(pair: Pair<Rule>) -> Expr {
     let child = pair.into_inner().next().expect("primary has one child");
     match child.as_rule() {
+        Rule::function_invocation => build_function_invocation(child),
         Rule::int => Expr::Int(child.as_str().parse().expect("int literal fits in i64")),
         Rule::identifier => Expr::Var(child.as_str().to_string()),
         Rule::expr => build_expr(child), // parenthesized expression

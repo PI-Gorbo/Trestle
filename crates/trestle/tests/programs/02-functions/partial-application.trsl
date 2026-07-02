@@ -1,4 +1,3 @@
-// @skip: needs curried application + partial application (tier 02)
 // TARGET: applying fewer arguments than a function takes returns a function
 // awaiting the rest. This is the mechanism the pipe operator relies on.
 
