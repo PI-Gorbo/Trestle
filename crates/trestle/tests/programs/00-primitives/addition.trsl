@@ -1,0 +1,4 @@
+// @skip: needs bare top-level expression support (statement = expr) — remove to snapshot
+// A single addition — Expr::Add(1, 2). Evaluates to 3.
+
+1 + 2

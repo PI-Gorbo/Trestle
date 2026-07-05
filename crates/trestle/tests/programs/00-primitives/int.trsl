@@ -1,0 +1,4 @@
+// @skip: needs bare top-level expression support (statement = expr) — remove to snapshot
+// A single integer literal — the simplest expression. Evaluates to Value::Int(42).
+
+42

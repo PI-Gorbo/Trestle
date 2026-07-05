@@ -33,6 +33,7 @@ snapshot). The shrinking ignore list *is* the remaining roadmap.
 
 | Tier | Folder | Focus |
 |------|--------|-------|
+| 00 | `00-primitives` | one construct per file — int, let, add, mul, lambda, call, typed lambda — the evaluator's atoms |
 | 01 | `01-basics` | let bindings, integer arithmetic, precedence, comments — **parses today** |
 | 02 | `02-functions` | arrow functions, currying, partial application, curried calls |
 | 03 | `03-pipelines` | the `\|>` operator, leading-pipe continuation, chaining |

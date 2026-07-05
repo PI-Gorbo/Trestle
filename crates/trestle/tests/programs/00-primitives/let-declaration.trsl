@@ -1,0 +1,4 @@
+// A single let binding: names a value in the environment.
+// Evaluating the program leaves the env { x: 42 }.
+
+let x = 42

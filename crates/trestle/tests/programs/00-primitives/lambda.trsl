@@ -1,0 +1,5 @@
+// @skip: needs bare top-level expression support (statement = expr) — remove to snapshot
+// The simplest lambda: one untyped param, returns it unchanged.
+// Evaluates to a closure capturing the current (empty) environment.
+
+(x) => x

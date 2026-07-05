@@ -1,0 +1,6 @@
+// @skip: needs bare top-level expression support (statement = expr) — remove to snapshot
+// A lambda with typed params and a return type. Types are parsed into
+// Param.type_dec / Lambda.return_type but not yet checked — evaluation ignores
+// them for now. Evaluates to a closure.
+
+(a:Int, b:Int):Int => a + b
