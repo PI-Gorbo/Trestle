@@ -8,29 +8,8 @@ Program {
             kind: Let {
                 name: "x",
                 value: Expression {
-                    kind: Add(
-                        Expression {
-                            kind: Int(
-                                5,
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    145,
-                                ),
-                                length: 1,
-                            },
-                        },
-                        Expression {
-                            kind: Int(
-                                3,
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    149,
-                                ),
-                                length: 1,
-                            },
-                        },
+                    kind: Int(
+                        8,
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(

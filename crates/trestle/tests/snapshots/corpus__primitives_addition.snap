@@ -5,29 +5,8 @@ expression: program
 Program {
     expressions: [
         Expression {
-            kind: Add(
-                Expression {
-                    kind: Int(
-                        1,
-                    ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            151,
-                        ),
-                        length: 1,
-                    },
-                },
-                Expression {
-                    kind: Int(
-                        2,
-                    ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            155,
-                        ),
-                        length: 1,
-                    },
-                },
+            kind: Int(
+                3,
             ),
             span: SourceSpan {
                 offset: SourceOffset(

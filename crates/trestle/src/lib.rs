@@ -7,7 +7,11 @@ use miette::{IntoDiagnostic, NamedSource, Report, Result};
 use pest::Parser;
 use pest_derive::Parser;
 
+pub mod analysis;
+/// The lowered AST — currying is already desugared here (see [`ast::Lambda`]).
 pub mod ast;
+pub mod checked;
+pub mod evaluation;
 
 /// The `pest`-generated parser. `Rule` (the grammar's rule enum) is generated
 /// alongside it and re-exported implicitly via the derive.

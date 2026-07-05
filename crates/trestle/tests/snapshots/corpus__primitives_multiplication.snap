@@ -5,33 +5,12 @@ expression: program
 Program {
     expressions: [
         Expression {
-            kind: Mul(
-                Expression {
-                    kind: Int(
-                        2,
-                    ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            157,
-                        ),
-                        length: 1,
-                    },
-                },
-                Expression {
-                    kind: Int(
-                        3,
-                    ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            161,
-                        ),
-                        length: 1,
-                    },
-                },
+            kind: Int(
+                6,
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    157,
+                    65,
                 ),
                 length: 5,
             },

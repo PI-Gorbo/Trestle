@@ -1,4 +1,3 @@
-// @skip: needs bare top-level expression support (statement = expr) — remove to snapshot
 // Define a function, then invoke it by name. double(2) evaluates to 4.
 // FunctionInvocation takes a *name*, so `double` must be bound first.
 

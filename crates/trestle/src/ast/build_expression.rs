@@ -169,10 +169,16 @@ fn build_add(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         let rhs = build_mul(next)?;
         let span = merge_spans(lhs.span, rhs.span);
 
-        Ok(Expression {
-            kind: ExpressionKind::Add(Box::new(lhs), Box::new(rhs)),
-            span,
-        })
+        match (&lhs.kind, &rhs.kind) {
+            (ExpressionKind::Int(lhs_num), ExpressionKind::Int(rhs_num)) => Ok(Expression {
+                kind: ExpressionKind::Int(lhs_num + rhs_num),
+                span,
+            }),
+            _ => Ok(Expression {
+                kind: ExpressionKind::Add(Box::new(lhs), Box::new(rhs)),
+                span,
+            }),
+        }
     })
 }
 
@@ -180,14 +186,21 @@ fn build_mul(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let mut inner = pair.into_inner();
     let head = inner.next().expect("mul has at least one primary");
     let head_expression = build_primary(head)?;
+
     inner.try_fold(head_expression, |lhs, next| {
         let rhs = build_primary(next)?;
         let span = merge_spans(lhs.span, rhs.span);
 
-        Ok(Expression {
-            kind: ExpressionKind::Mul(Box::new(lhs), Box::new(rhs)),
-            span,
-        })
+        match (&lhs.kind, &rhs.kind) {
+            (ExpressionKind::Int(lhs_num), ExpressionKind::Int(rhs_num)) => Ok(Expression {
+                kind: ExpressionKind::Int(lhs_num * rhs_num),
+                span,
+            }),
+            _ => Ok(Expression {
+                kind: ExpressionKind::Mul(Box::new(lhs), Box::new(rhs)),
+                span,
+            }),
+        }
     })
 }
 

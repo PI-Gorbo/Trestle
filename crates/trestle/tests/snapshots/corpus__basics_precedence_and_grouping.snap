@@ -8,50 +8,8 @@ Program {
             kind: Let {
                 name: "natural",
                 value: Expression {
-                    kind: Add(
-                        Expression {
-                            kind: Int(
-                                1,
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    92,
-                                ),
-                                length: 1,
-                            },
-                        },
-                        Expression {
-                            kind: Mul(
-                                Expression {
-                                    kind: Int(
-                                        2,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            96,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                                Expression {
-                                    kind: Int(
-                                        3,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            100,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    96,
-                                ),
-                                length: 5,
-                            },
-                        },
+                    kind: Int(
+                        7,
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -72,50 +30,8 @@ Program {
             kind: Let {
                 name: "grouped",
                 value: Expression {
-                    kind: Mul(
-                        Expression {
-                            kind: Add(
-                                Expression {
-                                    kind: Int(
-                                        1,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            142,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                                Expression {
-                                    kind: Int(
-                                        2,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            146,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    142,
-                                ),
-                                length: 5,
-                            },
-                        },
-                        Expression {
-                            kind: Int(
-                                3,
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    151,
-                                ),
-                                length: 1,
-                            },
-                        },
+                    kind: Int(
+                        9,
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -136,71 +52,8 @@ Program {
             kind: Let {
                 name: "nested",
                 value: Expression {
-                    kind: Mul(
-                        Expression {
-                            kind: Add(
-                                Expression {
-                                    kind: Int(
-                                        1,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            178,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                                Expression {
-                                    kind: Int(
-                                        2,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            182,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    178,
-                                ),
-                                length: 5,
-                            },
-                        },
-                        Expression {
-                            kind: Add(
-                                Expression {
-                                    kind: Int(
-                                        3,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            188,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                                Expression {
-                                    kind: Int(
-                                        4,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            192,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    188,
-                                ),
-                                length: 5,
-                            },
-                        },
+                    kind: Int(
+                        21,
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(

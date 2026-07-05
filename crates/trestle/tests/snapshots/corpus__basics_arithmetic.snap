@@ -8,50 +8,8 @@ Program {
             kind: Let {
                 name: "a",
                 value: Expression {
-                    kind: Add(
-                        Expression {
-                            kind: Add(
-                                Expression {
-                                    kind: Int(
-                                        1,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            84,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                                Expression {
-                                    kind: Int(
-                                        2,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            88,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    84,
-                                ),
-                                length: 5,
-                            },
-                        },
-                        Expression {
-                            kind: Int(
-                                3,
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    92,
-                                ),
-                                length: 1,
-                            },
-                        },
+                    kind: Int(
+                        6,
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -72,50 +30,8 @@ Program {
             kind: Let {
                 name: "b",
                 value: Expression {
-                    kind: Mul(
-                        Expression {
-                            kind: Mul(
-                                Expression {
-                                    kind: Int(
-                                        2,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            148,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                                Expression {
-                                    kind: Int(
-                                        3,
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            152,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    148,
-                                ),
-                                length: 5,
-                            },
-                        },
-                        Expression {
-                            kind: Int(
-                                4,
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    156,
-                                ),
-                                length: 1,
-                            },
-                        },
+                    kind: Int(
+                        24,
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
