@@ -63,7 +63,7 @@ pub struct Param {
 
 #[derive(Debug, PartialEq)]
 pub struct Lambda {
-    pub params: Vec<Param>,
+    pub parameter: Option<Param>,
     pub return_type: Option<TypeDeclaration>,
     pub body: Box<Expression>,
 }

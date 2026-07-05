@@ -41,8 +41,7 @@ fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
 
     let (name, value) =
-        pair
-            .into_inner()
+        pair.into_inner()
             .fold((String::new(), None), |(mut name, mut value), p| {
                 match p.as_rule() {
                     Rule::let_kw => {}
@@ -89,19 +88,47 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         }
     }
 
-    match body {
-        Some(body_value) => Ok(spanned(
+    // Guard: a lambda must have a body.
+    let Some(body_value) = body else {
+        return Err(BuildError::MissingLambdaBody {
+            span: source_span_from_pest_span(span),
+        });
+    };
+    let boxed_body = Box::new(body_value?);
+
+    // Fold up the params to build a curried lambda expression. Ie: (A => (B => (C => D)))
+    let mut params_in_reverse = params.into_iter().rev();
+
+    // Guard: a lambda with no parameters wraps the body directly.
+    let Some(last_param) = params_in_reverse.next() else {
+        return Ok(spanned(
             span,
             ExpressionKind::Lambda(Lambda {
-                params,
+                parameter: None,
                 return_type,
-                body: Box::new(body_value?),
+                body: boxed_body,
             }),
+        ));
+    };
+
+    // The innermost lambda owns the real return type; outer wrappers get None.
+    let most_inner_lambda = Lambda {
+        parameter: Some(last_param),
+        body: boxed_body,
+        return_type,
+    };
+
+    Ok(spanned(
+        span,
+        ExpressionKind::Lambda(params_in_reverse.fold(
+            most_inner_lambda,
+            |inner_lambda, next_innermost_parameter| Lambda {
+                parameter: Some(next_innermost_parameter),
+                return_type: None,
+                body: Box::new(spanned(span, ExpressionKind::Lambda(inner_lambda))),
+            },
         )),
-        None => Err(BuildError::MissingLambdaBody {
-            span: source_span_from_pest_span(span),
-        }),
-    }
+    ))
 }
 
 fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {

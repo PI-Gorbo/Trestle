@@ -10,12 +10,12 @@ Program {
                 value: Expression {
                     kind: Lambda(
                         Lambda {
-                            params: [
+                            parameter: Some(
                                 Param {
                                     name: "x",
                                     type_dec: None,
                                 },
-                            ],
+                            ),
                             return_type: None,
                             body: Expression {
                                 kind: Var(
@@ -51,12 +51,12 @@ Program {
                 value: Expression {
                     kind: Lambda(
                         Lambda {
-                            params: [
+                            parameter: Some(
                                 Param {
                                     name: "x",
                                     type_dec: None,
                                 },
-                            ],
+                            ),
                             return_type: None,
                             body: Expression {
                                 kind: Mul(
@@ -113,7 +113,7 @@ Program {
                 value: Expression {
                     kind: Lambda(
                         Lambda {
-                            params: [
+                            parameter: Some(
                                 Param {
                                     name: "a",
                                     type_dec: Some(
@@ -122,50 +122,65 @@ Program {
                                         ),
                                     ),
                                 },
-                                Param {
-                                    name: "b",
-                                    type_dec: Some(
-                                        Named(
-                                            "Int",
-                                        ),
-                                    ),
-                                },
-                            ],
-                            return_type: Some(
-                                Named(
-                                    "Int",
-                                ),
                             ),
+                            return_type: None,
                             body: Expression {
-                                kind: Add(
-                                    Expression {
-                                        kind: Var(
-                                            "a",
+                                kind: Lambda(
+                                    Lambda {
+                                        parameter: Some(
+                                            Param {
+                                                name: "b",
+                                                type_dec: Some(
+                                                    Named(
+                                                        "Int",
+                                                    ),
+                                                ),
+                                            },
                                         ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                344,
+                                        return_type: Some(
+                                            Named(
+                                                "Int",
                                             ),
-                                            length: 1,
-                                        },
-                                    },
-                                    Expression {
-                                        kind: Var(
-                                            "b",
                                         ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                348,
+                                        body: Expression {
+                                            kind: Add(
+                                                Expression {
+                                                    kind: Var(
+                                                        "a",
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            344,
+                                                        ),
+                                                        length: 1,
+                                                    },
+                                                },
+                                                Expression {
+                                                    kind: Var(
+                                                        "b",
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            348,
+                                                        ),
+                                                        length: 1,
+                                                    },
+                                                },
                                             ),
-                                            length: 1,
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    344,
+                                                ),
+                                                length: 5,
+                                            },
                                         },
                                     },
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        344,
+                                        322,
                                     ),
-                                    length: 5,
+                                    length: 28,
                                 },
                             },
                         },
@@ -191,7 +206,7 @@ Program {
                 value: Expression {
                     kind: Lambda(
                         Lambda {
-                            params: [
+                            parameter: Some(
                                 Param {
                                     name: "a",
                                     type_dec: Some(
@@ -200,17 +215,17 @@ Program {
                                         ),
                                     ),
                                 },
-                            ],
+                            ),
                             return_type: None,
                             body: Expression {
                                 kind: Lambda(
                                     Lambda {
-                                        params: [
+                                        parameter: Some(
                                             Param {
                                                 name: "b",
                                                 type_dec: None,
                                             },
-                                        ],
+                                        ),
                                         return_type: None,
                                         body: Expression {
                                             kind: Add(

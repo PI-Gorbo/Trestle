@@ -10,12 +10,12 @@ Program {
                 value: Expression {
                     kind: Lambda(
                         Lambda {
-                            params: [
+                            parameter: Some(
                                 Param {
                                     name: "x",
                                     type_dec: None,
                                 },
-                            ],
+                            ),
                             return_type: None,
                             body: Expression {
                                 kind: Mul(
