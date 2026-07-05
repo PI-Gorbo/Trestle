@@ -30,6 +30,42 @@ macro_rules! trsl_test {
     };
 }
 
+// ── 00 primitives ─────────────────────────────────────────
+trsl_test!(
+    primitives_int,
+    "00-primitives/int.trsl",
+    ignore = "needs bare top-level expression support (statement = expr)"
+);
+trsl_test!(
+    primitives_let_declaration,
+    "00-primitives/let-declaration.trsl"
+);
+trsl_test!(
+    primitives_addition,
+    "00-primitives/addition.trsl",
+    ignore = "needs bare top-level expression support (statement = expr)"
+);
+trsl_test!(
+    primitives_multiplication,
+    "00-primitives/multiplication.trsl",
+    ignore = "needs bare top-level expression support (statement = expr)"
+);
+trsl_test!(
+    primitives_lambda,
+    "00-primitives/lambda.trsl",
+    ignore = "needs bare top-level expression support (statement = expr)"
+);
+trsl_test!(
+    primitives_function_invocation,
+    "00-primitives/function-invocation.trsl",
+    ignore = "needs bare top-level expression support (statement = expr)"
+);
+trsl_test!(
+    primitives_typed_lambda,
+    "00-primitives/typed-lambda.trsl",
+    ignore = "needs bare top-level expression support (statement = expr)"
+);
+
 // ── 01 basics ─────────────────────────────────────────────
 trsl_test!(basics_arithmetic, "01-basics/arithmetic.trsl");
 trsl_test!(basics_basics, "01-basics/basics.trsl");
