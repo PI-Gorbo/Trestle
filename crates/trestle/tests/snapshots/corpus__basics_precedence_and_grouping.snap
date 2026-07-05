@@ -3,59 +3,219 @@ source: crates/trestle/tests/corpus.rs
 expression: program
 ---
 Program {
-    statements: [
-        Let {
-            name: "natural",
-            value: Add(
-                Int(
-                    1,
-                ),
-                Mul(
-                    Int(
-                        2,
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "natural",
+                value: Expression {
+                    kind: Add(
+                        Expression {
+                            kind: Int(
+                                1,
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    92,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Mul(
+                                Expression {
+                                    kind: Int(
+                                        2,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            96,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Int(
+                                        3,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            100,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    96,
+                                ),
+                                length: 5,
+                            },
+                        },
                     ),
-                    Int(
-                        3,
-                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            92,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    78,
                 ),
-            ),
+                length: 23,
+            },
         },
-        Let {
-            name: "grouped",
-            value: Mul(
-                Add(
-                    Int(
-                        1,
+        Expression {
+            kind: Let {
+                name: "grouped",
+                value: Expression {
+                    kind: Mul(
+                        Expression {
+                            kind: Add(
+                                Expression {
+                                    kind: Int(
+                                        1,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            142,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Int(
+                                        2,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            146,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    142,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        Expression {
+                            kind: Int(
+                                3,
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    151,
+                                ),
+                                length: 1,
+                            },
+                        },
                     ),
-                    Int(
-                        2,
-                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            142,
+                        ),
+                        length: 10,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    127,
                 ),
-                Int(
-                    3,
-                ),
-            ),
+                length: 35,
+            },
         },
-        Let {
-            name: "nested",
-            value: Mul(
-                Add(
-                    Int(
-                        1,
+        Expression {
+            kind: Let {
+                name: "nested",
+                value: Expression {
+                    kind: Mul(
+                        Expression {
+                            kind: Add(
+                                Expression {
+                                    kind: Int(
+                                        1,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            178,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Int(
+                                        2,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            182,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    178,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        Expression {
+                            kind: Add(
+                                Expression {
+                                    kind: Int(
+                                        3,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            188,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Int(
+                                        4,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            192,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    188,
+                                ),
+                                length: 5,
+                            },
+                        },
                     ),
-                    Int(
-                        2,
-                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            178,
+                        ),
+                        length: 15,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    162,
                 ),
-                Add(
-                    Int(
-                        3,
-                    ),
-                    Int(
-                        4,
-                    ),
-                ),
-            ),
+                length: 34,
+            },
         },
     ],
 }

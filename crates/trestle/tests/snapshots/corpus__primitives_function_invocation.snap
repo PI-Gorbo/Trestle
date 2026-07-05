@@ -1,0 +1,94 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+Program {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "double",
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            params: [
+                                Param {
+                                    name: "x",
+                                    type_dec: None,
+                                },
+                            ],
+                            return_type: None,
+                            body: Expression {
+                                kind: Mul(
+                                    Expression {
+                                        kind: Var(
+                                            "x",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                256,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: Int(
+                                            2,
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                260,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        256,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            249,
+                        ),
+                        length: 13,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 26,
+            },
+        },
+        Expression {
+            kind: FunctionInvocation(
+                "double",
+                [
+                    Expression {
+                        kind: Int(
+                            2,
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                269,
+                            ),
+                            length: 1,
+                        },
+                    },
+                ],
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    262,
+                ),
+                length: 9,
+            },
+        },
+    ],
+}

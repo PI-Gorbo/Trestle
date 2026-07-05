@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+miette = { version = "7.6.0", features = ["fancy"] }
 pest = "2.6"
 pest_derive = "2.6"
+thiserror = "2.0.18"
 
 # Test-only. Snapshot testing for the parsed AST in tests/corpus.rs.
 # Dev-dependencies are compiled only for tests/examples/benches and are never

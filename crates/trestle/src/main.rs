@@ -3,9 +3,10 @@
 //! Phase 1 only parses; it does not yet evaluate. The path argument is
 //! required so the binary stays decoupled from any particular corpus layout.
 
+use miette::Result;
 use std::{env, fs, process};
 
-fn main() {
+fn main() -> Result<()> {
     let Some(path) = env::args().nth(1) else {
         eprintln!("usage: trestle <file.trsl>");
         process::exit(2);
@@ -16,11 +17,7 @@ fn main() {
         process::exit(1);
     });
 
-    match trestle::parse(&src) {
-        Ok(program) => println!("{program:#?}"),
-        Err(e) => {
-            eprintln!("parse error:\n{e}");
-            process::exit(1);
-        }
-    }
+    trestle::parse(&src)?;
+
+    Ok(())
 }

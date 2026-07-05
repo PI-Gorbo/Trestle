@@ -15,9 +15,7 @@ identifier_with_optional_type_declaration = ${ identifier ~ (type_declaration)? 
 int                                       = @{ ASCII_DIGIT+ }
 
 // program & statements
-let_binding = { let_kw ~ identifier_with_optional_type_declaration ~ "=" ~ expr }
-statement   = { let_binding }
-program     = { SOI ~ statement* ~ EOI }
+program = { SOI ~ expr+ ~ EOI }
 
 // expressions (loosest binding at the bottom -> tightest at the top): + < * < atom
 primary                             = { function_invocation | int | identifier | "(" ~ expr ~ ")" }
@@ -28,4 +26,5 @@ lambda                              = {
 }
 comma_separated_list_of_expressions = { expr ~ ("," ~ expr)* }
 function_invocation                 = { identifier ~ "(" ~ comma_separated_list_of_expressions? ~ ")" }
-expr                                = { lambda | add }
+let_binding                         = { let_kw ~ identifier_with_optional_type_declaration ~ "=" ~ expr }
+expr                                = { let_binding | lambda | add }

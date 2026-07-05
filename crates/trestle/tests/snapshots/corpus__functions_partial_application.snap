@@ -29,7 +29,7 @@ Program {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                165,
+                                                173,
                                             ),
                                             length: 1,
                                         },
@@ -40,7 +40,7 @@ Program {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                169,
+                                                177,
                                             ),
                                             length: 1,
                                         },
@@ -48,7 +48,7 @@ Program {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        165,
+                                        173,
                                     ),
                                     length: 5,
                                 },
@@ -57,7 +57,73 @@ Program {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            155,
+                            163,
+                        ),
+                        length: 16,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    151,
+                ),
+                length: 28,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "mul",
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            params: [
+                                Param {
+                                    name: "a",
+                                    type_dec: None,
+                                },
+                                Param {
+                                    name: "b",
+                                    type_dec: None,
+                                },
+                            ],
+                            return_type: None,
+                            body: Expression {
+                                kind: Mul(
+                                    Expression {
+                                        kind: Var(
+                                            "a",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                201,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: Var(
+                                            "b",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                205,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        201,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            191,
                         ),
                         length: 17,
                     },
@@ -65,60 +131,25 @@ Program {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    145,
+                    179,
                 ),
-                length: 27,
+                length: 29,
             },
         },
         Expression {
             kind: Let {
-                name: "add10",
+                name: "inc",
                 value: Expression {
                     kind: FunctionInvocation(
                         "add",
                         [
                             Expression {
                                 kind: Int(
-                                    10,
+                                    1,
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        188,
-                                    ),
-                                    length: 2,
-                                },
-                            },
-                        ],
-                    ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            184,
-                        ),
-                        length: 7,
-                    },
-                },
-            },
-            span: SourceSpan {
-                offset: SourceOffset(
-                    172,
-                ),
-                length: 71,
-            },
-        },
-        Expression {
-            kind: Let {
-                name: "z",
-                value: Expression {
-                    kind: FunctionInvocation(
-                        "add10",
-                        [
-                            Expression {
-                                kind: Int(
-                                    5,
-                                ),
-                                span: SourceSpan {
-                                    offset: SourceOffset(
-                                        257,
+                                        226,
                                     ),
                                     length: 1,
                                 },
@@ -127,25 +158,25 @@ Program {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            251,
+                            222,
                         ),
-                        length: 8,
+                        length: 6,
                     },
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    243,
+                    208,
                 ),
-                length: 41,
+                length: 55,
             },
         },
         Expression {
             kind: Let {
-                name: "w",
+                name: "triple",
                 value: Expression {
                     kind: FunctionInvocation(
-                        "add",
+                        "mul",
                         [
                             Expression {
                                 kind: Int(
@@ -153,18 +184,7 @@ Program {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        296,
-                                    ),
-                                    length: 1,
-                                },
-                            },
-                            Expression {
-                                kind: Int(
-                                    4,
-                                ),
-                                span: SourceSpan {
-                                    offset: SourceOffset(
-                                        299,
+                                        281,
                                     ),
                                     length: 1,
                                 },
@@ -173,17 +193,65 @@ Program {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            292,
+                            277,
                         ),
-                        length: 9,
+                        length: 6,
                     },
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    284,
+                    263,
                 ),
-                length: 40,
+                length: 59,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "result",
+                value: Expression {
+                    kind: FunctionInvocation(
+                        "triple",
+                        [
+                            Expression {
+                                kind: FunctionInvocation(
+                                    "inc",
+                                    [
+                                        Expression {
+                                            kind: Int(
+                                                9,
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    346,
+                                                ),
+                                                length: 1,
+                                            },
+                                        },
+                                    ],
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        342,
+                                    ),
+                                    length: 6,
+                                },
+                            },
+                        ],
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            335,
+                        ),
+                        length: 14,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    322,
+                ),
+                length: 50,
             },
         },
     ],

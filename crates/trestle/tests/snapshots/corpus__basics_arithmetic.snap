@@ -3,49 +3,188 @@ source: crates/trestle/tests/corpus.rs
 expression: program
 ---
 Program {
-    statements: [
-        Let {
-            name: "a",
-            value: Add(
-                Add(
-                    Int(
-                        1,
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "a",
+                value: Expression {
+                    kind: Add(
+                        Expression {
+                            kind: Add(
+                                Expression {
+                                    kind: Int(
+                                        1,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            84,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Int(
+                                        2,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            88,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    84,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        Expression {
+                            kind: Int(
+                                3,
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    92,
+                                ),
+                                length: 1,
+                            },
+                        },
                     ),
-                    Int(
-                        2,
-                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            84,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    76,
                 ),
-                Int(
-                    3,
-                ),
-            ),
+                length: 64,
+            },
         },
-        Let {
-            name: "b",
-            value: Mul(
-                Mul(
-                    Int(
-                        2,
+        Expression {
+            kind: Let {
+                name: "b",
+                value: Expression {
+                    kind: Mul(
+                        Expression {
+                            kind: Mul(
+                                Expression {
+                                    kind: Int(
+                                        2,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            148,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Int(
+                                        3,
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            152,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    148,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        Expression {
+                            kind: Int(
+                                4,
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    156,
+                                ),
+                                length: 1,
+                            },
+                        },
                     ),
-                    Int(
-                        3,
-                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            148,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    140,
                 ),
-                Int(
-                    4,
-                ),
-            ),
+                length: 31,
+            },
         },
-        Let {
-            name: "c",
-            value: Add(
-                Var(
-                    "a",
+        Expression {
+            kind: Let {
+                name: "c",
+                value: Expression {
+                    kind: Add(
+                        Expression {
+                            kind: Var(
+                                "a",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    179,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Var(
+                                "b",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    183,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            179,
+                        ),
+                        length: 5,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    171,
                 ),
-                Var(
-                    "b",
-                ),
+                length: 56,
+            },
+        },
+        Expression {
+            kind: Var(
+                "c",
             ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    227,
+                ),
+                length: 1,
+            },
         },
     ],
 }

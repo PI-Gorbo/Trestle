@@ -3,12 +3,28 @@ source: crates/trestle/tests/corpus.rs
 expression: program
 ---
 Program {
-    statements: [
-        Let {
-            name: "x",
-            value: Int(
-                42,
-            ),
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "x",
+                value: Expression {
+                    kind: Int(
+                        42,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            120,
+                        ),
+                        length: 2,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    112,
+                ),
+                length: 11,
+            },
         },
     ],
 }

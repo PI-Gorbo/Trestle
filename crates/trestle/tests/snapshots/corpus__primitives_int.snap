@@ -1,0 +1,19 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+Program {
+    expressions: [
+        Expression {
+            kind: Int(
+                42,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    179,
+                ),
+                length: 2,
+            },
+        },
+    ],
+}

@@ -13,8 +13,8 @@ macro_rules! trsl_test {
         #[test]
         fn $name() {
             let src = include_str!(concat!("programs/", $path));
-            let program =
-                trestle::parse(src).unwrap_or_else(|e| panic!("failed to parse `{}`:\n{e}", $path));
+            let program = trestle::parse(src)
+                .unwrap_or_else(|e| panic!("failed to parse `{}`:\n{e:?}", $path));
             insta::assert_debug_snapshot!(program);
         }
     };
@@ -23,48 +23,30 @@ macro_rules! trsl_test {
         #[ignore = $reason]
         fn $name() {
             let src = include_str!(concat!("programs/", $path));
-            let program =
-                trestle::parse(src).unwrap_or_else(|e| panic!("failed to parse `{}`:\n{e}", $path));
+            let program = trestle::parse(src)
+                .unwrap_or_else(|e| panic!("failed to parse `{}`:\n{e:?}", $path));
             insta::assert_debug_snapshot!(program);
         }
     };
 }
 
 // ── 00 primitives ─────────────────────────────────────────
-trsl_test!(
-    primitives_int,
-    "00-primitives/int.trsl",
-    ignore = "needs bare top-level expression support (statement = expr)"
-);
+trsl_test!(primitives_int, "00-primitives/int.trsl");
 trsl_test!(
     primitives_let_declaration,
     "00-primitives/let-declaration.trsl"
 );
-trsl_test!(
-    primitives_addition,
-    "00-primitives/addition.trsl",
-    ignore = "needs bare top-level expression support (statement = expr)"
-);
+trsl_test!(primitives_addition, "00-primitives/addition.trsl");
 trsl_test!(
     primitives_multiplication,
-    "00-primitives/multiplication.trsl",
-    ignore = "needs bare top-level expression support (statement = expr)"
+    "00-primitives/multiplication.trsl"
 );
-trsl_test!(
-    primitives_lambda,
-    "00-primitives/lambda.trsl",
-    ignore = "needs bare top-level expression support (statement = expr)"
-);
+trsl_test!(primitives_lambda, "00-primitives/lambda.trsl");
 trsl_test!(
     primitives_function_invocation,
-    "00-primitives/function-invocation.trsl",
-    ignore = "needs bare top-level expression support (statement = expr)"
+    "00-primitives/function-invocation.trsl"
 );
-trsl_test!(
-    primitives_typed_lambda,
-    "00-primitives/typed-lambda.trsl",
-    ignore = "needs bare top-level expression support (statement = expr)"
-);
+trsl_test!(primitives_typed_lambda, "00-primitives/typed-lambda.trsl");
 
 // ── 01 basics ─────────────────────────────────────────────
 trsl_test!(basics_arithmetic, "01-basics/arithmetic.trsl");
@@ -79,13 +61,11 @@ trsl_test!(functions_currying, "02-functions/currying.trsl");
 trsl_test!(functions_lambdas, "02-functions/lambdas.trsl");
 trsl_test!(
     functions_arrow_functions,
-    "02-functions/arrow-functions.trsl",
-    ignore = "arrow-function walker not implemented yet (tier 02)"
+    "02-functions/arrow-functions.trsl"
 );
 trsl_test!(
     functions_partial_application,
-    "02-functions/partial-application.trsl",
-    ignore = "needs curried application + partial application (tier 02)"
+    "02-functions/partial-application.trsl"
 );
 
 // ── 03 pipelines ──────────────────────────────────────────

@@ -4,24 +4,50 @@
 //! into these types. The walker is split by what it builds — see the
 //! `build_program`, `build_statement`, and `build_expression` submodules.
 
-use pest::iterators::Pair;
+use miette::SourceSpan;
+use pest::{Span, iterators::Pair};
 
 use crate::Rule;
 
 mod build_expression;
 mod build_program;
-mod build_statement;
 
-pub use build_program::build_program;
+pub use build_program::{BuildError, build_program};
+
+pub fn source_span_from_pest_span(pest_span: Span) -> SourceSpan {
+    (pest_span.start(), pest_span.end() - pest_span.start()).into()
+}
+
+/// Merge two spans into one covering from the start of `a` to the end of `b`.
+///
+/// Used for synthesized binary nodes (`Add`/`Mul`) that span both operands.
+/// Assumes `a` starts at or before `b` (true for the left-to-right operand fold).
+pub fn merge_spans(a: SourceSpan, b: SourceSpan) -> SourceSpan {
+    let start = a.offset();
+    (start, b.offset() + b.len() - start).into()
+}
+
+/// A source-spanned expression node: what the expression *is* (`kind`) plus
+/// where it came from (`span`). Every node in the tree carries its own span so
+/// diagnostics can point at any sub-expression.
+#[derive(Debug, PartialEq)]
+pub struct Expression {
+    pub kind: ExpressionKind,
+    pub span: SourceSpan,
+}
 
 #[derive(Debug, PartialEq)]
-pub enum Expr {
+pub enum ExpressionKind {
     Int(i64),
     Var(String),
-    Add(Box<Expr>, Box<Expr>),
-    Mul(Box<Expr>, Box<Expr>),
+    Add(Box<Expression>, Box<Expression>),
+    Mul(Box<Expression>, Box<Expression>),
     Lambda(Lambda),
-    FunctionInvocation(String, Vec<Expr>),
+    FunctionInvocation(String, Vec<Expression>),
+    Let {
+        name: String,
+        value: Box<Expression>,
+    },
 }
 
 #[derive(Debug, PartialEq)]
@@ -39,18 +65,12 @@ pub struct Param {
 pub struct Lambda {
     pub params: Vec<Param>,
     pub return_type: Option<TypeDeclaration>,
-    pub body: Box<Expr>,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct Let {
-    pub name: String,
-    pub value: Expr,
+    pub body: Box<Expression>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Program {
-    pub statements: Vec<Let>,
+    pub expressions: Vec<Expression>,
 }
 
 fn get_bindings<'a>(pair: Pair<'a, Rule>, expect_message: &'a str) -> Pair<'a, Rule> {
