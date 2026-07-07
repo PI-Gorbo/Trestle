@@ -149,7 +149,11 @@ macro_rules! trsl_test {
 // one concern per program, related concerns kept side by side.
 
 // ── literals ──────────────────────────────────────────────
-trsl_test!(basics_literals_int, "00-basics/literals/int/int.trsl");
+trsl_test!(
+    basics_literals_int,
+    "00-basics/literals/int/int.trsl",
+    [ast, analyse]
+);
 trsl_test!(
     basics_literals_string,
     "00-basics/literals/string/string.trsl",
@@ -169,15 +173,18 @@ trsl_test!(
 // ── operators ─────────────────────────────────────────────
 trsl_test!(
     basics_operators_addition,
-    "00-basics/operators/addition/addition.trsl"
+    "00-basics/operators/addition/addition.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_operators_multiplication,
-    "00-basics/operators/multiplication/multiplication.trsl"
+    "00-basics/operators/multiplication/multiplication.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_operators_precedence_and_grouping,
-    "00-basics/operators/precedence-and-grouping/precedence-and-grouping.trsl"
+    "00-basics/operators/precedence-and-grouping/precedence-and-grouping.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_operators_subtraction,
@@ -208,11 +215,13 @@ trsl_test!(
 // ── bindings ──────────────────────────────────────────────
 trsl_test!(
     basics_bindings_let_declaration,
-    "00-basics/bindings/let-declaration/let-declaration.trsl"
+    "00-basics/bindings/let-declaration/let-declaration.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_bindings_arithmetic,
-    "00-basics/bindings/arithmetic/arithmetic.trsl"
+    "00-basics/bindings/arithmetic/arithmetic.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_bindings_typed_let_declaration,
@@ -223,27 +232,33 @@ trsl_test!(
 // ── functions ─────────────────────────────────────────────
 trsl_test!(
     basics_functions_lambda,
-    "00-basics/functions/lambda/lambda.trsl"
+    "00-basics/functions/lambda/lambda.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_functions_typed_lambda,
-    "00-basics/functions/typed-lambda/typed-lambda.trsl"
+    "00-basics/functions/typed-lambda/typed-lambda.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_functions_nested_lambda,
-    "00-basics/functions/nested-lambda/nested-lambda.trsl"
+    "00-basics/functions/nested-lambda/nested-lambda.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_functions_function_invocation,
-    "00-basics/functions/function-invocation/function-invocation.trsl"
+    "00-basics/functions/function-invocation/function-invocation.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_functions_currying,
-    "00-basics/functions/currying/currying.trsl"
+    "00-basics/functions/currying/currying.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_functions_partial_application,
-    "00-basics/functions/partial-application/partial-application.trsl"
+    "00-basics/functions/partial-application/partial-application.trsl",
+    [ast, analyse]
 );
 trsl_test!(
     basics_functions_zero_param_lambda,

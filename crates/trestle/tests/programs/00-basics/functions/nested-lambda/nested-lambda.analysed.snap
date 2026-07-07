@@ -1,0 +1,106 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+ResolvedProgram {
+    expressions: [
+        ResolvedExpression {
+            kind: Lambda(
+                ResolvedLambda {
+                    parameter: Some(
+                        ResolvedParam {
+                            binding: BindingId(
+                                0,
+                            ),
+                            type_dec: None,
+                        },
+                    ),
+                    return_type: None,
+                    body: ResolvedExpression {
+                        kind: Lambda(
+                            ResolvedLambda {
+                                parameter: Some(
+                                    ResolvedParam {
+                                        binding: BindingId(
+                                            1,
+                                        ),
+                                        type_dec: None,
+                                    },
+                                ),
+                                return_type: None,
+                                body: ResolvedExpression {
+                                    kind: Add(
+                                        ResolvedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    0,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    250,
+                                                ),
+                                                length: 1,
+                                            },
+                                        },
+                                        ResolvedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    1,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    254,
+                                                ),
+                                                length: 1,
+                                            },
+                                        },
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            250,
+                                        ),
+                                        length: 5,
+                                    },
+                                },
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                243,
+                            ),
+                            length: 13,
+                        },
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 20,
+            },
+        },
+    ],
+    bindings: [
+        ResolvedBinding {
+            name: "a",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 20,
+            },
+        },
+        ResolvedBinding {
+            name: "b",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    243,
+                ),
+                length: 13,
+            },
+        },
+    ],
+}

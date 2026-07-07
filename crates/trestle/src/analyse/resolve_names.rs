@@ -31,84 +31,49 @@ use crate::parse::ast::{self, Expression, ExpressionKind, Param};
 pub(super) fn resolve(
     program: &ast::LoweredProgram,
 ) -> Result<ResolvedProgram, Vec<AnalysisError>> {
-    let mut state = ResolvingState::new();
+    let mut bindings_arena = BindingArena::new();
+    let mut scope = Scope::Empty;
+    let mut expressions = Vec::new();
+    let mut errors = Vec::new();
 
     // Names declared *in this block* (the top-level sequence), mapped to the first declaration's
-    // span so a redeclaration error can point back at it. A local, not a field of `ResolvingState`:
-    // unlike `scope`, it must not leak into child blocks — a lambda body starts fresh, so a param
-    // may legitimately reuse an outer name.
+    // span so a redeclaration error can point back at it. Block-local, unlike `scope`: it must not
+    // leak into child blocks — a lambda body starts fresh, so a param may legitimately reuse an
+    // outer name. It also can't be derived from `scope`, which contains outer bindings too, so a
+    // `scope.lookup` would wrongly flag legal shadowing of an outer name as a redeclaration.
     let mut declared: HashMap<&str, SourceSpan> = HashMap::new();
 
     for expression in &program.expressions {
-        match &expression.kind {
-            // A block-level `let` threads its binding into the scope seen by later siblings, so it
-            // is handled here rather than in `resolve_expression` (which cannot return a new scope).
-            ExpressionKind::Let { name, value } => {
-                if let Some(&original_span) = declared.get(name.as_str()) {
-                    state.errors.push(AnalysisError::DuplicateBinding {
-                        name: name.clone(),
-                        span: expression.span,
-                        original_span,
-                    });
-                } else {
+        // The one block-level concern that isn't per-expression: flag a same-block redeclaration.
+        // Resolution itself (including the `let` scope threading below) is uniform across kinds.
+        if let ExpressionKind::Let { name, .. } = &expression.kind {
+            match declared.get(name.as_str()) {
+                Some(&original_span) => errors.push(AnalysisError::DuplicateBinding {
+                    name: name.clone(),
+                    span: expression.span,
+                    original_span,
+                }),
+                None => {
                     declared.insert(name.as_str(), expression.span);
                 }
-
-                // Value is resolved *before* the binding enters scope (non-recursive let).
-                let value = resolve_expression(value, &state.scope, &mut state.bindings_arena);
-
-                // Mint + extend even if the value failed, so later references to this name don't
-                // cascade into spurious `UnboundName`s; only emit the node when the value resolved.
-                let (binding, extended) = bind_let(
-                    name,
-                    expression.span,
-                    &state.scope,
-                    &mut state.bindings_arena,
-                );
-                state.scope = extended;
-
-                match value {
-                    Ok(value) => state.expressions.push(ResolvedExpression {
-                        kind: ResolvedExpressionKind::Let {
-                            binding,
-                            value: Box::new(value),
-                        },
-                        span: expression.span,
-                    }),
-                    Err(error) => state.errors.push(error),
-                }
             }
-            _ => match resolve_expression(expression, &state.scope, &mut state.bindings_arena) {
-                Ok(resolved) => state.expressions.push(resolved),
-                Err(error) => state.errors.push(error),
-            },
+        }
+
+        // `resolve_expression` hands back the scope the next sibling sees; only a `let` changes it.
+        let (result, next_scope) = resolve_expression(expression, &scope, &mut bindings_arena);
+        scope = next_scope;
+        match result {
+            Ok(resolved) => expressions.push(resolved),
+            Err(error) => errors.push(error),
         }
     }
 
-    match state.errors.is_empty() {
+    match errors.is_empty() {
         true => Ok(ResolvedProgram {
-            expressions: state.expressions,
-            bindings: state.bindings_arena.into_bindings(),
+            expressions,
+            bindings: bindings_arena.into_bindings(),
         }),
-        false => Err(state.errors),
-    }
-}
-
-struct ResolvingState {
-    bindings_arena: BindingArena,
-    scope: Scope,
-    expressions: Vec<ResolvedExpression>,
-    errors: Vec<AnalysisError>,
-}
-
-impl ResolvingState {
-    fn new() -> ResolvingState {
-        ResolvingState {
-            expressions: Vec::new(),
-            bindings_arena: BindingArena::new(),
-            scope: Scope::Empty,
-            errors: Vec::new(),
-        }
+        false => Err(errors),
     }
 }
 
@@ -188,42 +153,63 @@ fn bind_let(
     (binding, scope.extend(name.to_string(), binding))
 }
 
+/// Resolve one expression, returning both its resolved node (or error) and the scope the *next
+/// sibling in a sequence* should see. Only a `let` returns an outgoing scope different from
+/// `scope`; every other kind hands `scope` straight back. This is the single home of `let`
+/// resolution — the driver's block loop threads the outgoing scope forward without special-casing.
 fn resolve_expression(
     expr: &Expression,
     scope: &Scope,
     bindings_arena: &mut BindingArena,
-) -> Result<ResolvedExpression, AnalysisError> {
-    let (resvoled_expression_kind, additional_bindings) = match &expr.kind {
-        ExpressionKind::Var(string_identifier) => {
-            let lookup = scope.lookup(string_identifier);
-            match lookup {
-                Some(binding) => (ResolvedExpressionKind::Var(binding), None),
-                None => {
-                    return Err(AnalysisError::UnboundName {
-                        name: string_identifier.to_string(),
-                        span: expr.span,
-                    });
-                }
-            }
-        }
-        ExpressionKind::Int(v) => (ResolvedExpressionKind::Int(*v), None),
-        ExpressionKind::Add(lhs, rhs) => {
-            let lhs = resolve_expression(&lhs, scope, bindings_arena)?;
-            let rhs = resolve_expression(&rhs, scope, bindings_arena)?;
+) -> (Result<ResolvedExpression, AnalysisError>, Scope) {
+    // A `let` mints a binding and hands an extended scope to its successors — even when its value
+    // fails to resolve, so later references to the name don't cascade into spurious `UnboundName`s.
+    if let ExpressionKind::Let { name, value } = &expr.kind {
+        let value = resolve_subexpr(value, scope, bindings_arena);
+        let (binding, extended) = bind_let(name, expr.span, scope, bindings_arena);
+        let node = value.map(|value| ResolvedExpression {
+            kind: ResolvedExpressionKind::Let {
+                binding,
+                value: Box::new(value),
+            },
+            span: expr.span,
+        });
+        return (node, extended);
+    }
 
-            (
-                ResolvedExpressionKind::Add(Box::new(lhs), Box::new(rhs)),
-                None,
-            )
+    // Every other kind leaves the sibling scope untouched, so resolve to a plain result and pair
+    // it with an unchanged `scope`.
+    (resolve_subexpr(expr, scope, bindings_arena), scope.clone())
+}
+
+/// Resolve an expression whose outgoing scope is irrelevant — i.e. one in *expression position*
+/// (an operand, a call argument, a lambda body), not a block sibling. Keeps `?` ergonomics while
+/// leaving `let` scope-threading to the single caller in [`resolve_expression`].
+fn resolve_subexpr(
+    expr: &Expression,
+    scope: &Scope,
+    bindings_arena: &mut BindingArena,
+) -> Result<ResolvedExpression, AnalysisError> {
+    let kind = match &expr.kind {
+        ExpressionKind::Var(string_identifier) => match scope.lookup(string_identifier) {
+            Some(binding) => ResolvedExpressionKind::Var(binding),
+            None => {
+                return Err(AnalysisError::UnboundName {
+                    name: string_identifier.to_string(),
+                    span: expr.span,
+                });
+            }
+        },
+        ExpressionKind::Int(v) => ResolvedExpressionKind::Int(*v),
+        ExpressionKind::Add(lhs, rhs) => {
+            let lhs = resolve_subexpr(lhs, scope, bindings_arena)?;
+            let rhs = resolve_subexpr(rhs, scope, bindings_arena)?;
+            ResolvedExpressionKind::Add(Box::new(lhs), Box::new(rhs))
         }
         ExpressionKind::Mul(lhs, rhs) => {
-            let lhs = resolve_expression(&lhs, scope, bindings_arena)?;
-            let rhs = resolve_expression(&rhs, scope, bindings_arena)?;
-
-            (
-                ResolvedExpressionKind::Mul(Box::new(lhs), Box::new(rhs)),
-                None,
-            )
+            let lhs = resolve_subexpr(lhs, scope, bindings_arena)?;
+            let rhs = resolve_subexpr(rhs, scope, bindings_arena)?;
+            ResolvedExpressionKind::Mul(Box::new(lhs), Box::new(rhs))
         }
         ExpressionKind::Lambda(lambda) => {
             let (parameter, updated_scope) = match &lambda.parameter {
@@ -235,16 +221,13 @@ fn resolve_expression(
                 None => (None, scope.clone()),
             };
 
-            let body = resolve_expression(&lambda.body, &updated_scope, bindings_arena)?;
+            let body = resolve_subexpr(&lambda.body, &updated_scope, bindings_arena)?;
 
-            (
-                ResolvedExpressionKind::Lambda(ResolvedLambda {
-                    body: Box::new(body),
-                    parameter,
-                    return_type: lambda.return_type.clone(),
-                }),
-                None,
-            )
+            ResolvedExpressionKind::Lambda(ResolvedLambda {
+                body: Box::new(body),
+                parameter,
+                return_type: lambda.return_type.clone(),
+            })
         }
         ExpressionKind::FunctionInvocation {
             function_name,
@@ -261,42 +244,30 @@ fn resolve_expression(
             let resolved_args = expressions.iter().try_fold(
                 Vec::with_capacity(expressions.len()),
                 |mut resolved_args, argument| {
-                    resolved_args.push(resolve_expression(argument, scope, bindings_arena)?);
+                    resolved_args.push(resolve_subexpr(argument, scope, bindings_arena)?);
 
                     Ok(resolved_args)
                 },
             )?;
 
-            (
-                ResolvedExpressionKind::FunctionInvocation(binding, resolved_args),
-                None,
-            )
+            ResolvedExpressionKind::FunctionInvocation(binding, resolved_args)
         }
-        // A `let` in expression position (not a block sequence) has no following siblings to see its
-        // binding, so it needs no scope threading or duplicate-tracking.
+        // A `let` here is in expression position: its binding has no following siblings to see it,
+        // so the extended scope is discarded (only [`resolve_expression`] threads it to siblings).
         ExpressionKind::Let { name, value } => {
-            let value = resolve_expression(value, scope, bindings_arena)?;
+            let value = resolve_subexpr(value, scope, bindings_arena)?;
             let (binding, _extended) = bind_let(name, expr.span, scope, bindings_arena);
-            (
-                ResolvedExpressionKind::Let {
-                    binding,
-                    value: Box::new(value),
-                },
-                None,
-            )
+            ResolvedExpressionKind::Let {
+                binding,
+                value: Box::new(value),
+            }
         }
     };
 
-    let expression = ResolvedExpression {
-        kind: resvoled_expression_kind,
+    Ok(ResolvedExpression {
+        kind,
         span: expr.span,
-    };
-
-    if let Some(binding) = additional_bindings {
-        bindings_arena.push(binding);
-    }
-
-    Ok(expression)
+    })
 }
 
 /// Resolve a lambda parameter: mint its `BindingId`, record it in the arena, and

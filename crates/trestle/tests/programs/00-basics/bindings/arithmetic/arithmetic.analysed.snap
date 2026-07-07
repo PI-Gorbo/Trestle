@@ -1,0 +1,147 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+ResolvedProgram {
+    expressions: [
+        ResolvedExpression {
+            kind: Let {
+                binding: BindingId(
+                    0,
+                ),
+                value: ResolvedExpression {
+                    kind: Int(
+                        6,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            84,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    76,
+                ),
+                length: 64,
+            },
+        },
+        ResolvedExpression {
+            kind: Let {
+                binding: BindingId(
+                    1,
+                ),
+                value: ResolvedExpression {
+                    kind: Int(
+                        24,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            148,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    140,
+                ),
+                length: 31,
+            },
+        },
+        ResolvedExpression {
+            kind: Let {
+                binding: BindingId(
+                    2,
+                ),
+                value: ResolvedExpression {
+                    kind: Add(
+                        ResolvedExpression {
+                            kind: Var(
+                                BindingId(
+                                    0,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    179,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        ResolvedExpression {
+                            kind: Var(
+                                BindingId(
+                                    1,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    183,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            179,
+                        ),
+                        length: 5,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    171,
+                ),
+                length: 56,
+            },
+        },
+        ResolvedExpression {
+            kind: Var(
+                BindingId(
+                    2,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    227,
+                ),
+                length: 1,
+            },
+        },
+    ],
+    bindings: [
+        ResolvedBinding {
+            name: "a",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    76,
+                ),
+                length: 64,
+            },
+        },
+        ResolvedBinding {
+            name: "b",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    140,
+                ),
+                length: 31,
+            },
+        },
+        ResolvedBinding {
+            name: "c",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    171,
+                ),
+                length: 56,
+            },
+        },
+    ],
+}

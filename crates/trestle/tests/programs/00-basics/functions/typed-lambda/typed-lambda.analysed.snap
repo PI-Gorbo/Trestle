@@ -1,0 +1,118 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+ResolvedProgram {
+    expressions: [
+        ResolvedExpression {
+            kind: Lambda(
+                ResolvedLambda {
+                    parameter: Some(
+                        ResolvedParam {
+                            binding: BindingId(
+                                0,
+                            ),
+                            type_dec: Some(
+                                Named(
+                                    "Int",
+                                ),
+                            ),
+                        },
+                    ),
+                    return_type: None,
+                    body: ResolvedExpression {
+                        kind: Lambda(
+                            ResolvedLambda {
+                                parameter: Some(
+                                    ResolvedParam {
+                                        binding: BindingId(
+                                            1,
+                                        ),
+                                        type_dec: Some(
+                                            Named(
+                                                "Int",
+                                            ),
+                                        ),
+                                    },
+                                ),
+                                return_type: Some(
+                                    Named(
+                                        "Int",
+                                    ),
+                                ),
+                                body: ResolvedExpression {
+                                    kind: Add(
+                                        ResolvedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    0,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    309,
+                                                ),
+                                                length: 1,
+                                            },
+                                        },
+                                        ResolvedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    1,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    313,
+                                                ),
+                                                length: 1,
+                                            },
+                                        },
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            309,
+                                        ),
+                                        length: 5,
+                                    },
+                                },
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                287,
+                            ),
+                            length: 28,
+                        },
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    287,
+                ),
+                length: 28,
+            },
+        },
+    ],
+    bindings: [
+        ResolvedBinding {
+            name: "a",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    287,
+                ),
+                length: 28,
+            },
+        },
+        ResolvedBinding {
+            name: "b",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    287,
+                ),
+                length: 28,
+            },
+        },
+    ],
+}

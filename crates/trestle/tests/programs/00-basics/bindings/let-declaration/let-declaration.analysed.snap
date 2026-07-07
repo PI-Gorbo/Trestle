@@ -1,0 +1,43 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+ResolvedProgram {
+    expressions: [
+        ResolvedExpression {
+            kind: Let {
+                binding: BindingId(
+                    0,
+                ),
+                value: ResolvedExpression {
+                    kind: Int(
+                        42,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            120,
+                        ),
+                        length: 2,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    112,
+                ),
+                length: 11,
+            },
+        },
+    ],
+    bindings: [
+        ResolvedBinding {
+            name: "x",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    112,
+                ),
+                length: 11,
+            },
+        },
+    ],
+}

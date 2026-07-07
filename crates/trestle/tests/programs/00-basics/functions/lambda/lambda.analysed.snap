@@ -1,0 +1,53 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+ResolvedProgram {
+    expressions: [
+        ResolvedExpression {
+            kind: Lambda(
+                ResolvedLambda {
+                    parameter: Some(
+                        ResolvedParam {
+                            binding: BindingId(
+                                0,
+                            ),
+                            type_dec: None,
+                        },
+                    ),
+                    return_type: None,
+                    body: ResolvedExpression {
+                        kind: Var(
+                            BindingId(
+                                0,
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                142,
+                            ),
+                            length: 1,
+                        },
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    135,
+                ),
+                length: 9,
+            },
+        },
+    ],
+    bindings: [
+        ResolvedBinding {
+            name: "x",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    135,
+                ),
+                length: 9,
+            },
+        },
+    ],
+}

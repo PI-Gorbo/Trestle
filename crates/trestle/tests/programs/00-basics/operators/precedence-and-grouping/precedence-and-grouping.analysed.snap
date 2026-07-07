@@ -1,0 +1,109 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+ResolvedProgram {
+    expressions: [
+        ResolvedExpression {
+            kind: Let {
+                binding: BindingId(
+                    0,
+                ),
+                value: ResolvedExpression {
+                    kind: Int(
+                        7,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            92,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    78,
+                ),
+                length: 23,
+            },
+        },
+        ResolvedExpression {
+            kind: Let {
+                binding: BindingId(
+                    1,
+                ),
+                value: ResolvedExpression {
+                    kind: Int(
+                        9,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            142,
+                        ),
+                        length: 10,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    127,
+                ),
+                length: 35,
+            },
+        },
+        ResolvedExpression {
+            kind: Let {
+                binding: BindingId(
+                    2,
+                ),
+                value: ResolvedExpression {
+                    kind: Int(
+                        21,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            178,
+                        ),
+                        length: 15,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    162,
+                ),
+                length: 34,
+            },
+        },
+    ],
+    bindings: [
+        ResolvedBinding {
+            name: "natural",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    78,
+                ),
+                length: 23,
+            },
+        },
+        ResolvedBinding {
+            name: "grouped",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    127,
+                ),
+                length: 35,
+            },
+        },
+        ResolvedBinding {
+            name: "nested",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    162,
+                ),
+                length: 34,
+            },
+        },
+    ],
+}

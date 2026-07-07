@@ -1,0 +1,20 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+ResolvedProgram {
+    expressions: [
+        ResolvedExpression {
+            kind: Int(
+                3,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    151,
+                ),
+                length: 5,
+            },
+        },
+    ],
+    bindings: [],
+}
