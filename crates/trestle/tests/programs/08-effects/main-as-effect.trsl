@@ -1,8 +1,0 @@
-// @skip: needs the effect system (tier 08) — PROPOSED syntax, not settled
-// TARGET: `main` is itself an effect. The runtime is the boundary where all
-// requirements are satisfied and all errors are handled.
-
-let main = effect {
-    let name = readLine          // requires a Console capability
-    print("hello, " + name)      // requires Console; unmet until the runtime
-}

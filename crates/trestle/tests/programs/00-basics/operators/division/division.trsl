@@ -1,0 +1,5 @@
+// @skip: needs the division operator (/)
+// TARGET: a single division — Expr::Div(6, 2). Same precedence level as `*`.
+// Should constant-fold to Int(3).
+
+6 / 2

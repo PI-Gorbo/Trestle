@@ -1,0 +1,9 @@
+// @skip: needs generic data types (tier 04) — PROPOSED syntax, not settled
+// TARGET: a data type parameterised by another type — e.g. an optional value.
+
+type Option<T> =
+    | Some(T)
+    | None
+
+let first: Option<Int>  = Some(1)
+let none:  Option<Int>  = None

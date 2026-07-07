@@ -1,0 +1,6 @@
+// @skip: needs string literals (tier 00)
+// TARGET: a bare double-quoted string literal — the string analogue of `int` (42).
+// Parses to a String primitive value. Edge case to cover once implemented: the
+// empty string "".
+
+"hello"

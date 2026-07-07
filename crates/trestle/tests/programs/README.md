@@ -1,51 +1,57 @@
 # Trestle program corpus
 
-A tiered suite of `.trsl` programs used to test the parser (and later the
-interpreter) as the language grows. The harness lives in
-[`../corpus.rs`](../corpus.rs); run it with:
+A tiered suite of `.trsl` programs that test the compiler as the language grows.
+The harness lives in [`../corpus.rs`](../corpus.rs); run it with:
 
 ```sh
-cargo test -p trestle                     # every program, one test each
-cargo test -p trestle basics_arithmetic   # a single program
-cargo test -p trestle -- --ignored        # the not-yet-supported programs
+cargo test -p trestle                             # every program
+cargo test -p trestle basics_operators_addition   # a single program
+cargo test -p trestle -- --ignored                # the not-yet-supported programs
 ```
 
 ## How it works
 
-Each `.trsl` file gets its own `#[test]`, wired up by a single `trsl_test!` line
-in [`../corpus.rs`](../corpus.rs). Each test parses the program and snapshots its
-AST (via `insta`), so every program reports pass/fail individually.
+Programs are **not** auto-discovered — each is registered with one `trsl_test!`
+line in [`../corpus.rs`](../corpus.rs). Every program lives in its own directory
+so its snapshots sit beside it:
 
-Every file here is **expected to parse**. A file that the parser can't handle
-*yet* is registered but marked ignored, by giving its macro line a reason:
-
-```rust
-trsl_test!(functions_arrow_functions, "02-functions/arrow-functions.trsl",
-    ignore = "arrow-function walker not implemented yet (tier 02)");
+```text
+00-basics/operators/addition/
+  addition.trsl        the source
+  addition.ast.snap    parse() -> ast::Program   (recorded by insta)
 ```
 
-An ignored test shows as `... ignored` in the report (not silently passed).
-**When you implement the feature, delete the `ignore = "…"` argument** and the
-program joins the must-parse set (run `cargo insta accept` to record its AST
-snapshot). The shrinking ignore list *is* the remaining roadmap.
+Each registered program parses its source and snapshots the resulting AST via
+`insta`, so every program reports pass/fail individually. A program whose feature
+isn't implemented *yet* is still registered but marked ignored, with a reason:
 
-## Tiers (easy → hard, working backwards from the effect system)
+```rust
+trsl_test!(basics_operators_subtraction,
+    "00-basics/operators/subtraction/subtraction.trsl",
+    ignore = "needs the subtraction operator (-)");
+```
 
-| Tier | Folder | Focus |
-|------|--------|-------|
-| 00 | `00-primitives` | one construct per file — int, let, add, mul, lambda, call, typed lambda — the evaluator's atoms |
-| 01 | `01-basics` | let bindings, integer arithmetic, precedence, comments — **parses today** |
-| 02 | `02-functions` | arrow functions, currying, partial application, curried calls |
-| 03 | `03-pipelines` | the `\|>` operator, leading-pipe continuation, chaining |
-| 04 | `04-values-and-types` | strings, booleans, floats, negatives, comparison/boolean ops |
-| 05 | `05-control-flow` | `if`/`else` expressions, `match` / pattern matching *(syntax proposed)* |
-| 06 | `06-records-and-adts` | records, `.` field access, algebraic data types *(syntax proposed)* |
-| 07 | `07-generics` | type parameters, generic functions, higher-order data types |
-| 08 | `08-effects` | `Effect<V,E,R>`, `effect { }`, railway errors, DI, `main` as an effect |
+When you implement the feature, delete the `ignore = "…"` argument and the program
+joins the must-parse set (its AST snapshot is recorded on the next run). The
+shrinking ignore list *is* the remaining roadmap.
 
-Each tier folder has a `README.md` describing the goal, its prerequisites, and
-what to build to un-skip it.
+## Organisation — complexity & dependencies
 
-> Where the language spec hasn't pinned syntax yet (tiers 05–08), the stubs use
-> a **proposed** syntax marked as such — treat those files as design prompts,
-> not settled decisions.
+Programs are tiered so each tier only depends on earlier ones. **One concern per
+program**; related concerns are co-located rather than merged into one file.
+
+| Tier | Focus |
+|------|-------|
+| `00-basics` | the foundation — literals, operators, bindings, functions, conditionals |
+| `01-pipelines` | the `\|>` operator and leading-pipe continuation |
+| `02-control-flow` | `match` / pattern matching *(proposed syntax)* |
+| `03-records-and-adts` | records, `.` field access, algebraic data types *(proposed)* |
+| `04-generics` | type parameters, generic functions and data types *(proposed)* |
+| `05-effects` | `effect { }`, railway errors, `main` as an effect *(proposed)* |
+
+`00-basics` is split into **houses**, each a folder of closely-related programs
+(see [`00-basics/README.md`](00-basics/README.md)). For example `lambda` and
+`typed-lambda` are two separate programs living together under `functions/`.
+
+> Where the language hasn't pinned syntax yet (tiers 02–05), programs use a
+> **proposed** syntax — treat them as design prompts, not settled decisions.

@@ -1,0 +1,12 @@
+// @skip: needs the effect system (tier 05) — PROPOSED syntax, not settled
+// TARGET: errors are values that short-circuit a pipeline; a handler placed
+// anywhere can intercept them. No try/catch.
+
+let safeDivide = (a, b) =>
+    if b == 0 then fail("divide by zero") else succeed(a / b)
+
+let result =
+    10
+    |> safeDivide(2)      // succeeds with 5
+    |> map((n) => n + 1)  // 6; skipped entirely on failure
+    |> recover((err) => 0)

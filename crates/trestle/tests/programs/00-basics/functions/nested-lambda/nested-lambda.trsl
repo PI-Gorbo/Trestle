@@ -1,0 +1,5 @@
+// Explicit nested single-parameter lambdas: `(a) => (b) => a + b`.
+// This is exactly what a multi-parameter lambda desugars TO (see currying) — here the
+// nesting is written by hand. Evaluates to a closure that returns a closure.
+
+(a) => (b) => a + b

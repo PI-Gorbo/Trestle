@@ -1,0 +1,7 @@
+// @skip: needs boolean literals (tier 00)
+// TARGET: the boolean literals `true` and `false` — the bool analogue of `int` (42).
+// Each parses to a Bool primitive value. The operators that consume/produce bools
+// live next door in operators/comparison and operators/logical.
+
+true
+false

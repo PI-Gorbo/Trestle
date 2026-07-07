@@ -1,0 +1,6 @@
+// @skip: needs if expressions (tier 00) — `if (cond) expr`, no else branch
+// TARGET: `if` with a parenthesized condition and a single expression body, NO else.
+// Open question: what does it evaluate to when the condition is false? (no unit/optional
+// value exists yet). Also needs booleans + comparison operators.
+
+if (3 > 2) 10

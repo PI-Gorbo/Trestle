@@ -1,8 +1,0 @@
-// Lambda definitions only (no application) — exercises the arrow-function walker:
-// untyped params, typed params, and an optional return type. Function *invocation*
-// is covered separately once `build_primary` handles it (see arrow-functions.trsl).
-
-let identity = (x) => x
-let scale    = (x) => x * 2
-let add      = (a:Int, b:Int):Int => a + b
-let curried  = (a:Int) => (b) => a + b

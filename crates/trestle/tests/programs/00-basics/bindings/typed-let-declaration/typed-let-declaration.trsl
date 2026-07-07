@@ -1,0 +1,6 @@
+// @skip: needs Let bindings to carry a type declaration on the AST
+// TARGET: a let binding with an explicit type annotation. Today build_let folds the
+// whole "x: Int" span into Let.name — the type is swallowed. Needs ExpressionKind::Let
+// to carry an Option<TypeDeclaration> (like Param.type_dec) before this snapshots cleanly.
+
+let x: Int = 42

@@ -1,0 +1,6 @@
+// @skip: needs zero-parameter lambdas — the grammar's `lambda` rule currently requires
+// at least one parameter between the parens (see trestle.pest).
+// TARGET: a lambda that takes no argument: `() => 42`. Evaluates to a closure that
+// yields 42 when invoked.
+
+() => 42

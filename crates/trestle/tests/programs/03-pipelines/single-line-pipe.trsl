@@ -1,8 +1,0 @@
-// @skip: needs the |> operator (tier 03)
-// TARGET: the whole chain on one line still means nested application.
-//   x |> f |> g  ==  g(f(x))
-
-let double = (x) => x * 2
-let add = (a, b) => a + b
-
-let result = 5 |> add(3) |> double    // double(add(3)(5)) = 16

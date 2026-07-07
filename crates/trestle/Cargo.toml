@@ -14,3 +14,6 @@ thiserror = "2.0.18"
 # part of a shipped build of `trestle`, nor inherited by downstream crates.
 [dev-dependencies]
 insta = "1"
+# Identifier concatenation for the `trsl_test!` macro (generates one `#[test]`
+# fn per stage, e.g. `<name>_ast` / `<name>_checked` / `<name>_eval`).
+paste = "1"

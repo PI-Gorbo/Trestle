@@ -1,0 +1,7 @@
+// @skip: needs float literals (tier 00)
+// TARGET: floating-point literals — the float analogue of `int` (42).
+// Each parses to a Float primitive value. Unary minus on a number lives in
+// operators/negation.
+
+3.14
+0.5

@@ -1,0 +1,9 @@
+// @skip: needs the effect system (tier 05) — PROPOSED syntax, not settled
+// TARGET: `effect { }` sequences steps where each can depend on earlier results.
+// It is the imperative-reading twin of the |> pipeline.
+
+let program = effect {
+    let x = fetchNumber
+    let y = fetchNumber
+    x + y
+}

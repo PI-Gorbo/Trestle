@@ -1,8 +1,0 @@
-// @skip: needs record field access via `.` (tier 06) — PROPOSED syntax
-// TARGET: `.` reads a record field. It is NEVER a method call in Trestle.
-
-type Point = { x: Int, y: Int }
-
-let p = Point { x: 3, y: 4 }
-
-let sum = p.x + p.y     // 7

@@ -1,0 +1,5 @@
+// @skip: needs the subtraction operator (-)
+// TARGET: a single subtraction — Expr::Sub(5, 2). Same precedence level as `+`.
+// Should constant-fold to Int(3), mirroring how `1 + 2` folds to Int(3).
+
+5 - 2

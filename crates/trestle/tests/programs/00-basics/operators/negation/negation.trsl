@@ -1,0 +1,6 @@
+// @skip: needs unary negation (-) (tier 00)
+// TARGET: a leading `-` negates a numeric expression. Distinct from the binary
+// subtraction operator (see operators/subtraction). `-7` should fold to Int(-7),
+// mirroring how `1 + 2` folds to Int(3).
+
+-7

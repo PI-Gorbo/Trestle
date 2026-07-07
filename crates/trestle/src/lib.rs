@@ -1,34 +1,14 @@
-//! Trestle language front-end: the `pest` grammar, its generated parser, and the AST.
+//! Trestle language: the three compiler phases, each in its own folder.
 //!
-//! The binary (`main.rs`) and the conformance suite (`trestle-tests` crate) both
-//! drive the language through this crate's public API — chiefly [`parse`].
+//! Source flows [`parse()`] → [`analyse::analyse`] → [`evaluate::evaluate`]. The binary
+//! (`main.rs`) and the conformance suite (`trestle-tests` crate) drive the language
+//! through these public entry points; [`parse()`] is re-exported here for convenience.
 
-use miette::{IntoDiagnostic, NamedSource, Report, Result};
-use pest::Parser;
-use pest_derive::Parser;
+// Phase 1 — grammar, parser, and the lowered AST.
+pub mod parse;
+// Phase 2 — name resolution and type checking.
+pub mod analyse;
+// Phase 3 — tree-walk evaluation.
+pub mod evaluate;
 
-pub mod analysis;
-/// The lowered AST — currying is already desugared here (see [`ast::Lambda`]).
-pub mod ast;
-pub mod checked;
-pub mod evaluation;
-
-/// The `pest`-generated parser. `Rule` (the grammar's rule enum) is generated
-/// alongside it and re-exported implicitly via the derive.
-#[derive(Parser)]
-#[grammar = "trestle.pest"]
-pub struct TrestleParser;
-
-/// Parse Trestle source text into a [`ast::Program`].
-///
-/// Both failure modes are surfaced as a [`miette::Report`]: the `pest` syntax
-/// error via [`IntoDiagnostic`], and the AST-walk [`ast::BuildError`] with the
-/// source text attached here (the walker itself stays source-free).
-pub fn parse(src: &str) -> Result<ast::Program> {
-    let program_pair = TrestleParser::parse(Rule::program, src)
-        .into_diagnostic()?
-        .next()
-        .expect("the program rule always yields exactly one pair");
-    ast::build_program(program_pair)
-        .map_err(|e| Report::new(e).with_source_code(NamedSource::new("input", src.to_string())))
-}
+pub use parse::parse;

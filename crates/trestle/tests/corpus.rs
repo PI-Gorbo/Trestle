@@ -1,162 +1,334 @@
-//! Conformance corpus: one test per `.trsl` program under `tests/programs/`.
-//! Each test parses the program and snapshots its AST (via `insta`).
-//! Add a program by adding one `trsl_test!` line below.
+//! Conformance corpus: one program per directory under `tests/programs/`, each
+//! snapshotted through up to three compiler stages via `insta`.
+//!
+//! Programs are tiered by complexity and dependency. Tier `00-basics` is the
+//! foundation every later tier builds on; it is split into "houses" (literals,
+//! operators, bindings, functions, conditionals) with one concern per program.
+//!
+//! Layout — every program lives in its own directory alongside its snapshots:
+//!
+//! ```text
+//! programs/00-basics/operators/addition/
+//!   addition.trsl            the source
+//!   addition.ast.snap        parse()    -> ast::Program
+//!   addition.analysed.snap   analyse()  -> AnalysedProgram (opt-in)
+//!   addition.eval.snap       evaluate() -> Value           (opt-in)
+//! ```
+//!
+//! Each `trsl_test!` line lists the stages that are currently expected to pass
+//! for that program and generates one `#[test]` per stage (`<name>_ast`,
+//! `<name>_analysed`, `<name>_eval`). Stages are opt-in because `analyse` and
+//! `evaluate` are still being built out — add `analyse`/`eval` to a program's list
+//! once that stage works for it. See the macro docs below.
 
-/// Generate a `#[test]` that parses a program and snapshots its AST.
+use trestle::evaluate::Environment;
+
+/// A compiler stage to snapshot. Each maps to a public entry point and a
+/// snapshot-file suffix (`.ast` / `.analysed` / `.eval`).
+enum Stage {
+    Ast,
+    Analyse,
+    Eval,
+}
+
+/// Run one stage of one program and snapshot its `Debug` output *next to the
+/// program*.
 ///
-/// - `trsl_test!(name, "path.trsl")` — active test, must parse.
-/// - `trsl_test!(name, "path.trsl", ignore = "reason")` — work-in-progress
-///   feature; the test is registered but reported as *ignored* until the
-///   `ignore = "…"` argument is removed.
-macro_rules! trsl_test {
-    ($name:ident, $path:literal) => {
-        #[test]
-        fn $name() {
-            let src = include_str!(concat!("programs/", $path));
-            let program = trestle::parse(src)
-                .unwrap_or_else(|e| panic!("failed to parse `{}`:\n{e:?}", $path));
-            insta::assert_debug_snapshot!(program);
+/// `path` is the program's path relative to `programs/`, e.g.
+/// `"00-basics/operators/addition/addition.trsl"`. The snapshot is written to
+/// that same directory with the program's stem plus the stage suffix, so a file
+/// named exactly `addition.ast.snap` lands beside `addition.trsl`.
+///
+/// `analyse` and `evaluate` are `todo!()` today, so only `ast` is wired up corpus-wide.
+fn run_stage(path: &str, src: &str, stage: Stage) {
+    // Split the relative path into its directory and file stem:
+    //   dir  = "00-basics/operators/addition"   (where the .snap is written)
+    //   stem = "addition"                        (the snapshot name prefix)
+    let dir = path.rsplit_once('/').map(|(d, _)| d).unwrap_or("");
+    let stem = path
+        .rsplit('/')
+        .next()
+        .unwrap()
+        .strip_suffix(".trsl")
+        .unwrap_or(path);
+
+    // `set_snapshot_path` is resolved relative to this file's directory
+    // (`crates/trestle/tests/`), so this co-locates the snapshot with the
+    // program. Dropping the module prefix + naming the snapshot explicitly makes
+    // the file exactly `<stem>.<stage>.snap` (no `corpus__` prefix).
+    let mut settings = insta::Settings::clone_current();
+    settings.set_snapshot_path(format!("programs/{dir}"));
+    settings.set_prepend_module_to_snapshot(false);
+
+    settings.bind(|| {
+        let program =
+            trestle::parse(src).unwrap_or_else(|e| panic!("failed to parse `{path}`:\n{e:?}"));
+        match stage {
+            Stage::Ast => {
+                insta::assert_debug_snapshot!(format!("{stem}.ast"), program);
+            }
+            Stage::Analyse => {
+                let analysed = trestle::analyse::analyse(&program)
+                    .unwrap_or_else(|e| panic!("failed to analyse `{path}`:\n{e:?}"));
+                insta::assert_debug_snapshot!(format!("{stem}.analysed"), analysed);
+            }
+            Stage::Eval => {
+                let analysed = trestle::analyse::analyse(&program)
+                    .unwrap_or_else(|e| panic!("failed to analyse `{path}`:\n{e:?}"));
+                let env = Environment::empty();
+                let value = trestle::evaluate::evaluate(&env, &analysed)
+                    .unwrap_or_else(|e| panic!("failed to eval `{path}`:\n{e:?}"));
+                insta::assert_debug_snapshot!(format!("{stem}.eval"), value);
+            }
         }
+    });
+}
+
+/// Register a program's conformance tests.
+///
+/// The path is the program's location under `programs/`, e.g.
+/// `"00-basics/operators/addition/addition.trsl"`. Each active stage becomes its
+/// own `#[test]` (`<name>_ast`, `<name>_analysed`, `<name>_eval`).
+///
+/// - `trsl_test!(name, "path.trsl")` — default stage list `[ast]`.
+/// - `trsl_test!(name, "path.trsl", [ast, analyse, eval])` — opt into more stages
+///   as `analyse`/`evaluate` come online for that program. `analyse` and
+///   `evaluate` are `todo!()` today, so only `ast` is wired up corpus-wide.
+/// - `trsl_test!(name, "path.trsl", ignore = "reason")` — work-in-progress
+///   program (e.g. syntax not implemented yet); every generated stage test is
+///   reported as *ignored* until the `ignore = "…"` argument is removed. Combine
+///   with a stage list as `trsl_test!(name, "path.trsl", [ast], ignore = "…")`.
+macro_rules! trsl_test {
+    // ── Public forms ──────────────────────────────────────────
+    ($name:ident, $path:literal) => {
+        trsl_test!($name, $path, [ast]);
     };
     ($name:ident, $path:literal, ignore = $reason:literal) => {
-        #[test]
-        #[ignore = $reason]
-        fn $name() {
-            let src = include_str!(concat!("programs/", $path));
-            let program = trestle::parse(src)
-                .unwrap_or_else(|e| panic!("failed to parse `{}`:\n{e:?}", $path));
-            insta::assert_debug_snapshot!(program);
+        trsl_test!($name, $path, [ast], ignore = $reason);
+    };
+    ($name:ident, $path:literal, [ $($stage:ident),+ $(,)? ]) => {
+        $( trsl_test!(@stage $name, $path, $stage); )+
+    };
+    ($name:ident, $path:literal, [ $($stage:ident),+ $(,)? ], ignore = $reason:literal) => {
+        $( trsl_test!(@stage $name, $path, $stage, ignore = $reason); )+
+    };
+
+    // ── Per-stage `#[test]` generators (one fn per stage) ─────
+    // The optional `, ignore = "…"` tail applies `#[ignore]` to the fn.
+    (@stage $name:ident, $path:literal, ast $(, ignore = $reason:literal)?) => {
+        paste::paste! {
+            #[test]
+            $(#[ignore = $reason])?
+            fn [<$name _ast>]() {
+                run_stage($path, include_str!(concat!("programs/", $path)), Stage::Ast);
+            }
+        }
+    };
+    (@stage $name:ident, $path:literal, analyse $(, ignore = $reason:literal)?) => {
+        paste::paste! {
+            #[test]
+            $(#[ignore = $reason])?
+            fn [<$name _analysed>]() {
+                run_stage($path, include_str!(concat!("programs/", $path)), Stage::Analyse);
+            }
+        }
+    };
+    (@stage $name:ident, $path:literal, eval $(, ignore = $reason:literal)?) => {
+        paste::paste! {
+            #[test]
+            $(#[ignore = $reason])?
+            fn [<$name _eval>]() {
+                run_stage($path, include_str!(concat!("programs/", $path)), Stage::Eval);
+            }
         }
     };
 }
 
-// ── 00 primitives ─────────────────────────────────────────
+// ══ 00 basics ═════════════════════════════════════════════
+// The foundation tier. Everything later builds on these. Grouped into houses;
+// one concern per program, related concerns kept side by side.
 
-trsl_test!(primitives_int, "00-primitives/int.trsl");
+// ── literals ──────────────────────────────────────────────
+trsl_test!(basics_literals_int, "00-basics/literals/int/int.trsl");
 trsl_test!(
-    primitives_let_declaration,
-    "00-primitives/let-declaration.trsl"
+    basics_literals_string,
+    "00-basics/literals/string/string.trsl",
+    ignore = "needs string literals"
 );
-trsl_test!(primitives_addition, "00-primitives/addition.trsl");
 trsl_test!(
-    primitives_multiplication,
-    "00-primitives/multiplication.trsl"
+    basics_literals_bool,
+    "00-basics/literals/bool/bool.trsl",
+    ignore = "needs boolean literals"
 );
-trsl_test!(primitives_lambda, "00-primitives/lambda.trsl");
 trsl_test!(
-    primitives_function_invocation,
-    "00-primitives/function-invocation.trsl"
-);
-trsl_test!(primitives_typed_lambda, "00-primitives/typed-lambda.trsl");
-
-// ── 01 basics ─────────────────────────────────────────────
-trsl_test!(basics_arithmetic, "01-basics/arithmetic.trsl");
-trsl_test!(basics_basics, "01-basics/basics.trsl");
-trsl_test!(
-    basics_precedence_and_grouping,
-    "01-basics/precedence-and-grouping.trsl"
+    basics_literals_float,
+    "00-basics/literals/float/float.trsl",
+    ignore = "needs float literals"
 );
 
-// ── 02 functions ──────────────────────────────────────────
-trsl_test!(functions_currying, "02-functions/currying.trsl");
-trsl_test!(functions_lambdas, "02-functions/lambdas.trsl");
+// ── operators ─────────────────────────────────────────────
 trsl_test!(
-    functions_arrow_functions,
-    "02-functions/arrow-functions.trsl"
+    basics_operators_addition,
+    "00-basics/operators/addition/addition.trsl"
 );
 trsl_test!(
-    functions_partial_application,
-    "02-functions/partial-application.trsl"
+    basics_operators_multiplication,
+    "00-basics/operators/multiplication/multiplication.trsl"
+);
+trsl_test!(
+    basics_operators_precedence_and_grouping,
+    "00-basics/operators/precedence-and-grouping/precedence-and-grouping.trsl"
+);
+trsl_test!(
+    basics_operators_subtraction,
+    "00-basics/operators/subtraction/subtraction.trsl",
+    ignore = "needs the subtraction operator (-)"
+);
+trsl_test!(
+    basics_operators_division,
+    "00-basics/operators/division/division.trsl",
+    ignore = "needs the division operator (/)"
+);
+trsl_test!(
+    basics_operators_negation,
+    "00-basics/operators/negation/negation.trsl",
+    ignore = "needs unary negation (-)"
+);
+trsl_test!(
+    basics_operators_comparison,
+    "00-basics/operators/comparison/comparison.trsl",
+    ignore = "needs comparison operators + booleans"
+);
+trsl_test!(
+    basics_operators_logical,
+    "00-basics/operators/logical/logical.trsl",
+    ignore = "needs boolean operators + booleans"
 );
 
-// ── 03 pipelines ──────────────────────────────────────────
+// ── bindings ──────────────────────────────────────────────
 trsl_test!(
-    pipelines_builder_as_pipeline,
-    "03-pipelines/builder-as-pipeline.trsl",
-    ignore = "needs the |> operator + partial application (tier 03)"
+    basics_bindings_let_declaration,
+    "00-basics/bindings/let-declaration/let-declaration.trsl"
 );
+trsl_test!(
+    basics_bindings_arithmetic,
+    "00-basics/bindings/arithmetic/arithmetic.trsl"
+);
+trsl_test!(
+    basics_bindings_typed_let_declaration,
+    "00-basics/bindings/typed-let-declaration/typed-let-declaration.trsl",
+    ignore = "needs Let bindings to carry a type declaration on the AST"
+);
+
+// ── functions ─────────────────────────────────────────────
+trsl_test!(
+    basics_functions_lambda,
+    "00-basics/functions/lambda/lambda.trsl"
+);
+trsl_test!(
+    basics_functions_typed_lambda,
+    "00-basics/functions/typed-lambda/typed-lambda.trsl"
+);
+trsl_test!(
+    basics_functions_nested_lambda,
+    "00-basics/functions/nested-lambda/nested-lambda.trsl"
+);
+trsl_test!(
+    basics_functions_function_invocation,
+    "00-basics/functions/function-invocation/function-invocation.trsl"
+);
+trsl_test!(
+    basics_functions_currying,
+    "00-basics/functions/currying/currying.trsl"
+);
+trsl_test!(
+    basics_functions_partial_application,
+    "00-basics/functions/partial-application/partial-application.trsl"
+);
+trsl_test!(
+    basics_functions_zero_param_lambda,
+    "00-basics/functions/zero-param-lambda/zero-param-lambda.trsl",
+    ignore = "needs zero-parameter lambdas — grammar requires at least one param"
+);
+
+// ── conditionals ──────────────────────────────────────────
+trsl_test!(
+    basics_conditionals_if_expression,
+    "00-basics/conditionals/if-expression/if-expression.trsl",
+    ignore = "needs if expressions — `if (cond) expr`"
+);
+trsl_test!(
+    basics_conditionals_if_else_expression,
+    "00-basics/conditionals/if-else-expression/if-else-expression.trsl",
+    ignore = "needs if/else expressions — `if (cond) expr else expr`"
+);
+
+// ══ 01 pipelines ══════════════════════════════════════════
 trsl_test!(
     pipelines_pipeline,
-    "03-pipelines/pipeline.trsl",
-    ignore = "needs the |> operator + leading-pipe continuation (tier 03)"
+    "01-pipelines/pipeline/pipeline.trsl",
+    ignore = "needs the |> operator + leading-pipe continuation"
 );
 trsl_test!(
     pipelines_single_line_pipe,
-    "03-pipelines/single-line-pipe.trsl",
-    ignore = "needs the |> operator (tier 03)"
+    "01-pipelines/single-line-pipe/single-line-pipe.trsl",
+    ignore = "needs the |> operator"
+);
+trsl_test!(
+    pipelines_builder_as_pipeline,
+    "01-pipelines/builder-as-pipeline/builder-as-pipeline.trsl",
+    ignore = "needs the |> operator + partial application"
 );
 
-// ── 04 values and types ───────────────────────────────────
-trsl_test!(
-    values_booleans_and_comparison,
-    "04-values-and-types/booleans-and-comparison.trsl",
-    ignore = "needs booleans + comparison/boolean operators (tier 04)"
-);
-trsl_test!(
-    values_floats_and_negatives,
-    "04-values-and-types/floats-and-negatives.trsl",
-    ignore = "needs float literals + negative numbers (tier 04)"
-);
-trsl_test!(
-    values_strings,
-    "04-values-and-types/strings.trsl",
-    ignore = "needs string literals (tier 04)"
-);
-
-// ── 05 control flow ───────────────────────────────────────
-trsl_test!(
-    control_if_else_expression,
-    "05-control-flow/if-else-expression.trsl",
-    ignore = "needs if/else expressions (tier 05) — proposed syntax"
-);
+// ══ 02 control flow ═══════════════════════════════════════
 trsl_test!(
     control_match_expression,
-    "05-control-flow/match-expression.trsl",
-    ignore = "needs match / pattern matching (tier 05) — proposed syntax"
+    "02-control-flow/match-expression/match-expression.trsl",
+    ignore = "needs match / pattern matching — proposed syntax"
 );
 
-// ── 06 records and ADTs ───────────────────────────────────
+// ══ 03 records and ADTs ═══════════════════════════════════
 trsl_test!(
-    records_algebraic_data_types,
-    "06-records-and-adts/algebraic-data-types.trsl",
-    ignore = "needs ADTs + constructors + match (tiers 05/06)"
+    records_records,
+    "03-records-and-adts/records/records.trsl",
+    ignore = "needs record types + literals"
 );
 trsl_test!(
     records_field_access,
-    "06-records-and-adts/field-access.trsl",
-    ignore = "needs record field access via `.` (tier 06)"
+    "03-records-and-adts/field-access/field-access.trsl",
+    ignore = "needs record field access via `.`"
 );
 trsl_test!(
-    records_records,
-    "06-records-and-adts/records.trsl",
-    ignore = "needs record types + literals (tier 06)"
+    records_algebraic_data_types,
+    "03-records-and-adts/algebraic-data-types/algebraic-data-types.trsl",
+    ignore = "needs ADTs + constructors + match"
 );
 
-// ── 07 generics ───────────────────────────────────────────
+// ══ 04 generics ═══════════════════════════════════════════
 trsl_test!(
     generics_generic_functions,
-    "07-generics/generic-functions.trsl",
-    ignore = "needs type parameters (tier 07)"
+    "04-generics/generic-functions/generic-functions.trsl",
+    ignore = "needs type parameters"
 );
 trsl_test!(
     generics_higher_order_data_types,
-    "07-generics/higher-order-data-types.trsl",
-    ignore = "needs generic data types (tier 07)"
+    "04-generics/higher-order-data-types/higher-order-data-types.trsl",
+    ignore = "needs generic data types"
 );
 
-// ── 08 effects ────────────────────────────────────────────
+// ══ 05 effects ════════════════════════════════════════════
 trsl_test!(
     effects_effect_block,
-    "08-effects/effect-block.trsl",
-    ignore = "needs the effect system (tier 08)"
+    "05-effects/effect-block/effect-block.trsl",
+    ignore = "needs the effect system"
 );
 trsl_test!(
     effects_main_as_effect,
-    "08-effects/main-as-effect.trsl",
-    ignore = "needs the effect system (tier 08)"
+    "05-effects/main-as-effect/main-as-effect.trsl",
+    ignore = "needs the effect system"
 );
 trsl_test!(
     effects_railway_errors,
-    "08-effects/railway-errors.trsl",
-    ignore = "needs the effect system (tier 08)"
+    "05-effects/railway-errors/railway-errors.trsl",
+    ignore = "needs the effect system"
 );

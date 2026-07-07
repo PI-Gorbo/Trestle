@@ -1,0 +1,7 @@
+// @skip: needs type parameters (tier 04) — PROPOSED syntax, not settled
+// TARGET: functions abstracted over a type parameter.
+
+let identity = <T>(x: T) => x
+
+let n = identity<Int>(5)
+let s = identity<String>("hi")
