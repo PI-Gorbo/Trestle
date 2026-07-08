@@ -38,7 +38,7 @@ pub enum ResolvedExpressionKind {
 pub struct ResolvedParam {
     pub binding: BindingId,
     /// Raw annotation, still unresolved — pass 2 turns this into a [`Type`](super::analysed::Type).
-    pub type_dec: Option<TypeDeclaration>,
+    pub type_dec: TypeDeclaration,
 }
 
 #[derive(Debug, PartialEq)]

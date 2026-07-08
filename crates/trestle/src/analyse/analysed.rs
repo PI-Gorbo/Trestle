@@ -49,7 +49,7 @@ pub struct AnalysedExpression {
 
 #[derive(Debug, PartialEq)]
 pub enum ExpressionKind {
-    Int(i64),
+    Int(usize),
     Var(BindingId), // was Var(String)
     Add(Box<AnalysedExpression>, Box<AnalysedExpression>),
     Mul(Box<AnalysedExpression>, Box<AnalysedExpression>),

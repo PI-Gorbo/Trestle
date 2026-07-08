@@ -50,6 +50,14 @@ pub enum AnalysisError {
         #[label("here")]
         span: SourceSpan,
     },
+
+    #[error("cannot determine the type of `{name}` add a type annotation")]
+    #[diagnostic(code(trestle::missing_annotation))]
+    MissingAnnotation {
+        name: String,
+        #[label("type unknown here")]
+        span: SourceSpan,
+    },
 }
 
 /// Resolve names and type-check a lowered program into an [`AnalysedProgram`].
