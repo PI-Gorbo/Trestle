@@ -74,6 +74,11 @@ pub enum ExpressionKind {
         value: Box<Expression>,
     },
     Block(Vec<Expression>),
+    If {
+        condition: Box<Expression>,
+        true_pathway: Box<Expression>,
+        false_pathway: Option<Box<Expression>>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]

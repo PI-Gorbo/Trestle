@@ -52,6 +52,7 @@ pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         Rule::let_expression => build_let(expr_binding),
         Rule::lambda_expression => build_lambda(expr_binding),
         Rule::binary_expression => build_binary(expr_binding),
+        Rule::if_expression => build_if_expression(expr_binding),
         rule => Err(BuildError::UnexpectedRule {
             rule,
             span: source_span_from_pest_span(expr_binding.as_span()),
@@ -349,6 +350,27 @@ fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     }
 }
 
+/// Build an `If` from a `Rule::if_expression` pair. The grammar's keywords (`if`,
+/// `else`) and delimiters are bare string literals, so `into_inner()` yields only the
+/// `expr` children in order: condition, then-branch, and an optional else-branch.
+fn build_if_expression(pair: Pair<Rule>) -> Result<Expression, BuildError> {
+    let span = pair.as_span();
+    let mut inner = pair.into_inner();
+
+    let condition = build_expr(inner.next().expect("if_expression has a condition"))?;
+    let true_pathway = build_expr(inner.next().expect("if_expression has a then branch"))?;
+    let false_pathway = inner.next().map(build_expr).transpose()?; // None when no `else`
+
+    Ok(spanned(
+        span,
+        ExpressionKind::If {
+            condition: Box::new(condition),
+            true_pathway: Box::new(true_pathway),
+            false_pathway: false_pathway.map(Box::new),
+        },
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use crate::parse::parse;
@@ -365,5 +387,72 @@ mod tests {
             rendered.contains("requires a type annotation"),
             "expected a missing-type diagnostic, got:\n{rendered}"
         );
+    }
+
+    use crate::parse::ast::{BinaryOp, ExpressionKind, Literal};
+
+    /// Pull the single top-level expression's kind out of a parsed program.
+    fn only_expr_kind(source: &str) -> ExpressionKind {
+        let program = parse(source).expect("source parses");
+        let mut expressions = program.expressions.into_iter();
+        let expr = expressions.next().expect("one top-level expression");
+        assert!(expressions.next().is_none(), "expected a single expression");
+        expr.kind
+    }
+
+    /// `if (cond) then else other` maps the three exprs positionally: condition,
+    /// then-branch, else-branch.
+    #[test]
+    fn if_with_else_maps_all_three_branches_positionally() {
+        match only_expr_kind("if (x) 1 else 2") {
+            ExpressionKind::If {
+                condition,
+                true_pathway,
+                false_pathway,
+            } => {
+                assert!(matches!(condition.kind, ExpressionKind::Var(ref v) if v == "x"));
+                assert!(matches!(
+                    true_pathway.kind,
+                    ExpressionKind::Literal(Literal::Int(1))
+                ));
+                let else_expr = false_pathway.expect("else branch present");
+                assert!(matches!(
+                    else_expr.kind,
+                    ExpressionKind::Literal(Literal::Int(2))
+                ));
+            }
+            other => panic!("expected If, got {other:?}"),
+        }
+    }
+
+    /// The trailing `else` is optional; without it `false_pathway` is `None`.
+    #[test]
+    fn if_without_else_has_no_else_branch() {
+        match only_expr_kind("if (x) 1") {
+            ExpressionKind::If { false_pathway, .. } => {
+                assert!(false_pathway.is_none(), "expected no else branch");
+            }
+            other => panic!("expected If, got {other:?}"),
+        }
+    }
+
+    /// A binary condition still lands in the condition slot — position, not shape,
+    /// discriminates the branches.
+    #[test]
+    fn if_with_binary_condition_keeps_positional_mapping() {
+        match only_expr_kind("if (a < b) 1 else 2") {
+            ExpressionKind::If {
+                condition,
+                false_pathway,
+                ..
+            } => {
+                assert!(matches!(
+                    condition.kind,
+                    ExpressionKind::Binary(BinaryOp::Lt, _, _)
+                ));
+                assert!(false_pathway.is_some(), "else branch present");
+            }
+            other => panic!("expected If, got {other:?}"),
+        }
     }
 }

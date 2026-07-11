@@ -1,0 +1,69 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: If {
+                condition: Expression {
+                    kind: Binary(
+                        Gt,
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    325,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    329,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            325,
+                        ),
+                        length: 5,
+                    },
+                },
+                true_pathway: Expression {
+                    kind: Literal(
+                        Int(
+                            10,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            332,
+                        ),
+                        length: 2,
+                    },
+                },
+                false_pathway: None,
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    321,
+                ),
+                length: 14,
+            },
+        },
+    ],
+}

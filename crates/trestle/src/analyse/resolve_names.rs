@@ -296,6 +296,15 @@ fn resolve_subexpr(
             )?;
             ResolvedExpressionKind::Block(resolved)
         }
+        // `if` parses into the AST but has no resolved/typed form yet — reject it here in pass 1
+        // so the later passes never have to carry a variant they can't handle. Remove this arm
+        // when `if` is threaded end-to-end.
+        ExpressionKind::If { .. } => {
+            return Err(AnalysisError::Unsupported {
+                construct: "if",
+                span,
+            });
+        }
     };
 
     Ok(ResolvedExpression { kind, span })

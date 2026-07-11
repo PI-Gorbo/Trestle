@@ -97,6 +97,14 @@ pub enum AnalysisError {
         #[label("type unknown here")]
         span: SourceSpan,
     },
+
+    #[error("`{construct}` is not supported yet")]
+    #[diagnostic(code(trestle::unsupported))]
+    Unsupported {
+        construct: &'static str,
+        #[label("not supported yet")]
+        span: SourceSpan,
+    },
 }
 
 /// Resolve names and type-check a lowered program into an [`AnalysedProgram`].

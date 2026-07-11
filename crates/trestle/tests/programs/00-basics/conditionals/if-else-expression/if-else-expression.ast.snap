@@ -1,0 +1,219 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "abs",
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "n",
+                                    type_dec: Named(
+                                        "Int",
+                                    ),
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: If {
+                                    condition: Expression {
+                                        kind: Binary(
+                                            Lt,
+                                            Expression {
+                                                kind: Var(
+                                                    "n",
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        285,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                            Expression {
+                                                kind: Literal(
+                                                    Int(
+                                                        0,
+                                                    ),
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        289,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                285,
+                                            ),
+                                            length: 5,
+                                        },
+                                    },
+                                    true_pathway: Expression {
+                                        kind: Binary(
+                                            Sub,
+                                            Expression {
+                                                kind: Literal(
+                                                    Int(
+                                                        0,
+                                                    ),
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        292,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                            Expression {
+                                                kind: Var(
+                                                    "n",
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        296,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                292,
+                                            ),
+                                            length: 5,
+                                        },
+                                    },
+                                    false_pathway: Some(
+                                        Expression {
+                                            kind: Var(
+                                                "n",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    303,
+                                                ),
+                                                length: 1,
+                                            },
+                                        },
+                                    ),
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        281,
+                                    ),
+                                    length: 24,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            269,
+                        ),
+                        length: 36,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    259,
+                ),
+                length: 46,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "bigger",
+                value: Expression {
+                    kind: If {
+                        condition: Expression {
+                            kind: Binary(
+                                Gt,
+                                Expression {
+                                    kind: Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            326,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            330,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    326,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        true_pathway: Expression {
+                            kind: Literal(
+                                Int(
+                                    10,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    341,
+                                ),
+                                length: 2,
+                            },
+                        },
+                        false_pathway: Some(
+                            Expression {
+                                kind: Literal(
+                                    Int(
+                                        20,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        361,
+                                    ),
+                                    length: 2,
+                                },
+                            },
+                        ),
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            322,
+                        ),
+                        length: 50,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    305,
+                ),
+                length: 67,
+            },
+        },
+    ],
+}
