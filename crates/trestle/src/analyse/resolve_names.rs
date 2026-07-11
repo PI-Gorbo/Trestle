@@ -285,6 +285,21 @@ fn resolve_subexpr(
                 value: Box::new(value),
             }
         }
+        // A block's elements are siblings, so thread the outgoing scope forward through
+        // `resolve_expression` (as the top-level driver does) — a block-local `let` is then
+        // visible to later siblings. Bail on the first error to keep the `?` contract.
+        ExpressionKind::Block(expressions) => {
+            let element_count = expressions.len();
+            let (_scope, resolved) = expressions.into_iter().try_fold(
+                (scope.clone(), Vec::with_capacity(element_count)),
+                |(scope, mut resolved), expr| {
+                    let (result, next_scope) = resolve_expression(expr, &scope, bindings_arena);
+                    resolved.push(result?);
+                    Ok((next_scope, resolved))
+                },
+            )?;
+            ResolvedExpressionKind::Block(resolved)
+        }
     };
 
     Ok(ResolvedExpression { kind, span })

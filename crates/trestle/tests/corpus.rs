@@ -305,12 +305,12 @@ trsl_test!(
 trsl_test!(
     basics_blocks_block_single_expr,
     "00-basics/blocks/block-single-expr/block-single-expr.trsl",
-    ignore = "needs block expressions — `{ expr… }`"
+    [ast, analyse]
 );
 trsl_test!(
     basics_blocks_block_multi_expr,
     "00-basics/blocks/block-multi-expr/block-multi-expr.trsl",
-    ignore = "needs block expressions — `{ expr… }`"
+    [ast, analyse]
 );
 trsl_test!(
     basics_blocks_block_with_bindings,

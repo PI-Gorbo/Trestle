@@ -55,6 +55,7 @@ pub enum ExpressionKind {
         name: String,
         value: Box<Expression>,
     },
+    Block(Vec<Expression>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -40,6 +40,7 @@ pub enum ResolvedExpressionKind {
         binding: BindingId, // was name: String
         value: Box<ResolvedExpression>,
     },
+    Block(Vec<ResolvedExpression>),
 }
 
 #[derive(Debug, PartialEq)]

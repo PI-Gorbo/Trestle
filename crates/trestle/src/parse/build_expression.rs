@@ -28,6 +28,7 @@ fn spanned(span: Span, kind: ExpressionKind) -> Expression {
 pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let expr_binding = get_bindings(pair, "expression to have bindings");
     match expr_binding.as_rule() {
+        Rule::list_of_expressions => build_list_of_expressions(expr_binding),
         Rule::let_binding => build_let(expr_binding),
         Rule::lambda => build_lambda(expr_binding),
         Rule::add => build_add(expr_binding),
@@ -36,6 +37,17 @@ pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             span: source_span_from_pest_span(expr_binding.as_span()),
         }),
     }
+}
+
+/// Build a `Block` from a `Rule::list_of_expressions` pair: a brace-wrapped sequence
+/// of expressions whose value is its last element.
+fn build_list_of_expressions(pair: Pair<Rule>) -> Result<Expression, BuildError> {
+    let span = pair.as_span();
+    let expressions = pair.into_inner().try_fold(Vec::new(), |mut list, expr| {
+        list.push(build_expr(expr)?);
+        Ok(list)
+    })?;
+    Ok(spanned(span, ExpressionKind::Block(expressions)))
 }
 
 /// Build a `Let` from a `Rule::let_binding` pair.

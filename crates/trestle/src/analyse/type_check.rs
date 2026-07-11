@@ -274,6 +274,17 @@ fn infer_type_of_expression(
                 Type::Unit,
             )
         }
+
+        // A block's value is its last expression's; earlier ones are typed for effect. The
+        // grammar guarantees at least one element, but fall back to `Unit` defensively.
+        ResolvedExpressionKind::Block(expressions) => {
+            let analysed = expressions
+                .into_iter()
+                .map(|e| infer_type_of_expression(e, env, bindings))
+                .collect::<Result<Vec<_>, _>>()?;
+            let ty = analysed.last().map_or(Type::Unit, |e| e.ty.clone());
+            (ExpressionKind::Block(analysed), ty)
+        }
     };
 
     Ok(AnalysedExpression { kind, span, ty })

@@ -37,5 +37,6 @@ lambda                              = {
 comma_separated_list_of_expressions = { expr ~ ("," ~ expr)* }
 function_invocation                 = { identifier ~ "(" ~ comma_separated_list_of_expressions? ~ ")" }
 let_binding                         = { let_kw ~ identifier_with_optional_type_declaration ~ "=" ~ expr }
+list_of_expressions                 = { "{" ~ expr+ ~ "}" }
 
-expr = { let_binding | lambda | add }
+expr = { list_of_expressions | let_binding | lambda | add }

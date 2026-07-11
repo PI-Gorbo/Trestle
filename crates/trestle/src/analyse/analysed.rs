@@ -73,6 +73,7 @@ pub enum ExpressionKind {
         binding: BindingId, // was name: String
         value: Box<AnalysedExpression>,
     },
+    Block(Vec<AnalysedExpression>),
 }
 
 #[derive(Debug, PartialEq)]
