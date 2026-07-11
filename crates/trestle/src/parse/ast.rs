@@ -57,7 +57,7 @@ pub enum TypeDeclaration {
 #[derive(Debug, PartialEq)]
 pub struct Param {
     pub name: String,
-    pub type_dec: Option<TypeDeclaration>,
+    pub type_dec: TypeDeclaration,
 }
 
 #[derive(Debug, PartialEq)]

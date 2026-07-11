@@ -1,8 +1,8 @@
 // TARGET: applying fewer arguments than a function takes returns a function
 // awaiting the rest. This is the mechanism the pipe operator relies on.
 
-let add   = (a, b) => a + b
-let mul   = (a, b) => a * b
+let add   = (a: Int, b: Int) => a + b
+let mul   = (a: Int, b: Int) => a * b
 
 let inc     = add(1)     // awaits `b`; inc(n) = n + 1
 let triple  = mul(3)     // awaits `b`; triple(n) = n * 3

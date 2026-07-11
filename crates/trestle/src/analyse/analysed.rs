@@ -32,7 +32,7 @@ pub enum Literal {
 
 /// Name + resolved type + definition site for each [`BindingId`].
 #[derive(Debug, PartialEq)]
-pub struct BindingInfo {
+pub struct AnalysedBinding {
     pub name: String,
     pub ty: Type,
     pub span: SourceSpan,
@@ -83,5 +83,5 @@ pub struct Lambda {
 #[derive(Debug, PartialEq)]
 pub struct AnalysedProgram {
     pub expressions: Vec<AnalysedExpression>,
-    pub bindings: Vec<BindingInfo>,
+    pub bindings: Vec<AnalysedBinding>,
 }

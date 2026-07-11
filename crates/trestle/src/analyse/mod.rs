@@ -51,10 +51,35 @@ pub enum AnalysisError {
         span: SourceSpan,
     },
 
+    #[error("`{found:?}` is not a function and cannot be applied to arguments")]
+    #[diagnostic(code(trestle::not_a_function))]
+    NotAFunction {
+        found: Type,
+        #[label("called here")]
+        span: SourceSpan,
+    },
+
+    #[error("unknown type `{name}`")]
+    #[diagnostic(code(trestle::unknown_type))]
+    UnknownType {
+        name: String,
+        #[label("unknown type")]
+        span: SourceSpan,
+    },
+
     #[error("cannot determine the type of `{name}` add a type annotation")]
     #[diagnostic(code(trestle::missing_annotation))]
     MissingAnnotation {
         name: String,
+        #[label("type unknown here")]
+        span: SourceSpan,
+    },
+
+    #[error("could not resolve the type of the variable `{name}` - this is a system error")]
+    #[diagnostic(code(trestle::missing_annotation))]
+    UntypedBindingAfterTypeCheck {
+        name: String,
+
         #[label("type unknown here")]
         span: SourceSpan,
     },

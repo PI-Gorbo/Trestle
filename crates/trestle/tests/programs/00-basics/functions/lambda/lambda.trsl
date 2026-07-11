@@ -1,4 +1,4 @@
 // The simplest lambda: one untyped param, returns it unchanged.
 // Evaluates to a closure capturing the current (empty) environment.
 
-(x) => x
+(x: Int) => x

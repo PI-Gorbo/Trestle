@@ -1,5 +1,5 @@
 // Define a function, then invoke it by name. double(2) evaluates to 4.
 // FunctionInvocation takes a *name*, so `double` must be bound first.
 
-let double = (x) => x * 2
+let double = (x: Int) => x * 2
 double(2)

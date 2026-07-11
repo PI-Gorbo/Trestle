@@ -2,14 +2,14 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-ResolvedProgram {
+AnalysedProgram {
     expressions: [
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     0,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: Int(
                         7,
                     ),
@@ -19,6 +19,9 @@ ResolvedProgram {
                         ),
                         length: 9,
                     },
+                    ty: Literal(
+                        Int,
+                    ),
                 },
             },
             span: SourceSpan {
@@ -27,13 +30,14 @@ ResolvedProgram {
                 ),
                 length: 23,
             },
+            ty: Unit,
         },
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     1,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: Int(
                         9,
                     ),
@@ -43,6 +47,9 @@ ResolvedProgram {
                         ),
                         length: 10,
                     },
+                    ty: Literal(
+                        Int,
+                    ),
                 },
             },
             span: SourceSpan {
@@ -51,13 +58,14 @@ ResolvedProgram {
                 ),
                 length: 35,
             },
+            ty: Unit,
         },
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     2,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: Int(
                         21,
                     ),
@@ -67,6 +75,9 @@ ResolvedProgram {
                         ),
                         length: 15,
                     },
+                    ty: Literal(
+                        Int,
+                    ),
                 },
             },
             span: SourceSpan {
@@ -75,11 +86,15 @@ ResolvedProgram {
                 ),
                 length: 34,
             },
+            ty: Unit,
         },
     ],
     bindings: [
-        ResolvedBinding {
+        AnalysedBinding {
             name: "natural",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
                     78,
@@ -87,8 +102,11 @@ ResolvedProgram {
                 length: 23,
             },
         },
-        ResolvedBinding {
+        AnalysedBinding {
             name: "grouped",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
                     127,
@@ -96,8 +114,11 @@ ResolvedProgram {
                 length: 35,
             },
         },
-        ResolvedBinding {
+        AnalysedBinding {
             name: "nested",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
                     162,

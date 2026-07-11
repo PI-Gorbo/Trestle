@@ -2,7 +2,7 @@
 //   (a, b) => body   is sugar for   (a) => (b) => body
 //   f(a, b)          is sugar for   f(a)(b)
 
-let add = (a, b) => a + b
+let add = (a: Int, b: Int) => a + b
 
 let add10 = add(10)   // partial application: a function awaiting `b`
 

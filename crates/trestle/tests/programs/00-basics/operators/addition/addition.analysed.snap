@@ -2,9 +2,9 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-ResolvedProgram {
+AnalysedProgram {
     expressions: [
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Int(
                 3,
             ),
@@ -14,6 +14,9 @@ ResolvedProgram {
                 ),
                 length: 5,
             },
+            ty: Literal(
+                Int,
+            ),
         },
     ],
     bindings: [],

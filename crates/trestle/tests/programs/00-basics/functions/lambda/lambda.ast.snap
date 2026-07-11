@@ -10,7 +10,9 @@ LoweredProgram {
                     parameter: Some(
                         Param {
                             name: "x",
-                            type_dec: None,
+                            type_dec: Named(
+                                "Int",
+                            ),
                         },
                     ),
                     return_type: None,
@@ -20,7 +22,7 @@ LoweredProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                142,
+                                147,
                             ),
                             length: 1,
                         },
@@ -31,7 +33,7 @@ LoweredProgram {
                 offset: SourceOffset(
                     135,
                 ),
-                length: 9,
+                length: 14,
             },
         },
     ],

@@ -46,7 +46,11 @@ fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                 match p.as_rule() {
                     Rule::let_kw => {}
                     Rule::identifier_with_optional_type_declaration => {
-                        name = p.as_str().to_string()
+                        let ident = p
+                            .into_inner()
+                            .next()
+                            .expect("binding target starts with an identifier");
+                        name = ident.as_str().to_string();
                     }
                     Rule::expr => value = Some(build_expr(p)),
                     rule => unreachable!("unexpected rule in let_binding: {:?}", rule),
@@ -76,7 +80,7 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 
     for p in pair.into_inner() {
         match p.as_rule() {
-            Rule::identifier_with_optional_type_declaration => params.push(build_param(p)?),
+            Rule::identifier_with_type_declaration => params.push(build_param(p)?),
             Rule::optional_type_declaration => return_type = build_type_opt(p),
             Rule::expr => body = Some(build_expr(p)),
             rule => {
@@ -131,22 +135,39 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     ))
 }
 
+struct BuildParamCtx {
+    name: Option<String>,
+    type_dec: Option<TypeDeclaration>,
+}
+
 fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {
-    let mut name = String::new();
-    let mut ty = None;
-    for p in pair.into_inner() {
-        match p.as_rule() {
-            Rule::identifier => name = p.as_str().to_string(),
-            Rule::type_declaration => ty = Some(build_type(p)),
-            rule => {
-                return Err(BuildError::UnexpectedRule {
-                    rule,
-                    span: source_span_from_pest_span(p.as_span()),
-                });
-            }
-        }
-    }
-    Ok(Param { name, type_dec: ty })
+    let span = source_span_from_pest_span(pair.as_span());
+
+    pair.into_inner()
+        .try_fold(
+            BuildParamCtx {
+                name: None,
+                type_dec: None,
+            },
+            |state, pair| match pair.as_rule() {
+                Rule::identifier => Ok(BuildParamCtx {
+                    name: Some(pair.as_str().to_string()),
+                    ..state
+                }),
+                Rule::type_declaration => Ok(BuildParamCtx {
+                    type_dec: Some(build_type(pair)),
+                    ..state
+                }),
+                rule => Err(BuildError::UnexpectedRule { rule, span }),
+            },
+        )
+        .and_then(|values| match values {
+            BuildParamCtx {
+                name: Some(name),
+                type_dec: Some(type_dec),
+            } => Ok(Param { name, type_dec }),
+            _ => Err(BuildError::Invariant { span }),
+        })
 }
 
 fn build_type_opt(pair: Pair<Rule>) -> Option<TypeDeclaration> {

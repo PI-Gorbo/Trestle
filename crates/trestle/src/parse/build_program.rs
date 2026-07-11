@@ -37,6 +37,10 @@ pub enum BuildError {
         #[label("this let has no body")]
         span: SourceSpan,
     },
+
+    #[error("internal invariant violated")]
+    #[diagnostic(code(trestle::invariant))]
+    Invariant { span: SourceSpan },
 }
 
 /// Build a `Program` from a `Rule::program` pair.

@@ -10,7 +10,9 @@ LoweredProgram {
                     parameter: Some(
                         Param {
                             name: "a",
-                            type_dec: None,
+                            type_dec: Named(
+                                "String",
+                            ),
                         },
                     ),
                     return_type: None,
@@ -20,7 +22,9 @@ LoweredProgram {
                                 parameter: Some(
                                     Param {
                                         name: "b",
-                                        type_dec: None,
+                                        type_dec: Named(
+                                            "String",
+                                        ),
                                     },
                                 ),
                                 return_type: None,
@@ -32,7 +36,7 @@ LoweredProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    250,
+                                                    266,
                                                 ),
                                                 length: 1,
                                             },
@@ -43,7 +47,7 @@ LoweredProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    254,
+                                                    270,
                                                 ),
                                                 length: 1,
                                             },
@@ -51,7 +55,7 @@ LoweredProgram {
                                     ),
                                     span: SourceSpan {
                                         offset: SourceOffset(
-                                            250,
+                                            266,
                                         ),
                                         length: 5,
                                     },
@@ -60,9 +64,9 @@ LoweredProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                243,
+                                251,
                             ),
-                            length: 13,
+                            length: 21,
                         },
                     },
                 },
@@ -71,7 +75,7 @@ LoweredProgram {
                 offset: SourceOffset(
                     236,
                 ),
-                length: 20,
+                length: 36,
             },
         },
     ],

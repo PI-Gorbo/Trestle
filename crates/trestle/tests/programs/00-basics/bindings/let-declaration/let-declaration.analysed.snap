@@ -2,14 +2,14 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-ResolvedProgram {
+AnalysedProgram {
     expressions: [
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     0,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: Int(
                         42,
                     ),
@@ -19,6 +19,9 @@ ResolvedProgram {
                         ),
                         length: 2,
                     },
+                    ty: Literal(
+                        Int,
+                    ),
                 },
             },
             span: SourceSpan {
@@ -27,11 +30,15 @@ ResolvedProgram {
                 ),
                 length: 11,
             },
+            ty: Unit,
         },
     ],
     bindings: [
-        ResolvedBinding {
+        AnalysedBinding {
             name: "x",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
                     112,

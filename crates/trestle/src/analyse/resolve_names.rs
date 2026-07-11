@@ -315,8 +315,8 @@ mod tests {
     fn lambda_param_shadows_outer_binding_without_error() {
         // Outer `let x`, then a lambda whose param is also `x`. Different scopes → no duplicate, and
         // the body's `x` resolves to the param (newest-first), not the outer binding.
-        let resolved =
-            resolve_src("let x = 1\nlet f = (x) => x").expect("cross-scope shadowing is allowed");
+        let resolved = resolve_src("let x = 1\nlet f = (x:Int) => x")
+            .expect("cross-scope shadowing is allowed");
 
         let ResolvedExpressionKind::Let { value, .. } = &resolved.expressions[1].kind else {
             panic!("expected the second top-level expression to be a let");

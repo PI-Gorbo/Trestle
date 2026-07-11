@@ -21,7 +21,7 @@ use std::env::join_paths;
 use miette::SourceSpan;
 
 use crate::analyse::analysed::{
-    AnalysedExpression, BindingId, ExpressionKind, Lambda, Literal, Param, Type,
+    AnalysedBinding, AnalysedExpression, BindingId, ExpressionKind, Lambda, Literal, Param, Type,
 };
 use crate::analyse::resolved::{ResolvedBinding, ResolvedExpression, ResolvedExpressionKind};
 use crate::parse::ast::TypeDeclaration;
@@ -30,13 +30,13 @@ use super::AnalysisError;
 use super::analysed::AnalysedProgram;
 use super::resolved::ResolvedProgram;
 
-struct Env {
+struct TypeEnv {
     types: Vec<Option<Type>>,
 }
-impl Env {
-    fn new(binding_count: usize) -> Env {
-        Env {
-            types: Vec::with_capacity(binding_count),
+impl TypeEnv {
+    fn new(binding_count: usize) -> TypeEnv {
+        TypeEnv {
+            types: vec![None; binding_count],
         }
     }
 
@@ -49,41 +49,76 @@ impl Env {
     }
 }
 
-/// Type-check a name-resolved program into a fully typed [`AnalysedProgram`].
-pub(super) fn type_check(program: &ResolvedProgram) -> Result<AnalysedProgram, Vec<AnalysisError>> {
-    // Goal: Infer the typing information for all bindings
-    let mut env = Env::new(program.bindings.len());
-
-    let mut expressions = Vec::with_capacity(program.expressions.len());
-    let mut errors = Vec::new();
-
-    for untyped_expression in &program.expressions {
-        match infer_type_of_expression(untyped_expression, &mut env, &program.bindings) {
-            Ok(expression) => expressions.push(expression),
-            Err(error) => errors.push(error),
-        }
+trait BindingLookup {
+    fn lookup(&self, id: BindingId) -> &ResolvedBinding;
+    fn try_zip_with_type_env(&self, env: &TypeEnv) -> Result<Vec<AnalysedBinding>, AnalysisError>;
+}
+impl BindingLookup for [ResolvedBinding] {
+    fn lookup(&self, id: BindingId) -> &ResolvedBinding {
+        &self[id.0]
     }
 
-    match errors.is_empty() {
-        true => Ok(AnalysedProgram {
-            expressions,
-            bindings: todo!("build BindingInfo table from env + program.bindings"),
-        }),
-        false => Err(errors),
+    fn try_zip_with_type_env(&self, env: &TypeEnv) -> Result<Vec<AnalysedBinding>, AnalysisError> {
+        assert_eq!(self.len(), env.types.len());
+
+        self.iter()
+            .enumerate()
+            .map(|(index, binding)| match env.get(BindingId(index)) {
+                Some(ty) => Ok(AnalysedBinding {
+                    name: binding.name.clone(),
+                    ty: ty.clone(),
+                    span: binding.span,
+                }),
+                None => Err(AnalysisError::UntypedBindingAfterTypeCheck {
+                    name: binding.name.clone(),
+                    span: binding.span,
+                }),
+            })
+            .collect()
     }
 }
 
-struct ResolvedBindings([ResolvedBinding]);
-impl ResolvedBindings {
-    pub fn get(&self, binding: BindingId) -> String {
-        self.0[binding.0].name.clone()
+struct TypeCheckState {
+    type_env: TypeEnv,
+    expressions: Vec<AnalysedExpression>,
+    errors: Vec<AnalysisError>,
+}
+/// Type-check a name-resolved program into a fully typed [`AnalysedProgram`].
+pub(super) fn type_check(program: &ResolvedProgram) -> Result<AnalysedProgram, Vec<AnalysisError>> {
+    let bindings: &[ResolvedBinding] = &program.bindings;
+    let final_state = program.expressions.iter().fold(
+        TypeCheckState {
+            expressions: Vec::with_capacity(program.expressions.len()),
+            errors: Vec::new(),
+            type_env: TypeEnv::new(program.bindings.len()),
+        },
+        |mut state, untyped_expression| {
+            match infer_type_of_expression(untyped_expression, &mut state.type_env, bindings) {
+                Ok(expression) => state.expressions.push(expression),
+                Err(error) => state.errors.push(error),
+            }
+
+            state
+        },
+    );
+
+    let typed_bindings = bindings
+        .try_zip_with_type_env(&final_state.type_env)
+        .map_err(|err| vec![err])?;
+
+    match final_state.errors.is_empty() {
+        true => Ok(AnalysedProgram {
+            expressions: final_state.expressions,
+            bindings: typed_bindings,
+        }),
+        false => Err(final_state.errors),
     }
 }
 
 fn infer_type_of_expression(
     untyped_expression: &ResolvedExpression,
-    env: &mut Env,
-    bindings: &ResolvedBindings,
+    env: &mut TypeEnv,
+    bindings: &[ResolvedBinding],
 ) -> Result<AnalysedExpression, AnalysisError> {
     // Borrow the kind: boxed operands aren't `Copy`, so matching by value would move them.
     match &untyped_expression.kind {
@@ -101,7 +136,7 @@ fn infer_type_of_expression(
                 Some(ty) => ty.clone(),
                 None => {
                     return Err(AnalysisError::MissingAnnotation {
-                        name: bindings.get(*binding_id),
+                        name: bindings.lookup(*binding_id).name.clone(),
                         span: untyped_expression.span,
                     });
                 }
@@ -148,7 +183,8 @@ fn infer_type_of_expression(
                 .parameter
                 .as_ref()
                 .map(|untyped_param| {
-                    let type_from_type_dec = resolve_type_dec(&untyped_param.type_dec)?;
+                    let type_from_type_dec =
+                        resolve_type_dec(&untyped_param.type_dec, untyped_expression.span)?;
                     Ok(Param {
                         binding: untyped_param.binding,
                         ty: type_from_type_dec,
@@ -162,7 +198,7 @@ fn infer_type_of_expression(
                 .return_type
                 .as_ref()
                 .map(|specified_type| {
-                    resolve_type_dec(&specified_type).and_then(|found_type| {
+                    resolve_type_dec(&specified_type, untyped_expression.span).and_then(|found_type| {
                         unify(&body.ty, &found_type, untyped_expression.span)
                     })
                 })
@@ -188,36 +224,40 @@ fn infer_type_of_expression(
 
             // We now need to check that we can apply the types of the arguments to the parameters of the fuction.
             // First, we resolve the type from the binding_id
-            let function_type = env.get(*binding_id);
-
-            if let None = function_type {
+            let Some(function_type) = env.get(*binding_id) else {
                 return Err(AnalysisError::UnboundName {
-                    name: bindings.get(*binding_id),
+                    name: bindings.lookup(*binding_id).name.clone(),
                     span: untyped_expression.span,
                 });
-            }
+            };
 
-            // Unify the function's type with the argument types.
+            let output_type = get_type_after_applying_arguments(
+                &function_type,
+                &analysed_args,
+                untyped_expression.span,
+            )?;
 
             // Fold the args through the callee's curried `Fn(a, Fn(b, r))` type in `env`,
             // peeling one arrow (and checking one arg) per element; the leftover is the result.
             Ok(AnalysedExpression {
                 kind: ExpressionKind::FunctionInvocation(*binding_id, analysed_args),
                 span: untyped_expression.span,
-                ty: todo!(),
+                ty: output_type,
             })
         }
 
         ResolvedExpressionKind::Let { binding, value } => {
             let value = infer_type_of_expression(value, env, bindings)?;
             // Record the binding's type for later references: `env.set(*binding, value.ty…)`.
+            env.set(*binding, value.ty.clone());
+
             Ok(AnalysedExpression {
                 kind: ExpressionKind::Let {
                     binding: *binding,
                     value: Box::new(value),
                 },
                 span: untyped_expression.span,
-                ty: todo!(),
+                ty: Type::Unit,
             })
         }
     }
@@ -243,8 +283,42 @@ fn unify(found: &Type, expected: &Type, span: SourceSpan) -> Result<Type, Analys
     }
 }
 
+fn get_type_after_applying_arguments(
+    fn_type: &Type,
+    arguments: &[AnalysedExpression],
+    span: SourceSpan,
+) -> Result<Type, AnalysisError> {
+    // For each argument provided, we need to apply one layer of the expected function.
+    let Type::Fn(param_type, return_type) = fn_type else {
+        return Err(AnalysisError::NotAFunction {
+            found: fn_type.clone(),
+            span,
+        });
+    };
+
+    match arguments.get(0) {
+        None => Ok(fn_type.clone()),
+        Some(arg) => {
+            // If the types unify, then we can move on to the rest of the types
+            unify(param_type, &arg.ty, span)?;
+
+            // Re-call the same method, with the return type of the function and one shorter argument.
+            get_type_after_applying_arguments(return_type, &arguments[1..], span)
+        }
+    }
+}
+
 /// Interpret a raw type annotation into a concrete [`Type`]
 /// (`"Int"`/`"Bool"`/`"String"` → [`Literal`](super::analysed::Literal); unknown → an error).
-fn resolve_type_dec(dec: &TypeDeclaration) -> Result<Type, AnalysisError> {
-    todo!()
+fn resolve_type_dec(dec: &TypeDeclaration, span: SourceSpan) -> Result<Type, AnalysisError> {
+    let TypeDeclaration::Named(name) = dec;
+    match name.as_str() {
+        "Int" => Ok(Type::Literal(Literal::Int)),
+        "Bool" => Ok(Type::Literal(Literal::Bool)),
+        "String" => Ok(Type::Literal(Literal::String)),
+        _ => Err(AnalysisError::UnknownType {
+            name: name.clone(),
+            span,
+        }),
+    }
 }

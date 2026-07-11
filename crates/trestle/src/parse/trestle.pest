@@ -9,9 +9,10 @@ alpha_word_boundary        = @{ ASCII_ALPHA | "_" }
 let_kw                     = @{ "let" ~ !(alphanumeric_word_boundary) }
 
 identifier                                = @{ !let_kw ~ (alpha_word_boundary) ~ (alphanumeric_word_boundary)* }
-type_declaration                          = ${ ":" ~ identifier }
-optional_type_declaration                 = ${ type_declaration? }
-identifier_with_optional_type_declaration = ${ identifier ~ (type_declaration)? }
+type_declaration                          =  { ":" ~ identifier }
+optional_type_declaration                 =  { type_declaration? }
+identifier_with_optional_type_declaration =  { identifier ~ (type_declaration)? }
+identifier_with_type_declaration          =  { identifier ~ type_declaration }
 int                                       = @{ ASCII_DIGIT+ }
 
 // program & statements
@@ -22,7 +23,7 @@ primary                             = { function_invocation | int | identifier |
 mul                                 = { primary ~ ("*" ~ primary)* }
 add                                 = { mul ~ ("+" ~ mul)* }
 lambda                              = {
-    "(" ~ identifier_with_optional_type_declaration ~ ("," ~ identifier_with_optional_type_declaration)* ~ ")" ~ optional_type_declaration ~ "=>" ~ expr
+    "(" ~ identifier_with_type_declaration ~ ("," ~ identifier_with_type_declaration)* ~ ")" ~ optional_type_declaration ~ "=>" ~ expr
 }
 comma_separated_list_of_expressions = { expr ~ ("," ~ expr)* }
 function_invocation                 = { identifier ~ "(" ~ comma_separated_list_of_expressions? ~ ")" }
