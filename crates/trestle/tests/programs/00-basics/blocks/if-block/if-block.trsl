@@ -1,0 +1,6 @@
+// A block can serve as the body of an `if`: `if (cond) { … }` — the block's
+// value becomes the if's value. Also needs `if` + comparison operators.
+
+if (3 > 2) {
+    10
+}

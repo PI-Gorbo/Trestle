@@ -376,4 +376,14 @@ mod tests {
                 .all(|error| matches!(error, AnalysisError::UnboundName { .. }))
         );
     }
+
+    #[test]
+    #[ignore = "needs block expressions — block-local `let` scoping"]
+    fn block_local_let_is_not_visible_outside_the_block() {
+        // A block's local binding is scoped to the block. Referencing `inner` after the
+        // block closes must be an unbound name, not a leak of the block's scope.
+        let errors = resolve_src("let outer = { let inner = 1  inner }\ninner")
+            .expect_err("`inner` must not escape its block");
+        assert!(matches!(errors[0], AnalysisError::UnboundName { .. }));
+    }
 }

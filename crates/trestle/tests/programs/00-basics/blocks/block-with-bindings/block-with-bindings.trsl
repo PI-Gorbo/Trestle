@@ -1,0 +1,9 @@
+// A block is a true sub-program: it can introduce its own `let` bindings, scoped
+// to the block, then produce a final value. `a` and `b` are not visible outside.
+
+let total = {
+    let a = 10
+    let b = 20
+    a + b   // 30
+}
+total

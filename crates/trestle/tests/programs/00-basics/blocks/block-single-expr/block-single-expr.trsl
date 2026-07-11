@@ -1,0 +1,6 @@
+// A block expression: `{ … }` is a brace-wrapped sub-program (a whitespace-
+// separated list of expressions) whose value is its last expression. Simplest
+// case — a block around a single expression.
+
+let x = { 1 + 2 }   // 3
+x

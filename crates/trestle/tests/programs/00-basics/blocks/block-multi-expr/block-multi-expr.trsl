@@ -1,0 +1,9 @@
+// A block holds a list of expressions; the block evaluates to the LAST one.
+// Earlier expressions are still evaluated, they just don't determine the value.
+
+let x = {
+    1 + 1
+    2 + 2
+    3 + 3   // block evaluates to 6
+}
+x

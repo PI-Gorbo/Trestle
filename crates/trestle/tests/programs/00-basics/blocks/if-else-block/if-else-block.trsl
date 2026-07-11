@@ -1,0 +1,11 @@
+// Both branches of an if/else can be blocks; each block's last expression is the
+// value of that branch. Also needs `if`/`else` + comparison operators.
+
+let bigger =
+    if (3 > 2) {
+        let a = 5
+        a + a   // 10
+    } else {
+        20
+    }
+bigger

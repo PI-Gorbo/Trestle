@@ -1,0 +1,8 @@
+// Blocks nest: a block expression can appear anywhere an expression can,
+// including inside another block.
+
+let x = {
+    let inner = { 1 + 1 }   // 2
+    inner + 10              // 12
+}
+x

@@ -19,3 +19,8 @@ omnibus program.
   requires at least one parameter.
 - **conditionals** — `if-expression` / `if-else-expression`, awaiting the `if`
   grammar (its `ExpressionKind::If` already exists in `checked.rs`).
+- **blocks** — `{ … }` as a brace-wrapped sub-program: a whitespace-separated list
+  of expressions whose value is the last one, with block-local `let` bindings.
+  `block-single-expr`, `block-multi-expr`, `block-with-bindings`, `nested-block`,
+  plus the `if`/block combinations `if-block` and `if-else-block`. All await the
+  block grammar/AST.
