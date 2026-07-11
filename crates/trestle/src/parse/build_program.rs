@@ -38,6 +38,14 @@ pub enum BuildError {
         span: SourceSpan,
     },
 
+    #[error("parameter `{name}` requires a type annotation")]
+    #[diagnostic(code(trestle::missing_param_type))]
+    MissingParamType {
+        name: String,
+        #[label("this parameter needs a type, e.g. `{name}: Int`")]
+        span: SourceSpan,
+    },
+
     #[error("internal invariant violated")]
     #[diagnostic(code(trestle::invariant))]
     Invariant { span: SourceSpan },

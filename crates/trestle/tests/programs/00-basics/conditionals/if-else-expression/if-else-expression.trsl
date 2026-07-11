@@ -2,8 +2,7 @@
 // TARGET: the else form of the same construct — parenthesized condition, a then-expression,
 // and an else-expression. Needs booleans + comparison (and subtraction for `0 - n`).
 
-let abs = (n) => if (n < 0) 0 - n else n
-
+let abs = (n: Int) => if (n < 0) 0 - n else n
 let bigger =
     if (3 > 2)
         10

@@ -114,7 +114,7 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 
     for p in pair.into_inner() {
         match p.as_rule() {
-            Rule::identifier_with_type_declaration => params.push(build_param(p)?),
+            Rule::identifier_with_optional_type_declaration => params.push(build_param(p)?),
             Rule::optional_type_declaration => return_type = build_type_opt(p),
             Rule::expr => body = Some(build_expr(p)),
             rule => {
@@ -195,11 +195,17 @@ fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {
                 rule => Err(BuildError::UnexpectedRule { rule, span }),
             },
         )
+        // The grammar accepts untyped params (so `=>` commits the lambda branch); a
+        // required type that's missing is rejected here, pointing the caret at the param.
         .and_then(|values| match values {
             BuildParamCtx {
                 name: Some(name),
                 type_dec: Some(type_dec),
             } => Ok(Param { name, type_dec }),
+            BuildParamCtx {
+                name: Some(name),
+                type_dec: None,
+            } => Err(BuildError::MissingParamType { name, span }),
             _ => Err(BuildError::Invariant { span }),
         })
 }
@@ -340,5 +346,24 @@ fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             rule,
             span: source_span_from_pest_span(span),
         }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::parse::parse;
+
+    /// A lambda whose param lacks a type must fail with a *targeted* message pointing at
+    /// the param — not the old raw-pest "expected EOI/operator" error at `=>`. The grammar
+    /// admits untyped params so the `=>` commits the lambda branch; the missing type is
+    /// then rejected in `build_param`.
+    #[test]
+    fn untyped_lambda_param_reports_missing_type() {
+        let report = parse("(n) => n").expect_err("untyped param must be rejected");
+        let rendered = format!("{report:?}");
+        assert!(
+            rendered.contains("requires a type annotation"),
+            "expected a missing-type diagnostic, got:\n{rendered}"
+        );
     }
 }
