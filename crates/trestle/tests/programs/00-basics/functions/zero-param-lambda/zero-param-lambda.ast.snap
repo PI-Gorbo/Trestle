@@ -1,0 +1,33 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Lambda(
+                Lambda {
+                    parameter: None,
+                    return_type: None,
+                    body: Expression {
+                        kind: Int(
+                            42,
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                273,
+                            ),
+                            length: 2,
+                        },
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    267,
+                ),
+                length: 9,
+            },
+        },
+    ],
+}

@@ -180,7 +180,7 @@ trsl_test!(
 trsl_test!(
     basics_literals_string,
     "00-basics/literals/string/string.trsl",
-    ignore = "needs string literals"
+    [ast, analyse]
 );
 trsl_test!(
     basics_literals_bool,
@@ -286,7 +286,7 @@ trsl_test!(
 trsl_test!(
     basics_functions_zero_param_lambda,
     "00-basics/functions/zero-param-lambda/zero-param-lambda.trsl",
-    ignore = "needs zero-parameter lambdas — grammar requires at least one param"
+    [ast, analyse]
 );
 
 // ── conditionals ──────────────────────────────────────────
