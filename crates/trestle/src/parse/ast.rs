@@ -33,8 +33,16 @@ pub struct Expression {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum ExpressionKind {
+pub enum Literal {
     Int(usize),
+    Bool(bool),
+    Float(f64),
+    String(String),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ExpressionKind {
+    Literal(Literal),
     Var(String),
     Add(Box<Expression>, Box<Expression>),
     Mul(Box<Expression>, Box<Expression>),

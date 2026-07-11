@@ -8,8 +8,10 @@ LoweredProgram {
             kind: Let {
                 name: "natural",
                 value: Expression {
-                    kind: Int(
-                        7,
+                    kind: Literal(
+                        Int(
+                            7,
+                        ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -30,8 +32,10 @@ LoweredProgram {
             kind: Let {
                 name: "grouped",
                 value: Expression {
-                    kind: Int(
-                        9,
+                    kind: Literal(
+                        Int(
+                            9,
+                        ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -52,8 +56,10 @@ LoweredProgram {
             kind: Let {
                 name: "nested",
                 value: Expression {
-                    kind: Int(
-                        21,
+                    kind: Literal(
+                        Int(
+                            21,
+                        ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(

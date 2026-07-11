@@ -1,25 +1,21 @@
 ---
 source: crates/trestle/tests/corpus.rs
-expression: analysed
+expression: program
 ---
-AnalysedProgram {
+LoweredProgram {
     expressions: [
-        AnalysedExpression {
+        Expression {
             kind: Literal(
-                Int(
-                    3,
+                String(
+                    "\"hello\"",
                 ),
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    151,
+                    229,
                 ),
-                length: 5,
+                length: 7,
             },
-            ty: Literal(
-                Int,
-            ),
         },
     ],
-    bindings: [],
 }

@@ -5,8 +5,10 @@ expression: program
 LoweredProgram {
     expressions: [
         Expression {
-            kind: Int(
-                42,
+            kind: Literal(
+                Int(
+                    42,
+                ),
             ),
             span: SourceSpan {
                 offset: SourceOffset(

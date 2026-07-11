@@ -8,6 +8,8 @@
 
 use pest::{Span, iterators::Pair};
 
+use crate::parse::ast::Literal;
+
 use super::{BuildError, Rule};
 
 use super::ast::{
@@ -191,8 +193,11 @@ fn build_add(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         let span = merge_spans(lhs.span, rhs.span);
 
         match (&lhs.kind, &rhs.kind) {
-            (ExpressionKind::Int(lhs_num), ExpressionKind::Int(rhs_num)) => Ok(Expression {
-                kind: ExpressionKind::Int(lhs_num + rhs_num),
+            (
+                ExpressionKind::Literal(Literal::Int(lhs_num)),
+                ExpressionKind::Literal(Literal::Int(rhs_num)),
+            ) => Ok(Expression {
+                kind: ExpressionKind::Literal(Literal::Int(lhs_num + rhs_num)),
                 span,
             }),
             _ => Ok(Expression {
@@ -213,8 +218,11 @@ fn build_mul(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         let span = merge_spans(lhs.span, rhs.span);
 
         match (&lhs.kind, &rhs.kind) {
-            (ExpressionKind::Int(lhs_num), ExpressionKind::Int(rhs_num)) => Ok(Expression {
-                kind: ExpressionKind::Int(lhs_num * rhs_num),
+            (
+                ExpressionKind::Literal(Literal::Int(lhs_num)),
+                ExpressionKind::Literal(Literal::Int(rhs_num)),
+            ) => Ok(Expression {
+                kind: ExpressionKind::Literal(Literal::Int(lhs_num * rhs_num)),
                 span,
             }),
             _ => Ok(Expression {
@@ -267,15 +275,43 @@ fn build_function_invocation(pair: Pair<Rule>) -> Result<Expression, BuildError>
     ))
 }
 
+fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
+    let child = pair.into_inner().next().expect("literal has one child");
+    let span = child.as_span();
+    match child.as_rule() {
+        Rule::int => Ok(spanned(
+            span,
+            ExpressionKind::Literal(Literal::Int(
+                child.as_str().parse().expect("int literal fits in usize"),
+            )),
+        )),
+        Rule::string => Ok(spanned(
+            span,
+            ExpressionKind::Literal(Literal::String(child.as_str().to_string())),
+        )),
+        Rule::boolean => Ok(spanned(
+            span,
+            ExpressionKind::Literal(Literal::Bool(child.as_str() == "true")),
+        )),
+        Rule::float => Ok(spanned(
+            span,
+            ExpressionKind::Literal(Literal::Float(
+                child.as_str().parse().expect("float literal parses as f64"),
+            )),
+        )),
+        rule => Err(BuildError::UnexpectedRule {
+            rule,
+            span: source_span_from_pest_span(span),
+        }),
+    }
+}
+
 fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let child = pair.into_inner().next().expect("primary has one child");
     let span = child.as_span();
     match child.as_rule() {
         Rule::function_invocation => build_function_invocation(child),
-        Rule::int => Ok(spanned(
-            span,
-            ExpressionKind::Int(child.as_str().parse().expect("int literal fits in i64")),
-        )),
+        Rule::literal => build_literal(child),
         Rule::identifier => Ok(spanned(
             span,
             ExpressionKind::Var(child.as_str().to_string()),

@@ -182,8 +182,10 @@ LoweredProgram {
                         function_name: "add",
                         expressions: [
                             Expression {
-                                kind: Int(
-                                    1,
+                                kind: Literal(
+                                    Int(
+                                        1,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -217,8 +219,10 @@ LoweredProgram {
                         function_name: "mul",
                         expressions: [
                             Expression {
-                                kind: Int(
-                                    3,
+                                kind: Literal(
+                                    Int(
+                                        3,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -256,8 +260,10 @@ LoweredProgram {
                                     function_name: "inc",
                                     expressions: [
                                         Expression {
-                                            kind: Int(
-                                                9,
+                                            kind: Literal(
+                                                Int(
+                                                    9,
+                                                ),
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(

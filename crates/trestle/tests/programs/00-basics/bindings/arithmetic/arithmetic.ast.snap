@@ -8,8 +8,10 @@ LoweredProgram {
             kind: Let {
                 name: "a",
                 value: Expression {
-                    kind: Int(
-                        6,
+                    kind: Literal(
+                        Int(
+                            6,
+                        ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -30,8 +32,10 @@ LoweredProgram {
             kind: Let {
                 name: "b",
                 value: Expression {
-                    kind: Int(
-                        24,
+                    kind: Literal(
+                        Int(
+                            24,
+                        ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(

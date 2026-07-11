@@ -10,8 +10,10 @@ AnalysedProgram {
                     0,
                 ),
                 value: AnalysedExpression {
-                    kind: Int(
-                        6,
+                    kind: Literal(
+                        Int(
+                            6,
+                        ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -38,8 +40,10 @@ AnalysedProgram {
                     1,
                 ),
                 value: AnalysedExpression {
-                    kind: Int(
-                        24,
+                    kind: Literal(
+                        Int(
+                            24,
+                        ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(

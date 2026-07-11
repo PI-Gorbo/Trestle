@@ -103,8 +103,8 @@ pub enum AnalysisError {
 ///
 /// Pass 1 resolves every name to a [`BindingId`](analysed::BindingId); pass 2 types the
 /// resolved tree. Errors from either pass surface as a batch.
-pub fn analyse(program: &ast::LoweredProgram) -> Result<AnalysedProgram, Vec<AnalysisError>> {
+pub fn analyse(program: ast::LoweredProgram) -> Result<AnalysedProgram, Vec<AnalysisError>> {
     let resolved = resolve_names::resolve(program)?;
 
-    type_check::type_check(&resolved)
+    type_check::type_check(resolved)
 }

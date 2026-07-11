@@ -27,6 +27,7 @@ pub enum Type {
 pub enum Literal {
     Int,
     Bool,
+    Float,
     String,
 }
 
@@ -48,8 +49,16 @@ pub struct AnalysedExpression {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum ExpressionKind {
+pub enum AnalysedLiteral {
     Int(usize),
+    Bool(bool),
+    Float(f64),
+    String(String),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ExpressionKind {
+    Literal(AnalysedLiteral),
     Var(BindingId), // was Var(String)
     Add(Box<AnalysedExpression>, Box<AnalysedExpression>),
     Mul(Box<AnalysedExpression>, Box<AnalysedExpression>),

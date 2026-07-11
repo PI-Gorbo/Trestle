@@ -41,8 +41,10 @@ AnalysedProgram {
                                         ),
                                     },
                                     AnalysedExpression {
-                                        kind: Int(
-                                            2,
+                                        kind: Literal(
+                                            Int(
+                                                2,
+                                            ),
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
@@ -100,8 +102,10 @@ AnalysedProgram {
                 ),
                 [
                     AnalysedExpression {
-                        kind: Int(
-                            2,
+                        kind: Literal(
+                            Int(
+                                2,
+                            ),
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(

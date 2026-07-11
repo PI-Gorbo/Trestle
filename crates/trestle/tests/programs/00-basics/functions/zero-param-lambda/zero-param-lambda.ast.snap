@@ -10,8 +10,10 @@ LoweredProgram {
                     parameter: None,
                     return_type: None,
                     body: Expression {
-                        kind: Int(
-                            42,
+                        kind: Literal(
+                            Int(
+                                42,
+                            ),
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(

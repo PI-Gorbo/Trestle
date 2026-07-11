@@ -276,8 +276,10 @@ AnalysedProgram {
                         ),
                         [
                             AnalysedExpression {
-                                kind: Int(
-                                    1,
+                                kind: Literal(
+                                    Int(
+                                        1,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -329,8 +331,10 @@ AnalysedProgram {
                         ),
                         [
                             AnalysedExpression {
-                                kind: Int(
-                                    3,
+                                kind: Literal(
+                                    Int(
+                                        3,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -388,8 +392,10 @@ AnalysedProgram {
                                     ),
                                     [
                                         AnalysedExpression {
-                                            kind: Int(
-                                                9,
+                                            kind: Literal(
+                                                Int(
+                                                    9,
+                                                ),
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(

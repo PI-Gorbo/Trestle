@@ -97,8 +97,10 @@ LoweredProgram {
                         function_name: "add",
                         expressions: [
                             Expression {
-                                kind: Int(
-                                    10,
+                                kind: Literal(
+                                    Int(
+                                        10,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -132,8 +134,10 @@ LoweredProgram {
                         function_name: "add10",
                         expressions: [
                             Expression {
-                                kind: Int(
-                                    5,
+                                kind: Literal(
+                                    Int(
+                                        5,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -167,8 +171,10 @@ LoweredProgram {
                         function_name: "add",
                         expressions: [
                             Expression {
-                                kind: Int(
-                                    3,
+                                kind: Literal(
+                                    Int(
+                                        3,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -178,8 +184,10 @@ LoweredProgram {
                                 },
                             },
                             Expression {
-                                kind: Int(
-                                    4,
+                                kind: Literal(
+                                    Int(
+                                        4,
+                                    ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(

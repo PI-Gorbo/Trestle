@@ -83,7 +83,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                 insta::assert_debug_snapshot!(format!("{stem}.ast"), program);
             }
             Stage::Analyse => {
-                let analysed = trestle::analyse::analyse(&program).unwrap_or_else(|e| {
+                let analysed = trestle::analyse::analyse(program).unwrap_or_else(|e| {
                     panic!(
                         "failed to analyse `{path}`:\n{}",
                         render_analysis_errors(path, src, e)
@@ -92,7 +92,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                 insta::assert_debug_snapshot!(format!("{stem}.analysed"), analysed);
             }
             Stage::Eval => {
-                let analysed = trestle::analyse::analyse(&program).unwrap_or_else(|e| {
+                let analysed = trestle::analyse::analyse(program).unwrap_or_else(|e| {
                     panic!(
                         "failed to analyse `{path}`:\n{}",
                         render_analysis_errors(path, src, e)
@@ -185,12 +185,12 @@ trsl_test!(
 trsl_test!(
     basics_literals_bool,
     "00-basics/literals/bool/bool.trsl",
-    ignore = "needs boolean literals"
+    [ast, analyse]
 );
 trsl_test!(
     basics_literals_float,
     "00-basics/literals/float/float.trsl",
-    ignore = "needs float literals"
+    [ast, analyse]
 );
 
 // ── operators ─────────────────────────────────────────────

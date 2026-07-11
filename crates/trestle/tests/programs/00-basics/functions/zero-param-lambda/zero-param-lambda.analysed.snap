@@ -9,8 +9,10 @@ AnalysedProgram {
                 Lambda {
                     parameter: None,
                     body: AnalysedExpression {
-                        kind: Int(
-                            42,
+                        kind: Literal(
+                            Int(
+                                42,
+                            ),
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(

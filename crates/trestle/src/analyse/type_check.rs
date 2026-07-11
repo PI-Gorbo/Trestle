@@ -19,9 +19,12 @@
 use miette::SourceSpan;
 
 use crate::analyse::analysed::{
-    AnalysedBinding, AnalysedExpression, BindingId, ExpressionKind, Lambda, Literal, Param, Type,
+    AnalysedBinding, AnalysedExpression, AnalysedLiteral, BindingId, ExpressionKind, Lambda,
+    Literal, Param, Type,
 };
-use crate::analyse::resolved::{ResolvedBinding, ResolvedExpression, ResolvedExpressionKind};
+use crate::analyse::resolved::{
+    ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
+};
 use crate::parse::ast::TypeDeclaration;
 
 use super::AnalysisError;
@@ -49,31 +52,39 @@ impl TypeEnv {
 
 trait BindingLookup {
     fn lookup(&self, id: BindingId) -> &ResolvedBinding;
-    fn try_zip_with_type_env(&self, env: &TypeEnv) -> Result<Vec<AnalysedBinding>, AnalysisError>;
 }
 impl BindingLookup for [ResolvedBinding] {
     fn lookup(&self, id: BindingId) -> &ResolvedBinding {
         &self[id.0]
     }
+}
 
-    fn try_zip_with_type_env(&self, env: &TypeEnv) -> Result<Vec<AnalysedBinding>, AnalysisError> {
-        assert_eq!(self.len(), env.types.len());
+/// Pair each binding with the type computed for it during the walk, **moving** its name across.
+/// A binding still untyped afterwards is an [`UntypedBindingAfterTypeCheck`] error. Consumes the
+/// binding table since it's the last reader of it.
+///
+/// [`UntypedBindingAfterTypeCheck`]: AnalysisError::UntypedBindingAfterTypeCheck
+fn zip_bindings_with_types(
+    bindings: Vec<ResolvedBinding>,
+    env: &TypeEnv,
+) -> Result<Vec<AnalysedBinding>, AnalysisError> {
+    assert_eq!(bindings.len(), env.types.len());
 
-        self.iter()
-            .enumerate()
-            .map(|(index, binding)| match env.get(BindingId(index)) {
-                Some(ty) => Ok(AnalysedBinding {
-                    name: binding.name.clone(),
-                    ty: ty.clone(),
-                    span: binding.span,
-                }),
-                None => Err(AnalysisError::UntypedBindingAfterTypeCheck {
-                    name: binding.name.clone(),
-                    span: binding.span,
-                }),
-            })
-            .collect()
-    }
+    bindings
+        .into_iter()
+        .enumerate()
+        .map(|(index, binding)| match env.get(BindingId(index)) {
+            Some(ty) => Ok(AnalysedBinding {
+                name: binding.name,
+                ty: ty.clone(),
+                span: binding.span,
+            }),
+            None => Err(AnalysisError::UntypedBindingAfterTypeCheck {
+                name: binding.name,
+                span: binding.span,
+            }),
+        })
+        .collect()
 }
 
 struct TypeCheckState {
@@ -82,16 +93,23 @@ struct TypeCheckState {
     errors: Vec<AnalysisError>,
 }
 /// Type-check a name-resolved program into a fully typed [`AnalysedProgram`].
-pub(super) fn type_check(program: &ResolvedProgram) -> Result<AnalysedProgram, Vec<AnalysisError>> {
-    let bindings: &[ResolvedBinding] = &program.bindings;
-    let final_state = program.expressions.iter().fold(
+pub(super) fn type_check(program: ResolvedProgram) -> Result<AnalysedProgram, Vec<AnalysisError>> {
+    let ResolvedProgram {
+        expressions,
+        bindings,
+    } = program;
+
+    // Borrow `bindings` for id lookups during the walk; it's consumed afterwards (moving each
+    // name across) to build the typed table.
+    let expression_count = expressions.len();
+    let final_state = expressions.into_iter().fold(
         TypeCheckState {
-            expressions: Vec::with_capacity(program.expressions.len()),
+            expressions: Vec::with_capacity(expression_count),
             errors: Vec::new(),
-            type_env: TypeEnv::new(program.bindings.len()),
+            type_env: TypeEnv::new(bindings.len()),
         },
         |mut state, untyped_expression| {
-            match infer_type_of_expression(untyped_expression, &mut state.type_env, bindings) {
+            match infer_type_of_expression(untyped_expression, &mut state.type_env, &bindings) {
                 Ok(expression) => state.expressions.push(expression),
                 Err(error) => state.errors.push(error),
             }
@@ -100,9 +118,8 @@ pub(super) fn type_check(program: &ResolvedProgram) -> Result<AnalysedProgram, V
         },
     );
 
-    let typed_bindings = bindings
-        .try_zip_with_type_env(&final_state.type_env)
-        .map_err(|err| vec![err])?;
+    let typed_bindings =
+        zip_bindings_with_types(bindings, &final_state.type_env).map_err(|err| vec![err])?;
 
     match final_state.errors.is_empty() {
         true => Ok(AnalysedProgram {
@@ -114,75 +131,81 @@ pub(super) fn type_check(program: &ResolvedProgram) -> Result<AnalysedProgram, V
 }
 
 fn infer_type_of_expression(
-    untyped_expression: &ResolvedExpression,
+    untyped_expression: ResolvedExpression,
     env: &mut TypeEnv,
     bindings: &[ResolvedBinding],
 ) -> Result<AnalysedExpression, AnalysisError> {
-    // Borrow the kind: boxed operands aren't `Copy`, so matching by value would move them.
-    match &untyped_expression.kind {
-        ResolvedExpressionKind::Int(value) => Ok(AnalysedExpression {
-            kind: ExpressionKind::Int(*value),
-            span: untyped_expression.span,
+    let span = untyped_expression.span;
+    let (kind, ty) = match untyped_expression.kind {
+        ResolvedExpressionKind::Literal(ResolvedLiteral::Int(value)) => (
+            ExpressionKind::Literal(AnalysedLiteral::Int(value)),
             // An integer literal is a `Literal::Int`.
-            ty: Type::Literal(Literal::Int),
-        }),
+            Type::Literal(Literal::Int),
+        ),
+
+        ResolvedExpressionKind::Literal(ResolvedLiteral::String(value)) => (
+            // The name-resolved string moves straight through — no copy.
+            ExpressionKind::Literal(AnalysedLiteral::String(value)),
+            Type::Literal(Literal::String),
+        ),
+
+        ResolvedExpressionKind::Literal(ResolvedLiteral::Bool(value)) => (
+            ExpressionKind::Literal(AnalysedLiteral::Bool(value)),
+            Type::Literal(Literal::Bool),
+        ),
+
+        ResolvedExpressionKind::Literal(ResolvedLiteral::Float(value)) => (
+            ExpressionKind::Literal(AnalysedLiteral::Float(value)),
+            Type::Literal(Literal::Float),
+        ),
 
         ResolvedExpressionKind::Var(binding_id) => {
             // The binding's type was recorded when its `let`/lambda-param was analysed.
             // If none is known at the use site, the binding needs an annotation.
-            let ty = match env.get(*binding_id) {
+            let ty = match env.get(binding_id) {
                 Some(ty) => ty.clone(),
                 None => {
                     return Err(AnalysisError::MissingAnnotation {
-                        name: bindings.lookup(*binding_id).name.clone(),
-                        span: untyped_expression.span,
+                        name: bindings.lookup(binding_id).name.clone(),
+                        span,
                     });
                 }
             };
-            Ok(AnalysedExpression {
-                kind: ExpressionKind::Var(*binding_id),
-                span: untyped_expression.span,
-                ty,
-            })
+            (ExpressionKind::Var(binding_id), ty)
         }
 
         ResolvedExpressionKind::Add(lhs, rhs) => {
-            let lhs = infer_type_of_expression(lhs, env, bindings)?;
-            let rhs = infer_type_of_expression(rhs, env, bindings)?;
+            let lhs = infer_type_of_expression(*lhs, env, bindings)?;
+            let rhs = infer_type_of_expression(*rhs, env, bindings)?;
             // Both operands must be `Int`; unifying each against `Int` yields the result type.
             let int = Type::Literal(Literal::Int);
             unify(&lhs.ty, &int, lhs.span)?;
             unify(&rhs.ty, &int, rhs.span)?;
-            Ok(AnalysedExpression {
-                kind: ExpressionKind::Add(Box::new(lhs), Box::new(rhs)),
-                span: untyped_expression.span,
-                ty: int,
-            })
+            (ExpressionKind::Add(Box::new(lhs), Box::new(rhs)), int)
         }
 
         ResolvedExpressionKind::Mul(lhs, rhs) => {
-            let lhs = infer_type_of_expression(lhs, env, bindings)?;
-            let rhs = infer_type_of_expression(rhs, env, bindings)?;
+            let lhs = infer_type_of_expression(*lhs, env, bindings)?;
+            let rhs = infer_type_of_expression(*rhs, env, bindings)?;
             // Both operands must be `Int`; unifying each against `Int` yields the result type.
             let int = Type::Literal(Literal::Int);
             unify(&lhs.ty, &int, lhs.span)?;
             unify(&rhs.ty, &int, rhs.span)?;
-            Ok(AnalysedExpression {
-                kind: ExpressionKind::Mul(Box::new(lhs), Box::new(rhs)),
-                span: untyped_expression.span,
-                ty: int,
-            })
+            (ExpressionKind::Mul(Box::new(lhs), Box::new(rhs)), int)
         }
 
         ResolvedExpressionKind::Lambda(resolved_lambda) => {
+            let ResolvedLambda {
+                parameter,
+                body,
+                return_type,
+            } = resolved_lambda;
+
             // Resolve the parameter's annotation into a `Type`, record it in `env` (via
             // `env.set`) so the body can see it, and build the analysed `Param`.
-            let parameter: Option<Param> = resolved_lambda
-                .parameter
-                .as_ref()
+            let parameter: Option<Param> = parameter
                 .map(|untyped_param| {
-                    let type_from_type_dec =
-                        resolve_type_dec(&untyped_param.type_dec, untyped_expression.span)?;
+                    let type_from_type_dec = resolve_type_dec(&untyped_param.type_dec, span)?;
                     env.set(untyped_param.binding, type_from_type_dec.clone());
                     Ok(Param {
                         binding: untyped_param.binding,
@@ -193,74 +216,67 @@ fn infer_type_of_expression(
             let param_type = parameter.as_ref().map(|p| Box::new(p.ty.clone()));
 
             // Infer the body under the (now parameter-extended) environment.
-            let body = infer_type_of_expression(&resolved_lambda.body, env, bindings)?;
-            let unified_return_type = resolved_lambda
-                .return_type
-                .as_ref()
+            let body = infer_type_of_expression(*body, env, bindings)?;
+            let unified_return_type = return_type
                 .map(|specified_type| {
-                    resolve_type_dec(&specified_type, untyped_expression.span).and_then(
-                        |found_type| unify(&body.ty, &found_type, untyped_expression.span),
-                    )
+                    resolve_type_dec(&specified_type, span)
+                        .and_then(|found_type| unify(&body.ty, &found_type, span))
                 })
                 .transpose()?
                 .unwrap_or_else(|| body.ty.clone());
 
-            Ok(AnalysedExpression {
-                kind: ExpressionKind::Lambda(Lambda {
+            (
+                ExpressionKind::Lambda(Lambda {
                     parameter,
                     body: Box::new(body),
                 }),
-                span: untyped_expression.span,
                 // The lambda's type is `Fn(param.ty, body.ty)`.
-                ty: Type::Fn(param_type, Box::new(unified_return_type)),
-            })
+                Type::Fn(param_type, Box::new(unified_return_type)),
+            )
         }
 
         ResolvedExpressionKind::FunctionInvocation(binding_id, args) => {
             let analysed_args = args
-                .iter()
+                .into_iter()
                 .map(|arg| infer_type_of_expression(arg, env, bindings))
                 .collect::<Result<Vec<_>, _>>()?;
 
             // We now need to check that we can apply the types of the arguments to the parameters of the fuction.
             // First, we resolve the type from the binding_id
-            let Some(function_type) = env.get(*binding_id) else {
+            let Some(function_type) = env.get(binding_id) else {
                 return Err(AnalysisError::UnboundName {
-                    name: bindings.lookup(*binding_id).name.clone(),
-                    span: untyped_expression.span,
+                    name: bindings.lookup(binding_id).name.clone(),
+                    span,
                 });
             };
 
-            let output_type = get_type_after_applying_arguments(
-                &function_type,
-                &analysed_args,
-                untyped_expression.span,
-            )?;
+            let output_type =
+                get_type_after_applying_arguments(function_type, &analysed_args, span)?;
 
             // Fold the args through the callee's curried `Fn(a, Fn(b, r))` type in `env`,
             // peeling one arrow (and checking one arg) per element; the leftover is the result.
-            Ok(AnalysedExpression {
-                kind: ExpressionKind::FunctionInvocation(*binding_id, analysed_args),
-                span: untyped_expression.span,
-                ty: output_type,
-            })
+            (
+                ExpressionKind::FunctionInvocation(binding_id, analysed_args),
+                output_type,
+            )
         }
 
         ResolvedExpressionKind::Let { binding, value } => {
-            let value = infer_type_of_expression(value, env, bindings)?;
-            // Record the binding's type for later references: `env.set(*binding, value.ty…)`.
-            env.set(*binding, value.ty.clone());
+            let value = infer_type_of_expression(*value, env, bindings)?;
+            // Record the binding's type for later references: `env.set(binding, value.ty…)`.
+            env.set(binding, value.ty.clone());
 
-            Ok(AnalysedExpression {
-                kind: ExpressionKind::Let {
-                    binding: *binding,
+            (
+                ExpressionKind::Let {
+                    binding,
                     value: Box::new(value),
                 },
-                span: untyped_expression.span,
-                ty: Type::Unit,
-            })
+                Type::Unit,
+            )
         }
-    }
+    };
+
+    Ok(AnalysedExpression { kind, span, ty })
 }
 
 /// Reconcile two types, returning the type they agree on or a [`TypeMismatch`] at `span`.
@@ -336,6 +352,7 @@ fn resolve_type_dec(dec: &TypeDeclaration, span: SourceSpan) -> Result<Type, Ana
     match name.as_str() {
         "Int" => Ok(Type::Literal(Literal::Int)),
         "Bool" => Ok(Type::Literal(Literal::Bool)),
+        "Float" => Ok(Type::Literal(Literal::Float)),
         "String" => Ok(Type::Literal(Literal::String)),
         _ => Err(AnalysisError::UnknownType {
             name: name.clone(),
@@ -350,13 +367,13 @@ mod tests {
 
     fn analyse_src(src: &str) -> Result<AnalysedProgram, Vec<AnalysisError>> {
         let program = crate::parse::parse(src).expect("test source should parse");
-        crate::analyse::analyse(&program)
+        crate::analyse::analyse(program)
     }
 
     /// A dummy `Int` literal argument for driving `get_type_after_applying_arguments` directly.
     fn int_arg() -> AnalysedExpression {
         AnalysedExpression {
-            kind: ExpressionKind::Int(0),
+            kind: ExpressionKind::Literal(AnalysedLiteral::Int(0)),
             span: SourceSpan::from((0, 0)),
             ty: Type::Literal(Literal::Int),
         }
@@ -375,8 +392,9 @@ mod tests {
         // Nullary functions can't be written in source yet (the grammar requires a parameter),
         // so drive the checker directly with a `Fn(None, _)` type given one argument.
         let fn_type = Type::Fn(None, Box::new(Type::Unit));
-        let err = get_type_after_applying_arguments(&fn_type, &[int_arg()], SourceSpan::from((0, 0)))
-            .expect_err("applying an argument to a nullary function is an error");
+        let err =
+            get_type_after_applying_arguments(&fn_type, &[int_arg()], SourceSpan::from((0, 0)))
+                .expect_err("applying an argument to a nullary function is an error");
         assert!(matches!(
             err,
             AnalysisError::ArgumentsToArgumentlessFunction { .. }

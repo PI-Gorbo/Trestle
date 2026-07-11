@@ -21,8 +21,16 @@ pub struct ResolvedExpression {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum ResolvedExpressionKind {
+pub enum ResolvedLiteral {
     Int(usize),
+    Bool(bool),
+    Float(f64),
+    String(String),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ResolvedExpressionKind {
+    Literal(ResolvedLiteral),
     Var(BindingId), // was Var(String)
     Add(Box<ResolvedExpression>, Box<ResolvedExpression>),
     Mul(Box<ResolvedExpression>, Box<ResolvedExpression>),
