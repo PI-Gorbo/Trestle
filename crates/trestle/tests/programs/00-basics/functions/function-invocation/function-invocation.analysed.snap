@@ -23,7 +23,8 @@ AnalysedProgram {
                                 },
                             ),
                             body: AnalysedExpression {
-                                kind: Mul(
+                                kind: Binary(
+                                    Mul,
                                     AnalysedExpression {
                                         kind: Var(
                                             BindingId(
@@ -73,7 +74,7 @@ AnalysedProgram {
                         offset: SourceOffset(
                             157,
                         ),
-                        length: 18,
+                        length: 17,
                     },
                     ty: Fn(
                         Some(
@@ -91,7 +92,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 31,
+                length: 30,
             },
             ty: Unit,
         },
@@ -140,7 +141,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     157,
                 ),
-                length: 18,
+                length: 17,
             },
         },
         AnalysedBinding {
@@ -159,7 +160,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 31,
+                length: 30,
             },
         },
     ],

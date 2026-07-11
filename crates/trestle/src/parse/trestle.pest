@@ -17,7 +17,9 @@ identifier_with_type_declaration          =  { identifier ~ type_declaration }
 // program & statements
 program = { SOI ~ expr+ ~ EOI }
 
-// expressions (loosest binding at the bottom -> tightest at the top): + < * < atom
+// expressions. Operator precedence is NOT encoded structurally here — the flat
+// `binary_expression` rule hands its `primary`/operator sequence to a pest
+// `PrattParser` (see build_expression.rs), which owns the precedence table.
 int              = @{ ASCII_DIGIT+ }
 string_character = @{ "\\" ~ ANY | !("\"" | "\\") ~ ANY }
 string           = @{ "\"" ~ (string_character)* ~ "\"" }
@@ -27,16 +29,31 @@ false            = @{ "false" ~ !(alphanumeric_word_boundary) }
 boolean          =  { true | false }
 literal          =  { boolean | string | float | int }
 
-primary = { function_invocation | literal | identifier | "(" ~ expr ~ ")" }
-mul     = { primary ~ ("*" ~ primary)* }
-add     = { mul ~ ("+" ~ mul)* }
+primary           = { function_invocation | literal | identifier | "(" ~ expr ~ ")" }
+binary_expression = { primary ~ (infix_operator ~ primary)* }
 
-lambda                              = {
+// Operator tokens. Silent group: PEG tries alternatives in order, so multi-char
+// operators MUST precede the single-char ops they'd otherwise shadow (le before
+// lt, ge before gt). Precedence/associativity live in the PrattParser, not here.
+infix_operator = _{ add | subtract | multiply | divide | eq | neq | le | ge | lt | gt }
+add            = { "+" }
+subtract       = { "-" }
+multiply       = { "*" }
+divide         = { "/" }
+eq             = { "==" }
+neq            = { "!=" }
+le             = { "<=" }
+ge             = { ">=" }
+lt             = { "<" }
+gt             = { ">" }
+
+lambda_expression                   = {
     "(" ~ (identifier_with_type_declaration ~ ("," ~ identifier_with_type_declaration)*)? ~ ")" ~ optional_type_declaration ~ "=>" ~ expr
 }
 comma_separated_list_of_expressions = { expr ~ ("," ~ expr)* }
 function_invocation                 = { identifier ~ "(" ~ comma_separated_list_of_expressions? ~ ")" }
-let_binding                         = { let_kw ~ identifier_with_optional_type_declaration ~ "=" ~ expr }
+let_expression                      = { let_kw ~ identifier_with_optional_type_declaration ~ "=" ~ expr }
 list_of_expressions                 = { "{" ~ expr+ ~ "}" }
+if_expression                       = { "if" ~ "(" ~ expr ~ ")" ~ expr ~ ("else" ~ expr)? }
 
-expr = { list_of_expressions | let_binding | lambda | add }
+expr = { list_of_expressions | let_expression | if_expression | lambda_expression | binary_expression }

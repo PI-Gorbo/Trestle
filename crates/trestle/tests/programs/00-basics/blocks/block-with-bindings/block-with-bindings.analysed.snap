@@ -7,115 +7,83 @@ AnalysedProgram {
         AnalysedExpression {
             kind: Let {
                 binding: BindingId(
-                    0,
+                    2,
                 ),
                 value: AnalysedExpression {
                     kind: Block(
                         [
                             AnalysedExpression {
-                                kind: Binary(
-                                    Add,
-                                    AnalysedExpression {
-                                        kind: Literal(
-                                            Int(
-                                                1,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                173,
-                                            ),
-                                            length: 1,
-                                        },
-                                        ty: Literal(
-                                            Int,
-                                        ),
-                                    },
-                                    AnalysedExpression {
-                                        kind: Literal(
-                                            Int(
-                                                1,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                177,
-                                            ),
-                                            length: 1,
-                                        },
-                                        ty: Literal(
-                                            Int,
-                                        ),
-                                    },
-                                ),
-                                span: SourceSpan {
-                                    offset: SourceOffset(
-                                        173,
+                                kind: Let {
+                                    binding: BindingId(
+                                        0,
                                     ),
-                                    length: 5,
+                                    value: AnalysedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                10,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                191,
+                                            ),
+                                            length: 2,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
                                 },
-                                ty: Literal(
-                                    Int,
-                                ),
-                            },
-                            AnalysedExpression {
-                                kind: Binary(
-                                    Add,
-                                    AnalysedExpression {
-                                        kind: Literal(
-                                            Int(
-                                                2,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                183,
-                                            ),
-                                            length: 1,
-                                        },
-                                        ty: Literal(
-                                            Int,
-                                        ),
-                                    },
-                                    AnalysedExpression {
-                                        kind: Literal(
-                                            Int(
-                                                2,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                187,
-                                            ),
-                                            length: 1,
-                                        },
-                                        ty: Literal(
-                                            Int,
-                                        ),
-                                    },
-                                ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
                                         183,
                                     ),
-                                    length: 5,
+                                    length: 15,
                                 },
-                                ty: Literal(
-                                    Int,
-                                ),
+                                ty: Unit,
+                            },
+                            AnalysedExpression {
+                                kind: Let {
+                                    binding: BindingId(
+                                        1,
+                                    ),
+                                    value: AnalysedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                20,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                206,
+                                            ),
+                                            length: 2,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        198,
+                                    ),
+                                    length: 15,
+                                },
+                                ty: Unit,
                             },
                             AnalysedExpression {
                                 kind: Binary(
                                     Add,
                                     AnalysedExpression {
-                                        kind: Literal(
-                                            Int(
-                                                3,
+                                        kind: Var(
+                                            BindingId(
+                                                0,
                                             ),
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                193,
+                                                213,
                                             ),
                                             length: 1,
                                         },
@@ -124,14 +92,14 @@ AnalysedProgram {
                                         ),
                                     },
                                     AnalysedExpression {
-                                        kind: Literal(
-                                            Int(
-                                                3,
+                                        kind: Var(
+                                            BindingId(
+                                                1,
                                             ),
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                197,
+                                                217,
                                             ),
                                             length: 1,
                                         },
@@ -142,7 +110,7 @@ AnalysedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        193,
+                                        213,
                                     ),
                                     length: 5,
                                 },
@@ -154,9 +122,9 @@ AnalysedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            167,
+                            177,
                         ),
-                        length: 59,
+                        length: 51,
                     },
                     ty: Literal(
                         Int,
@@ -165,23 +133,23 @@ AnalysedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    159,
+                    165,
                 ),
-                length: 67,
+                length: 63,
             },
             ty: Unit,
         },
         AnalysedExpression {
             kind: Var(
                 BindingId(
-                    0,
+                    2,
                 ),
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    227,
+                    229,
                 ),
-                length: 1,
+                length: 5,
             },
             ty: Literal(
                 Int,
@@ -190,15 +158,39 @@ AnalysedProgram {
     ],
     bindings: [
         AnalysedBinding {
-            name: "x",
+            name: "a",
             ty: Literal(
                 Int,
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    159,
+                    183,
                 ),
-                length: 67,
+                length: 15,
+            },
+        },
+        AnalysedBinding {
+            name: "b",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    198,
+                ),
+                length: 15,
+            },
+        },
+        AnalysedBinding {
+            name: "total",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    165,
+                ),
+                length: 63,
             },
         },
     ],

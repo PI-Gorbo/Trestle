@@ -223,15 +223,11 @@ fn resolve_subexpr(
         ExpressionKind::Literal(Literal::Float(v)) => {
             ResolvedExpressionKind::Literal(ResolvedLiteral::Float(v))
         }
-        ExpressionKind::Add(lhs, rhs) => {
+        // Name resolution is uniform across operators — the `BinaryOp` tag just passes through.
+        ExpressionKind::Binary(op, lhs, rhs) => {
             let lhs = resolve_subexpr(*lhs, scope, bindings_arena)?;
             let rhs = resolve_subexpr(*rhs, scope, bindings_arena)?;
-            ResolvedExpressionKind::Add(Box::new(lhs), Box::new(rhs))
-        }
-        ExpressionKind::Mul(lhs, rhs) => {
-            let lhs = resolve_subexpr(*lhs, scope, bindings_arena)?;
-            let rhs = resolve_subexpr(*rhs, scope, bindings_arena)?;
-            ResolvedExpressionKind::Mul(Box::new(lhs), Box::new(rhs))
+            ResolvedExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs))
         }
         ExpressionKind::Lambda(lambda) => {
             let (parameter, updated_scope) = match lambda.parameter {

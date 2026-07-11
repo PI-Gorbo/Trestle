@@ -5,13 +5,13 @@
 //! field: every `String` name becomes a [`BindingId`], and each binding's name+span is recorded
 //! in the side [`ResolvedProgram::bindings`] table (indexed by `BindingId`). Type annotations are
 //! carried through untouched as [`ast::TypeDeclaration`] — pass 2 interprets them into
-//! [`Type`](super::analysed::Type). No node carries a type yet; there is no `If` variant because
-//! the grammar has none.
+//! [`Type`](super::analysed::Type). No node carries a type yet. There is no `If` variant: the
+//! grammar parses `if`, but its lowering (an `ast::If`, and arms here + in type-check) is deferred.
 
 use miette::SourceSpan;
 
 use super::analysed::BindingId;
-use crate::parse::ast::TypeDeclaration;
+use crate::parse::ast::{BinaryOp, TypeDeclaration};
 
 /// A name-resolved, not-yet-typed expression: what it is (`kind`) and where it came from (`span`).
 #[derive(Debug, PartialEq)]
@@ -32,8 +32,7 @@ pub enum ResolvedLiteral {
 pub enum ResolvedExpressionKind {
     Literal(ResolvedLiteral),
     Var(BindingId), // was Var(String)
-    Add(Box<ResolvedExpression>, Box<ResolvedExpression>),
-    Mul(Box<ResolvedExpression>, Box<ResolvedExpression>),
+    Binary(BinaryOp, Box<ResolvedExpression>, Box<ResolvedExpression>),
     Lambda(ResolvedLambda),
     FunctionInvocation(BindingId, Vec<ResolvedExpression>), // callee resolved; was String
     Let {

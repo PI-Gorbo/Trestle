@@ -1,13 +1,29 @@
 ---
 source: crates/trestle/tests/corpus.rs
-expression: program
+expression: analysed
 ---
-LoweredProgram {
+AnalysedProgram {
     expressions: [
-        Expression {
+        AnalysedExpression {
             kind: Binary(
-                Mul,
-                Expression {
+                Sub,
+                AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            86,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+                AnalysedExpression {
                     kind: Literal(
                         Int(
                             2,
@@ -15,31 +31,25 @@ LoweredProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            65,
+                            90,
                         ),
                         length: 1,
                     },
-                },
-                Expression {
-                    kind: Literal(
-                        Int(
-                            3,
-                        ),
+                    ty: Literal(
+                        Int,
                     ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            69,
-                        ),
-                        length: 1,
-                    },
                 },
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    65,
+                    86,
                 ),
                 length: 5,
             },
+            ty: Literal(
+                Int,
+            ),
         },
     ],
+    bindings: [],
 }

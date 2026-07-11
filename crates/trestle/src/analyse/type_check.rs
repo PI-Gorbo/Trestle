@@ -25,7 +25,7 @@ use crate::analyse::analysed::{
 use crate::analyse::resolved::{
     ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
 };
-use crate::parse::ast::TypeDeclaration;
+use crate::parse::ast::{BinaryOp, TypeDeclaration};
 
 use super::AnalysisError;
 use super::analysed::AnalysedProgram;
@@ -174,24 +174,28 @@ fn infer_type_of_expression(
             (ExpressionKind::Var(binding_id), ty)
         }
 
-        ResolvedExpressionKind::Add(lhs, rhs) => {
+        ResolvedExpressionKind::Binary(op, lhs, rhs) => {
             let lhs = infer_type_of_expression(*lhs, env, bindings)?;
             let rhs = infer_type_of_expression(*rhs, env, bindings)?;
-            // Both operands must be `Int`; unifying each against `Int` yields the result type.
+            // Every operator (arithmetic and comparison) takes two `Int`s for now; unify each
+            // operand against `Int`. The result type is what distinguishes them: arithmetic
+            // yields an `Int`, comparison yields a `Bool`.
             let int = Type::Literal(Literal::Int);
             unify(&lhs.ty, &int, lhs.span)?;
             unify(&rhs.ty, &int, rhs.span)?;
-            (ExpressionKind::Add(Box::new(lhs), Box::new(rhs)), int)
-        }
-
-        ResolvedExpressionKind::Mul(lhs, rhs) => {
-            let lhs = infer_type_of_expression(*lhs, env, bindings)?;
-            let rhs = infer_type_of_expression(*rhs, env, bindings)?;
-            // Both operands must be `Int`; unifying each against `Int` yields the result type.
-            let int = Type::Literal(Literal::Int);
-            unify(&lhs.ty, &int, lhs.span)?;
-            unify(&rhs.ty, &int, rhs.span)?;
-            (ExpressionKind::Mul(Box::new(lhs), Box::new(rhs)), int)
+            let result_ty = match op {
+                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => int,
+                BinaryOp::Lt
+                | BinaryOp::Gt
+                | BinaryOp::Le
+                | BinaryOp::Ge
+                | BinaryOp::Eq
+                | BinaryOp::Neq => Type::Literal(Literal::Bool),
+            };
+            (
+                ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
+                result_ty,
+            )
         }
 
         ResolvedExpressionKind::Lambda(resolved_lambda) => {

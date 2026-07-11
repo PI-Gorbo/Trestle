@@ -33,7 +33,8 @@ LoweredProgram {
                                     ),
                                 ),
                                 body: Expression {
-                                    kind: Add(
+                                    kind: Binary(
+                                        Add,
                                         Expression {
                                             kind: Var(
                                                 "a",
@@ -70,7 +71,7 @@ LoweredProgram {
                             offset: SourceOffset(
                                 287,
                             ),
-                            length: 28,
+                            length: 27,
                         },
                     },
                 },
@@ -79,7 +80,7 @@ LoweredProgram {
                 offset: SourceOffset(
                     287,
                 ),
-                length: 28,
+                length: 27,
             },
         },
     ],

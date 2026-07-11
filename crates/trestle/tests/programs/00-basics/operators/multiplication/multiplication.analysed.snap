@@ -5,10 +5,40 @@ expression: analysed
 AnalysedProgram {
     expressions: [
         AnalysedExpression {
-            kind: Literal(
-                Int(
-                    6,
-                ),
+            kind: Binary(
+                Mul,
+                AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            2,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            65,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+                AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            3,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            69,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
             ),
             span: SourceSpan {
                 offset: SourceOffset(

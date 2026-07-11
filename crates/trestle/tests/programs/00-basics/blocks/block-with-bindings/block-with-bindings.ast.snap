@@ -6,109 +6,79 @@ LoweredProgram {
     expressions: [
         Expression {
             kind: Let {
-                name: "x",
+                name: "total",
                 value: Expression {
                     kind: Block(
                         [
                             Expression {
-                                kind: Binary(
-                                    Add,
-                                    Expression {
+                                kind: Let {
+                                    name: "a",
+                                    value: Expression {
                                         kind: Literal(
                                             Int(
-                                                1,
+                                                10,
                                             ),
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                173,
+                                                191,
                                             ),
-                                            length: 1,
+                                            length: 2,
                                         },
                                     },
-                                    Expression {
-                                        kind: Literal(
-                                            Int(
-                                                1,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                177,
-                                            ),
-                                            length: 1,
-                                        },
-                                    },
-                                ),
-                                span: SourceSpan {
-                                    offset: SourceOffset(
-                                        173,
-                                    ),
-                                    length: 5,
                                 },
-                            },
-                            Expression {
-                                kind: Binary(
-                                    Add,
-                                    Expression {
-                                        kind: Literal(
-                                            Int(
-                                                2,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                183,
-                                            ),
-                                            length: 1,
-                                        },
-                                    },
-                                    Expression {
-                                        kind: Literal(
-                                            Int(
-                                                2,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                187,
-                                            ),
-                                            length: 1,
-                                        },
-                                    },
-                                ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
                                         183,
                                     ),
-                                    length: 5,
+                                    length: 15,
+                                },
+                            },
+                            Expression {
+                                kind: Let {
+                                    name: "b",
+                                    value: Expression {
+                                        kind: Literal(
+                                            Int(
+                                                20,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                206,
+                                            ),
+                                            length: 2,
+                                        },
+                                    },
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        198,
+                                    ),
+                                    length: 15,
                                 },
                             },
                             Expression {
                                 kind: Binary(
                                     Add,
                                     Expression {
-                                        kind: Literal(
-                                            Int(
-                                                3,
-                                            ),
+                                        kind: Var(
+                                            "a",
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                193,
+                                                213,
                                             ),
                                             length: 1,
                                         },
                                     },
                                     Expression {
-                                        kind: Literal(
-                                            Int(
-                                                3,
-                                            ),
+                                        kind: Var(
+                                            "b",
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                197,
+                                                217,
                                             ),
                                             length: 1,
                                         },
@@ -116,7 +86,7 @@ LoweredProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        193,
+                                        213,
                                     ),
                                     length: 5,
                                 },
@@ -125,28 +95,28 @@ LoweredProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            167,
+                            177,
                         ),
-                        length: 59,
+                        length: 51,
                     },
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    159,
+                    165,
                 ),
-                length: 67,
+                length: 63,
             },
         },
         Expression {
             kind: Var(
-                "x",
+                "total",
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    227,
+                    229,
                 ),
-                length: 1,
+                length: 5,
             },
         },
     ],

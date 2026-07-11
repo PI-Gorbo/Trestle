@@ -10,10 +10,70 @@ AnalysedProgram {
                     0,
                 ),
                 value: AnalysedExpression {
-                    kind: Literal(
-                        Int(
-                            7,
-                        ),
+                    kind: Binary(
+                        Add,
+                        AnalysedExpression {
+                            kind: Literal(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    92,
+                                ),
+                                length: 1,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
+                        AnalysedExpression {
+                            kind: Binary(
+                                Mul,
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            96,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            100,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    96,
+                                ),
+                                length: 5,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -40,10 +100,70 @@ AnalysedProgram {
                     1,
                 ),
                 value: AnalysedExpression {
-                    kind: Literal(
-                        Int(
-                            9,
-                        ),
+                    kind: Binary(
+                        Mul,
+                        AnalysedExpression {
+                            kind: Binary(
+                                Add,
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            142,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            146,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    142,
+                                ),
+                                length: 5,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
+                        AnalysedExpression {
+                            kind: Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    151,
+                                ),
+                                length: 1,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -60,7 +180,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     127,
                 ),
-                length: 35,
+                length: 25,
             },
             ty: Unit,
         },
@@ -70,10 +190,100 @@ AnalysedProgram {
                     2,
                 ),
                 value: AnalysedExpression {
-                    kind: Literal(
-                        Int(
-                            21,
-                        ),
+                    kind: Binary(
+                        Mul,
+                        AnalysedExpression {
+                            kind: Binary(
+                                Add,
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            178,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            182,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    178,
+                                ),
+                                length: 5,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
+                        AnalysedExpression {
+                            kind: Binary(
+                                Add,
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            188,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                                AnalysedExpression {
+                                    kind: Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            192,
+                                        ),
+                                        length: 1,
+                                    },
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    188,
+                                ),
+                                length: 5,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -117,7 +327,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     127,
                 ),
-                length: 35,
+                length: 25,
             },
         },
         AnalysedBinding {

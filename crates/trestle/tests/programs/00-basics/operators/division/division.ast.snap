@@ -6,7 +6,20 @@ LoweredProgram {
     expressions: [
         Expression {
             kind: Binary(
-                Mul,
+                Div,
+                Expression {
+                    kind: Literal(
+                        Int(
+                            6,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            83,
+                        ),
+                        length: 1,
+                    },
+                },
                 Expression {
                     kind: Literal(
                         Int(
@@ -15,20 +28,7 @@ LoweredProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            65,
-                        ),
-                        length: 1,
-                    },
-                },
-                Expression {
-                    kind: Literal(
-                        Int(
-                            3,
-                        ),
-                    ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            69,
+                            87,
                         ),
                         length: 1,
                     },
@@ -36,7 +36,7 @@ LoweredProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    65,
+                    83,
                 ),
                 length: 5,
             },

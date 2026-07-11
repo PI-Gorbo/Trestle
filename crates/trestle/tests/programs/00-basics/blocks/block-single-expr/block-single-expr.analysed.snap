@@ -13,10 +13,40 @@ AnalysedProgram {
                     kind: Block(
                         [
                             AnalysedExpression {
-                                kind: Literal(
-                                    Int(
-                                        3,
-                                    ),
+                                kind: Binary(
+                                    Add,
+                                    AnalysedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                217,
+                                            ),
+                                            length: 1,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                    AnalysedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                221,
+                                            ),
+                                            length: 1,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(

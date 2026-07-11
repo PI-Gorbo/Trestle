@@ -5,10 +5,34 @@ expression: program
 LoweredProgram {
     expressions: [
         Expression {
-            kind: Literal(
-                Int(
-                    3,
-                ),
+            kind: Binary(
+                Add,
+                Expression {
+                    kind: Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            151,
+                        ),
+                        length: 1,
+                    },
+                },
+                Expression {
+                    kind: Literal(
+                        Int(
+                            2,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            155,
+                        ),
+                        length: 1,
+                    },
+                },
             ),
             span: SourceSpan {
                 offset: SourceOffset(

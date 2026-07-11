@@ -31,7 +31,8 @@ AnalysedProgram {
                                     },
                                 ),
                                 body: AnalysedExpression {
-                                    kind: Add(
+                                    kind: Binary(
+                                        Add,
                                         AnalysedExpression {
                                             kind: Var(
                                                 BindingId(
@@ -81,7 +82,7 @@ AnalysedProgram {
                             offset: SourceOffset(
                                 287,
                             ),
-                            length: 28,
+                            length: 27,
                         },
                         ty: Fn(
                             Some(
@@ -100,7 +101,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     287,
                 ),
-                length: 28,
+                length: 27,
             },
             ty: Fn(
                 Some(
@@ -131,7 +132,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     287,
                 ),
-                length: 28,
+                length: 27,
             },
         },
         AnalysedBinding {
@@ -143,7 +144,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     287,
                 ),
-                length: 28,
+                length: 27,
             },
         },
     ],

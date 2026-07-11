@@ -16,7 +16,7 @@ pub fn source_span_from_pest_span(pest_span: Span) -> SourceSpan {
 
 /// Merge two spans into one covering from the start of `a` to the end of `b`.
 ///
-/// Used for synthesized binary nodes (`Add`/`Mul`) that span both operands.
+/// Used for synthesized `Binary` nodes that span both operands.
 /// Assumes `a` starts at or before `b` (true for the left-to-right operand fold).
 pub fn merge_spans(a: SourceSpan, b: SourceSpan) -> SourceSpan {
     let start = a.offset();
@@ -40,12 +40,30 @@ pub enum Literal {
     String(String),
 }
 
+/// A binary operator. The single source of truth for the operator set —
+/// `resolved` and `analysed` reuse this rather than defining their own. Precedence
+/// and associativity are not encoded here; they live in the `PrattParser`
+/// (see `build_expression.rs`). Arithmetic ops take `Int`s and yield an `Int`;
+/// comparison ops take `Int`s and yield a `Bool`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BinaryOp {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Lt,
+    Gt,
+    Le,
+    Ge,
+    Eq,
+    Neq,
+}
+
 #[derive(Debug, PartialEq)]
 pub enum ExpressionKind {
     Literal(Literal),
     Var(String),
-    Add(Box<Expression>, Box<Expression>),
-    Mul(Box<Expression>, Box<Expression>),
+    Binary(BinaryOp, Box<Expression>, Box<Expression>),
     Lambda(Lambda),
     FunctionInvocation {
         function_name: String,

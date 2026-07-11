@@ -9,6 +9,8 @@
 
 use miette::SourceSpan;
 
+use crate::parse::ast::BinaryOp;
+
 /// Index of a binding site (a `let` or a lambda parameter). Assigned during analysis;
 /// indexes into [`AnalysedProgram::bindings`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -60,8 +62,7 @@ pub enum AnalysedLiteral {
 pub enum ExpressionKind {
     Literal(AnalysedLiteral),
     Var(BindingId), // was Var(String)
-    Add(Box<AnalysedExpression>, Box<AnalysedExpression>),
-    Mul(Box<AnalysedExpression>, Box<AnalysedExpression>),
+    Binary(BinaryOp, Box<AnalysedExpression>, Box<AnalysedExpression>),
     If {
         condition: Box<AnalysedExpression>,
         then_branch: Box<AnalysedExpression>,

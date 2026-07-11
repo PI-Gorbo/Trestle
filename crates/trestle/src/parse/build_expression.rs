@@ -1,14 +1,17 @@
 //! Walkers for `Rule::expr` and everything nested under it: lambdas, type
-//! declarations, and the precedence-encoded arithmetic levels.
+//! declarations, and binary operators.
 //!
-//! Precedence is encoded by the grammar's rule nesting (`add` < `mul`), so
-//! each level only has to left-fold its children. Every builder returns a
-//! fully source-spanned [`Expression`]; synthesized binary nodes span both
-//! operands via [`merge_spans`].
+//! Binary-operator precedence is owned by a pest [`PrattParser`] (`PRATT`), not
+//! the grammar: the flat `binary_expression` rule hands its `primary`/operator
+//! sequence to it. Every builder returns a fully source-spanned [`Expression`];
+//! synthesized `Binary` nodes span both operands via [`merge_spans`].
 
+use std::sync::LazyLock;
+
+use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
 
-use crate::parse::ast::Literal;
+use crate::parse::ast::{BinaryOp, Literal};
 
 use super::{BuildError, Rule};
 
@@ -16,6 +19,23 @@ use super::ast::{
     Expression, ExpressionKind, Lambda, Param, TypeDeclaration, get_bindings, merge_spans,
     source_span_from_pest_span,
 };
+
+/// The operator-precedence table — the single, explicit statement of Trestle's
+/// order of operations. Levels are listed loosest-binding first, so:
+///   comparison  <  additive  <  multiplicative
+/// Every operator is left-associative (pest offers only `Left`/`Right`, so a
+/// chain like `a < b < c` parses as `(a < b) < c` and later type-errors).
+static PRATT: LazyLock<PrattParser<Rule>> = LazyLock::new(|| {
+    PrattParser::new()
+        .op(Op::infix(Rule::eq, Assoc::Left)
+            | Op::infix(Rule::neq, Assoc::Left)
+            | Op::infix(Rule::lt, Assoc::Left)
+            | Op::infix(Rule::gt, Assoc::Left)
+            | Op::infix(Rule::le, Assoc::Left)
+            | Op::infix(Rule::ge, Assoc::Left))
+        .op(Op::infix(Rule::add, Assoc::Left) | Op::infix(Rule::subtract, Assoc::Left))
+        .op(Op::infix(Rule::multiply, Assoc::Left) | Op::infix(Rule::divide, Assoc::Left))
+});
 
 /// Wrap an [`ExpressionKind`] with the source span of the pest pair it came from.
 fn spanned(span: Span, kind: ExpressionKind) -> Expression {
@@ -29,9 +49,9 @@ pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let expr_binding = get_bindings(pair, "expression to have bindings");
     match expr_binding.as_rule() {
         Rule::list_of_expressions => build_list_of_expressions(expr_binding),
-        Rule::let_binding => build_let(expr_binding),
-        Rule::lambda => build_lambda(expr_binding),
-        Rule::add => build_add(expr_binding),
+        Rule::let_expression => build_let(expr_binding),
+        Rule::lambda_expression => build_lambda(expr_binding),
+        Rule::binary_expression => build_binary(expr_binding),
         rule => Err(BuildError::UnexpectedRule {
             rule,
             span: source_span_from_pest_span(expr_binding.as_span()),
@@ -196,53 +216,40 @@ fn build_type(pair: Pair<Rule>) -> TypeDeclaration {
     TypeDeclaration::Named(ident.as_str().to_string())
 }
 
-fn build_add(pair: Pair<Rule>) -> Result<Expression, BuildError> {
-    let mut inner = pair.into_inner();
-    let head = inner.next().expect("add starts with a #head mul");
-    let head_expression = build_mul(head)?;
-    inner.try_fold(head_expression, |lhs, next| {
-        let rhs = build_mul(next)?;
-        let span = merge_spans(lhs.span, rhs.span);
-
-        match (&lhs.kind, &rhs.kind) {
-            (
-                ExpressionKind::Literal(Literal::Int(lhs_num)),
-                ExpressionKind::Literal(Literal::Int(rhs_num)),
-            ) => Ok(Expression {
-                kind: ExpressionKind::Literal(Literal::Int(lhs_num + rhs_num)),
+/// Fold a `Rule::binary_expression` (`primary (op primary)*`) into a tree of
+/// [`ExpressionKind::Binary`] nodes using the [`PRATT`] precedence table. A lone
+/// primary passes straight through — no `Binary` wrapper.
+fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
+    PRATT
+        .map_primary(build_primary)
+        .map_infix(|lhs, op, rhs| {
+            let lhs = lhs?;
+            let rhs = rhs?;
+            let span = merge_spans(lhs.span, rhs.span);
+            let binary_op = match op.as_rule() {
+                Rule::add => BinaryOp::Add,
+                Rule::subtract => BinaryOp::Sub,
+                Rule::multiply => BinaryOp::Mul,
+                Rule::divide => BinaryOp::Div,
+                Rule::lt => BinaryOp::Lt,
+                Rule::gt => BinaryOp::Gt,
+                Rule::le => BinaryOp::Le,
+                Rule::ge => BinaryOp::Ge,
+                Rule::eq => BinaryOp::Eq,
+                Rule::neq => BinaryOp::Neq,
+                rule => {
+                    return Err(BuildError::UnexpectedRule {
+                        rule,
+                        span: source_span_from_pest_span(op.as_span()),
+                    });
+                }
+            };
+            Ok(Expression {
+                kind: ExpressionKind::Binary(binary_op, Box::new(lhs), Box::new(rhs)),
                 span,
-            }),
-            _ => Ok(Expression {
-                kind: ExpressionKind::Add(Box::new(lhs), Box::new(rhs)),
-                span,
-            }),
-        }
-    })
-}
-
-fn build_mul(pair: Pair<Rule>) -> Result<Expression, BuildError> {
-    let mut inner = pair.into_inner();
-    let head = inner.next().expect("mul has at least one primary");
-    let head_expression = build_primary(head)?;
-
-    inner.try_fold(head_expression, |lhs, next| {
-        let rhs = build_primary(next)?;
-        let span = merge_spans(lhs.span, rhs.span);
-
-        match (&lhs.kind, &rhs.kind) {
-            (
-                ExpressionKind::Literal(Literal::Int(lhs_num)),
-                ExpressionKind::Literal(Literal::Int(rhs_num)),
-            ) => Ok(Expression {
-                kind: ExpressionKind::Literal(Literal::Int(lhs_num * rhs_num)),
-                span,
-            }),
-            _ => Ok(Expression {
-                kind: ExpressionKind::Mul(Box::new(lhs), Box::new(rhs)),
-                span,
-            }),
-        }
-    })
+            })
+        })
+        .parse(pair.into_inner())
 }
 
 fn build_comma_separated_list_of_expressions(

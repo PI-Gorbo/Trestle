@@ -1,0 +1,344 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "gt",
+                value: Expression {
+                    kind: Binary(
+                        Gt,
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    231,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    235,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            231,
+                        ),
+                        length: 5,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    222,
+                ),
+                length: 14,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "lt",
+                value: Expression {
+                    kind: Binary(
+                        Lt,
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    246,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    250,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            246,
+                        ),
+                        length: 5,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    237,
+                ),
+                length: 14,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "ge",
+                value: Expression {
+                    kind: Binary(
+                        Ge,
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    261,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    266,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            261,
+                        ),
+                        length: 6,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    252,
+                ),
+                length: 15,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "le",
+                value: Expression {
+                    kind: Binary(
+                        Le,
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    277,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    282,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            277,
+                        ),
+                        length: 6,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    268,
+                ),
+                length: 15,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "eq",
+                value: Expression {
+                    kind: Binary(
+                        Eq,
+                        Expression {
+                            kind: Binary(
+                                Add,
+                                Expression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            293,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            297,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    293,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    4,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    302,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            293,
+                        ),
+                        length: 10,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    284,
+                ),
+                length: 19,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "ne",
+                value: Expression {
+                    kind: Binary(
+                        Neq,
+                        Expression {
+                            kind: Binary(
+                                Add,
+                                Expression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            313,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                Expression {
+                                    kind: Literal(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            317,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    313,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    5,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    322,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            313,
+                        ),
+                        length: 10,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    304,
+                ),
+                length: 19,
+            },
+        },
+    ],
+}

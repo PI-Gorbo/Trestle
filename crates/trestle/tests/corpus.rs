@@ -212,12 +212,12 @@ trsl_test!(
 trsl_test!(
     basics_operators_subtraction,
     "00-basics/operators/subtraction/subtraction.trsl",
-    ignore = "needs the subtraction operator (-)"
+    [ast, analyse]
 );
 trsl_test!(
     basics_operators_division,
     "00-basics/operators/division/division.trsl",
-    ignore = "needs the division operator (/)"
+    [ast, analyse]
 );
 trsl_test!(
     basics_operators_negation,
@@ -227,7 +227,7 @@ trsl_test!(
 trsl_test!(
     basics_operators_comparison,
     "00-basics/operators/comparison/comparison.trsl",
-    ignore = "needs comparison operators + booleans"
+    [ast, analyse]
 );
 trsl_test!(
     basics_operators_logical,
@@ -293,12 +293,14 @@ trsl_test!(
 trsl_test!(
     basics_conditionals_if_expression,
     "00-basics/conditionals/if-expression/if-expression.trsl",
-    ignore = "needs if expressions — `if (cond) expr`"
+    [ast, analyse],
+    ignore = "needs if-expression lowering (ast::If + build/resolve/type-check arms)"
 );
 trsl_test!(
     basics_conditionals_if_else_expression,
     "00-basics/conditionals/if-else-expression/if-else-expression.trsl",
-    ignore = "needs if/else expressions — `if (cond) expr else expr`"
+    [ast, analyse],
+    ignore = "needs if-expression lowering (ast::If + build/resolve/type-check arms)"
 );
 
 // ── blocks ────────────────────────────────────────────────
@@ -315,22 +317,24 @@ trsl_test!(
 trsl_test!(
     basics_blocks_block_with_bindings,
     "00-basics/blocks/block-with-bindings/block-with-bindings.trsl",
-    ignore = "needs block expressions with local let bindings"
+    [ast, analyse]
 );
 trsl_test!(
     basics_blocks_nested_block,
     "00-basics/blocks/nested-block/nested-block.trsl",
-    ignore = "needs block expressions — `{ expr… }`"
+    [ast, analyse]
 );
 trsl_test!(
     basics_blocks_if_block,
     "00-basics/blocks/if-block/if-block.trsl",
-    ignore = "needs block expressions + if — `if (cond) { … }`"
+    [ast, analyse],
+    ignore = "needs if-expression lowering (ast::If + build/resolve/type-check arms)"
 );
 trsl_test!(
     basics_blocks_if_else_block,
     "00-basics/blocks/if-else-block/if-else-block.trsl",
-    ignore = "needs block expressions + if/else — `if (cond) { … } else { … }`"
+    [ast, analyse],
+    ignore = "needs if-expression lowering (ast::If + build/resolve/type-check arms)"
 );
 
 // ══ 01 pipelines ══════════════════════════════════════════

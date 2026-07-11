@@ -20,7 +20,8 @@ LoweredProgram {
                             ),
                             return_type: None,
                             body: Expression {
-                                kind: Mul(
+                                kind: Binary(
+                                    Mul,
                                     Expression {
                                         kind: Var(
                                             "x",
@@ -59,7 +60,7 @@ LoweredProgram {
                         offset: SourceOffset(
                             157,
                         ),
-                        length: 18,
+                        length: 17,
                     },
                 },
             },
@@ -67,7 +68,7 @@ LoweredProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 31,
+                length: 30,
             },
         },
         Expression {

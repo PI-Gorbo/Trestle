@@ -36,7 +36,8 @@ AnalysedProgram {
                                             },
                                         ),
                                         body: AnalysedExpression {
-                                            kind: Add(
+                                            kind: Binary(
+                                                Add,
                                                 AnalysedExpression {
                                                     kind: Var(
                                                         BindingId(
@@ -86,7 +87,7 @@ AnalysedProgram {
                                     offset: SourceOffset(
                                         155,
                                     ),
-                                    length: 27,
+                                    length: 25,
                                 },
                                 ty: Fn(
                                     Some(
@@ -105,7 +106,7 @@ AnalysedProgram {
                         offset: SourceOffset(
                             155,
                         ),
-                        length: 27,
+                        length: 25,
                     },
                     ty: Fn(
                         Some(
@@ -130,7 +131,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     145,
                 ),
-                length: 37,
+                length: 35,
             },
             ty: Unit,
         },
@@ -312,7 +313,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     155,
                 ),
-                length: 27,
+                length: 25,
             },
         },
         AnalysedBinding {
@@ -324,7 +325,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     155,
                 ),
-                length: 27,
+                length: 25,
             },
         },
         AnalysedBinding {
@@ -350,7 +351,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     145,
                 ),
-                length: 37,
+                length: 35,
             },
         },
         AnalysedBinding {

@@ -11,10 +11,34 @@ LoweredProgram {
                     kind: Block(
                         [
                             Expression {
-                                kind: Literal(
-                                    Int(
-                                        3,
-                                    ),
+                                kind: Binary(
+                                    Add,
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                217,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                221,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
