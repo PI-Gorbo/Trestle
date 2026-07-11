@@ -20,7 +20,7 @@ pub struct BindingId(pub usize);
 pub enum Type {
     Unit,
     Literal(Literal),
-    Fn(Box<Type>, Box<Type>), // curried: one arg -> result
+    Fn(Option<Box<Type>>, Box<Type>), // curried: one arg -> result
 }
 
 #[derive(Debug, Clone, PartialEq)]

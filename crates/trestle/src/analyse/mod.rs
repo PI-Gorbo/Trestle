@@ -59,6 +59,20 @@ pub enum AnalysisError {
         span: SourceSpan,
     },
 
+    #[error("this function was applied to too many arguments")]
+    #[diagnostic(code(trestle::too_many_arguments))]
+    TooManyArguments {
+        #[label("too many arguments in this call")]
+        span: SourceSpan,
+    },
+
+    #[error("this function takes no arguments, but arguments were provided")]
+    #[diagnostic(code(trestle::arguments_to_argumentless_function))]
+    ArgumentsToArgumentlessFunction {
+        #[label("no arguments expected here")]
+        span: SourceSpan,
+    },
+
     #[error("unknown type `{name}`")]
     #[diagnostic(code(trestle::unknown_type))]
     UnknownType {

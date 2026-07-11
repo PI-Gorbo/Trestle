@@ -2,21 +2,22 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-ResolvedProgram {
+AnalysedProgram {
     expressions: [
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Lambda(
-                ResolvedLambda {
+                Lambda {
                     parameter: Some(
-                        ResolvedParam {
+                        Param {
                             binding: BindingId(
                                 0,
                             ),
-                            type_dec: None,
+                            ty: Literal(
+                                Int,
+                            ),
                         },
                     ),
-                    return_type: None,
-                    body: ResolvedExpression {
+                    body: AnalysedExpression {
                         kind: Var(
                             BindingId(
                                 0,
@@ -24,10 +25,13 @@ ResolvedProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                142,
+                                147,
                             ),
                             length: 1,
                         },
+                        ty: Literal(
+                            Int,
+                        ),
                     },
                 },
             ),
@@ -35,18 +39,31 @@ ResolvedProgram {
                 offset: SourceOffset(
                     135,
                 ),
-                length: 9,
+                length: 14,
             },
+            ty: Fn(
+                Some(
+                    Literal(
+                        Int,
+                    ),
+                ),
+                Literal(
+                    Int,
+                ),
+            ),
         },
     ],
     bindings: [
-        ResolvedBinding {
+        AnalysedBinding {
             name: "x",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
                     135,
                 ),
-                length: 9,
+                length: 14,
             },
         },
     ],

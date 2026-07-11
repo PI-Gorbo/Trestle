@@ -16,8 +16,6 @@
 //!   [`ResolvedBinding`](super::resolved::ResolvedBinding)'s name+span with its computed type.
 //! - Report mismatches as [`AnalysisError::TypeMismatch`]; collect rather than bail.
 
-use std::env::join_paths;
-
 use miette::SourceSpan;
 
 use crate::analyse::analysed::{
@@ -185,12 +183,14 @@ fn infer_type_of_expression(
                 .map(|untyped_param| {
                     let type_from_type_dec =
                         resolve_type_dec(&untyped_param.type_dec, untyped_expression.span)?;
+                    env.set(untyped_param.binding, type_from_type_dec.clone());
                     Ok(Param {
                         binding: untyped_param.binding,
                         ty: type_from_type_dec,
                     })
                 })
                 .transpose()?;
+            let param_type = parameter.as_ref().map(|p| Box::new(p.ty.clone()));
 
             // Infer the body under the (now parameter-extended) environment.
             let body = infer_type_of_expression(&resolved_lambda.body, env, bindings)?;
@@ -198,9 +198,9 @@ fn infer_type_of_expression(
                 .return_type
                 .as_ref()
                 .map(|specified_type| {
-                    resolve_type_dec(&specified_type, untyped_expression.span).and_then(|found_type| {
-                        unify(&body.ty, &found_type, untyped_expression.span)
-                    })
+                    resolve_type_dec(&specified_type, untyped_expression.span).and_then(
+                        |found_type| unify(&body.ty, &found_type, untyped_expression.span),
+                    )
                 })
                 .transpose()?
                 .unwrap_or_else(|| body.ty.clone());
@@ -212,7 +212,7 @@ fn infer_type_of_expression(
                 }),
                 span: untyped_expression.span,
                 // The lambda's type is `Fn(param.ty, body.ty)`.
-                ty: unified_return_type,
+                ty: Type::Fn(param_type, Box::new(unified_return_type)),
             })
         }
 
@@ -288,24 +288,45 @@ fn get_type_after_applying_arguments(
     arguments: &[AnalysedExpression],
     span: SourceSpan,
 ) -> Result<Type, AnalysisError> {
-    // For each argument provided, we need to apply one layer of the expected function.
-    let Type::Fn(param_type, return_type) = fn_type else {
+    // Before applying anything: a non-function callee is `NotAFunction`. This is distinct from
+    // the over-application error, which we can only detect once we've started peeling arrows.
+    if !arguments.is_empty() && !matches!(fn_type, Type::Fn(..)) {
         return Err(AnalysisError::NotAFunction {
             found: fn_type.clone(),
             span,
         });
+    }
+    apply_arguments(fn_type, arguments, span)
+}
+
+/// Fold `arguments` through the callee's curried `Fn(a, Fn(b, r))` type, peeling (and checking)
+/// one argument per arrow. The caller (`get_type_after_applying_arguments`) has already ensured
+/// that a non-function `fn_type` here means the caller over-applied.
+fn apply_arguments(
+    fn_type: &Type,
+    arguments: &[AnalysedExpression],
+    span: SourceSpan,
+) -> Result<Type, AnalysisError> {
+    // No arguments left — the remaining type is the call's result (a fully-applied function's
+    // return type, or the function itself for a bare/partial reference).
+    let Some(arg) = arguments.first() else {
+        return Ok(fn_type.clone());
     };
 
-    match arguments.get(0) {
-        None => Ok(fn_type.clone()),
-        Some(arg) => {
-            // If the types unify, then we can move on to the rest of the types
-            unify(param_type, &arg.ty, span)?;
+    // Still have an argument but no arrow to peel: the callee was a function (guaranteed by the
+    // entry check), so this is over-application.
+    let Type::Fn(param_type, return_type) = fn_type else {
+        return Err(AnalysisError::TooManyArguments { span });
+    };
 
-            // Re-call the same method, with the return type of the function and one shorter argument.
-            get_type_after_applying_arguments(return_type, &arguments[1..], span)
-        }
-    }
+    // The function is nullary but was handed an argument.
+    let Some(param_type) = param_type else {
+        return Err(AnalysisError::ArgumentsToArgumentlessFunction { span });
+    };
+
+    // If the types unify, we can move on to the rest of the arguments.
+    unify(param_type, &arg.ty, span)?;
+    apply_arguments(return_type, &arguments[1..], span)
 }
 
 /// Interpret a raw type annotation into a concrete [`Type`]
@@ -320,5 +341,58 @@ fn resolve_type_dec(dec: &TypeDeclaration, span: SourceSpan) -> Result<Type, Ana
             name: name.clone(),
             span,
         }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn analyse_src(src: &str) -> Result<AnalysedProgram, Vec<AnalysisError>> {
+        let program = crate::parse::parse(src).expect("test source should parse");
+        crate::analyse::analyse(&program)
+    }
+
+    /// A dummy `Int` literal argument for driving `get_type_after_applying_arguments` directly.
+    fn int_arg() -> AnalysedExpression {
+        AnalysedExpression {
+            kind: ExpressionKind::Int(0),
+            span: SourceSpan::from((0, 0)),
+            ty: Type::Literal(Literal::Int),
+        }
+    }
+
+    #[test]
+    fn too_many_arguments_is_an_error() {
+        // `f` takes one argument; applying two over-applies it.
+        let errors = analyse_src("let f = (a: Int) => a\nf(1, 2)")
+            .expect_err("over-application is an error");
+        assert!(matches!(errors[0], AnalysisError::TooManyArguments { .. }));
+    }
+
+    #[test]
+    fn arguments_to_argumentless_function_is_an_error() {
+        // Nullary functions can't be written in source yet (the grammar requires a parameter),
+        // so drive the checker directly with a `Fn(None, _)` type given one argument.
+        let fn_type = Type::Fn(None, Box::new(Type::Unit));
+        let err = get_type_after_applying_arguments(&fn_type, &[int_arg()], SourceSpan::from((0, 0)))
+            .expect_err("applying an argument to a nullary function is an error");
+        assert!(matches!(
+            err,
+            AnalysisError::ArgumentsToArgumentlessFunction { .. }
+        ));
+    }
+
+    #[test]
+    fn applying_correct_arguments_returns_result_type() {
+        // `Fn(Int, Int)` applied to one argument yields its result type.
+        let fn_type = Type::Fn(
+            Some(Box::new(Type::Literal(Literal::Int))),
+            Box::new(Type::Literal(Literal::Int)),
+        );
+        let result =
+            get_type_after_applying_arguments(&fn_type, &[int_arg()], SourceSpan::from((0, 0)))
+                .expect("applying a matching argument should succeed");
+        assert_eq!(result, Type::Literal(Literal::Int));
     }
 }

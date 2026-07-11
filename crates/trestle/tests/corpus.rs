@@ -21,7 +21,22 @@
 //! `evaluate` are still being built out — add `analyse`/`eval` to a program's list
 //! once that stage works for it. See the macro docs below.
 
+use miette::{NamedSource, Report};
+use trestle::analyse::AnalysisError;
 use trestle::evaluate::Environment;
+
+/// Render a batch of analysis errors as miette's fancy diagnostics, with the
+/// program source attached so each error shows its snippet + caret.
+fn render_analysis_errors(path: &str, src: &str, errors: Vec<AnalysisError>) -> String {
+    errors
+        .into_iter()
+        .map(|e| {
+            let report = Report::new(e).with_source_code(NamedSource::new(path, src.to_string()));
+            format!("{report:?}")
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
 
 /// A compiler stage to snapshot. Each maps to a public entry point and a
 /// snapshot-file suffix (`.ast` / `.analysed` / `.eval`).
@@ -68,13 +83,21 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                 insta::assert_debug_snapshot!(format!("{stem}.ast"), program);
             }
             Stage::Analyse => {
-                let analysed = trestle::analyse::analyse(&program)
-                    .unwrap_or_else(|e| panic!("failed to analyse `{path}`:\n{e:?}"));
+                let analysed = trestle::analyse::analyse(&program).unwrap_or_else(|e| {
+                    panic!(
+                        "failed to analyse `{path}`:\n{}",
+                        render_analysis_errors(path, src, e)
+                    )
+                });
                 insta::assert_debug_snapshot!(format!("{stem}.analysed"), analysed);
             }
             Stage::Eval => {
-                let analysed = trestle::analyse::analyse(&program)
-                    .unwrap_or_else(|e| panic!("failed to analyse `{path}`:\n{e:?}"));
+                let analysed = trestle::analyse::analyse(&program).unwrap_or_else(|e| {
+                    panic!(
+                        "failed to analyse `{path}`:\n{}",
+                        render_analysis_errors(path, src, e)
+                    )
+                });
                 let env = Environment::empty();
                 let value = trestle::evaluate::evaluate(&env, &analysed)
                     .unwrap_or_else(|e| panic!("failed to eval `{path}`:\n{e:?}"));

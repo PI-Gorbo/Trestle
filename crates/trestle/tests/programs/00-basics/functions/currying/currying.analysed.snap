@@ -2,40 +2,42 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-ResolvedProgram {
+AnalysedProgram {
     expressions: [
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     2,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: Lambda(
-                        ResolvedLambda {
+                        Lambda {
                             parameter: Some(
-                                ResolvedParam {
+                                Param {
                                     binding: BindingId(
                                         0,
                                     ),
-                                    type_dec: None,
+                                    ty: Literal(
+                                        Int,
+                                    ),
                                 },
                             ),
-                            return_type: None,
-                            body: ResolvedExpression {
+                            body: AnalysedExpression {
                                 kind: Lambda(
-                                    ResolvedLambda {
+                                    Lambda {
                                         parameter: Some(
-                                            ResolvedParam {
+                                            Param {
                                                 binding: BindingId(
                                                     1,
                                                 ),
-                                                type_dec: None,
+                                                ty: Literal(
+                                                    Int,
+                                                ),
                                             },
                                         ),
-                                        return_type: None,
-                                        body: ResolvedExpression {
+                                        body: AnalysedExpression {
                                             kind: Add(
-                                                ResolvedExpression {
+                                                AnalysedExpression {
                                                     kind: Var(
                                                         BindingId(
                                                             0,
@@ -43,12 +45,15 @@ ResolvedProgram {
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            165,
+                                                            175,
                                                         ),
                                                         length: 1,
                                                     },
+                                                    ty: Literal(
+                                                        Int,
+                                                    ),
                                                 },
-                                                ResolvedExpression {
+                                                AnalysedExpression {
                                                     kind: Var(
                                                         BindingId(
                                                             1,
@@ -56,18 +61,24 @@ ResolvedProgram {
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            169,
+                                                            179,
                                                         ),
                                                         length: 1,
                                                     },
+                                                    ty: Literal(
+                                                        Int,
+                                                    ),
                                                 },
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    165,
+                                                    175,
                                                 ),
                                                 length: 5,
                                             },
+                                            ty: Literal(
+                                                Int,
+                                            ),
                                         },
                                     },
                                 ),
@@ -75,8 +86,18 @@ ResolvedProgram {
                                     offset: SourceOffset(
                                         155,
                                     ),
-                                    length: 17,
+                                    length: 27,
                                 },
+                                ty: Fn(
+                                    Some(
+                                        Literal(
+                                            Int,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int,
+                                    ),
+                                ),
                             },
                         },
                     ),
@@ -84,197 +105,285 @@ ResolvedProgram {
                         offset: SourceOffset(
                             155,
                         ),
-                        length: 17,
+                        length: 27,
                     },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                        Fn(
+                            Some(
+                                Literal(
+                                    Int,
+                                ),
+                            ),
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                    ),
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
                     145,
                 ),
-                length: 27,
+                length: 37,
             },
+            ty: Unit,
         },
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     3,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: FunctionInvocation(
                         BindingId(
                             2,
                         ),
                         [
-                            ResolvedExpression {
+                            AnalysedExpression {
                                 kind: Int(
                                     10,
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        188,
+                                        198,
                                     ),
                                     length: 2,
                                 },
+                                ty: Literal(
+                                    Int,
+                                ),
                             },
                         ],
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            184,
+                            194,
                         ),
                         length: 7,
                     },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                        Literal(
+                            Int,
+                        ),
+                    ),
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    172,
+                    182,
                 ),
                 length: 71,
             },
+            ty: Unit,
         },
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     4,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: FunctionInvocation(
                         BindingId(
                             3,
                         ),
                         [
-                            ResolvedExpression {
+                            AnalysedExpression {
                                 kind: Int(
                                     5,
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        257,
+                                        267,
                                     ),
                                     length: 1,
                                 },
+                                ty: Literal(
+                                    Int,
+                                ),
                             },
                         ],
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            251,
+                            261,
                         ),
                         length: 8,
                     },
+                    ty: Literal(
+                        Int,
+                    ),
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    243,
+                    253,
                 ),
                 length: 41,
             },
+            ty: Unit,
         },
-        ResolvedExpression {
+        AnalysedExpression {
             kind: Let {
                 binding: BindingId(
                     5,
                 ),
-                value: ResolvedExpression {
+                value: AnalysedExpression {
                     kind: FunctionInvocation(
                         BindingId(
                             2,
                         ),
                         [
-                            ResolvedExpression {
+                            AnalysedExpression {
                                 kind: Int(
                                     3,
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        296,
+                                        306,
                                     ),
                                     length: 1,
                                 },
+                                ty: Literal(
+                                    Int,
+                                ),
                             },
-                            ResolvedExpression {
+                            AnalysedExpression {
                                 kind: Int(
                                     4,
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        299,
+                                        309,
                                     ),
                                     length: 1,
                                 },
+                                ty: Literal(
+                                    Int,
+                                ),
                             },
                         ],
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            292,
+                            302,
                         ),
                         length: 9,
                     },
+                    ty: Literal(
+                        Int,
+                    ),
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    284,
+                    294,
                 ),
                 length: 40,
             },
+            ty: Unit,
         },
     ],
     bindings: [
-        ResolvedBinding {
+        AnalysedBinding {
             name: "a",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
                     155,
-                ),
-                length: 17,
-            },
-        },
-        ResolvedBinding {
-            name: "b",
-            span: SourceSpan {
-                offset: SourceOffset(
-                    155,
-                ),
-                length: 17,
-            },
-        },
-        ResolvedBinding {
-            name: "add",
-            span: SourceSpan {
-                offset: SourceOffset(
-                    145,
                 ),
                 length: 27,
             },
         },
-        ResolvedBinding {
-            name: "add10",
+        AnalysedBinding {
+            name: "b",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    172,
+                    155,
+                ),
+                length: 27,
+            },
+        },
+        AnalysedBinding {
+            name: "add",
+            ty: Fn(
+                Some(
+                    Literal(
+                        Int,
+                    ),
+                ),
+                Fn(
+                    Some(
+                        Literal(
+                            Int,
+                        ),
+                    ),
+                    Literal(
+                        Int,
+                    ),
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    145,
+                ),
+                length: 37,
+            },
+        },
+        AnalysedBinding {
+            name: "add10",
+            ty: Fn(
+                Some(
+                    Literal(
+                        Int,
+                    ),
+                ),
+                Literal(
+                    Int,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    182,
                 ),
                 length: 71,
             },
         },
-        ResolvedBinding {
+        AnalysedBinding {
             name: "z",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    243,
+                    253,
                 ),
                 length: 41,
             },
         },
-        ResolvedBinding {
+        AnalysedBinding {
             name: "w",
+            ty: Literal(
+                Int,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    284,
+                    294,
                 ),
                 length: 40,
             },
