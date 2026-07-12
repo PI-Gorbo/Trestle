@@ -23,7 +23,6 @@
 
 use miette::{NamedSource, Report};
 use trestle::analyse::AnalysisError;
-use trestle::evaluate::Environment;
 
 /// Render a batch of analysis errors as miette's fancy diagnostics, with the
 /// program source attached so each error shows its snippet + caret.
@@ -98,8 +97,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                         render_analysis_errors(path, src, e)
                     )
                 });
-                let env = Environment::empty();
-                let value = trestle::evaluate::evaluate(&env, &analysed)
+                let value = trestle::evaluate::evaluate(analysed)
                     .unwrap_or_else(|e| panic!("failed to eval `{path}`:\n{e:?}"));
                 insta::assert_debug_snapshot!(format!("{stem}.eval"), value);
             }
@@ -175,7 +173,7 @@ macro_rules! trsl_test {
 trsl_test!(
     basics_literals_int,
     "00-basics/literals/int/int.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_literals_string,

@@ -6,3 +6,5 @@ type Point = { x: Int, y: Int }
 let p = Point { x: 3, y: 4 }
 
 let sum = p.x + p.y     // 7
+
+sum

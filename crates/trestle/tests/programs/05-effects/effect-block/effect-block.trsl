@@ -2,8 +2,10 @@
 // TARGET: `effect { }` sequences steps where each can depend on earlier results.
 // It is the imperative-reading twin of the |> pipeline.
 
+let fetchNumber = () => Effect.Success(10)
+
 let program = effect {
-    let x = fetchNumber
-    let y = fetchNumber
+    let x = fetchNumber()
+    let y = fetchNumber()
     x + y
 }

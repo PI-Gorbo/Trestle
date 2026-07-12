@@ -43,14 +43,14 @@ pub struct AnalysedBinding {
 
 /// An analysed expression node: what it is (`kind`), where it came from (`span`), and its
 /// resolved type (`ty`, new vs the LoweredAst).
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct AnalysedExpression {
     pub kind: ExpressionKind,
     pub span: SourceSpan,
     pub ty: Type,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum AnalysedLiteral {
     Int(usize),
     Bool(bool),
@@ -58,7 +58,7 @@ pub enum AnalysedLiteral {
     String(String),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ExpressionKind {
     Literal(AnalysedLiteral),
     Var(BindingId), // was Var(String)
@@ -78,13 +78,13 @@ pub enum ExpressionKind {
     Block(Vec<AnalysedExpression>),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Param {
     pub binding: BindingId,
     pub ty: Type, // resolved; was Option<TypeDeclaration>
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Lambda {
     pub parameter: Option<Param>,
     pub body: Box<AnalysedExpression>,

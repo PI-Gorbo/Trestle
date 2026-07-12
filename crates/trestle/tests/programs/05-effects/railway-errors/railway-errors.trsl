@@ -3,10 +3,10 @@
 // anywhere can intercept them. No try/catch.
 
 let safeDivide = (a, b) =>
-    if b == 0 then fail("divide by zero") else succeed(a / b)
+    if b == 0 then fail("divide by zero") else Effect.ok(a / b)
 
 let result =
     10
     |> safeDivide(2)      // succeeds with 5
-    |> map((n) => n + 1)  // 6; skipped entirely on failure
-    |> recover((err) => 0)
+    |> Effect.map((n) => n + 1)  // 6; skipped entirely on failure
+    |> Effect.recover((err) => 0)
