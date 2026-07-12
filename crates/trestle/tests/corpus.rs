@@ -328,14 +328,12 @@ trsl_test!(
 trsl_test!(
     basics_blocks_if_block,
     "00-basics/blocks/if-block/if-block.trsl",
-    [ast, analyse],
-    ignore = "needs if-expression lowering (ast::If + build/resolve/type-check arms)"
+    [ast, analyse]
 );
 trsl_test!(
     basics_blocks_if_else_block,
     "00-basics/blocks/if-else-block/if-else-block.trsl",
-    [ast, analyse],
-    ignore = "needs if-expression lowering (ast::If + build/resolve/type-check arms)"
+    [ast, analyse]
 );
 
 // ══ 01 pipelines ══════════════════════════════════════════

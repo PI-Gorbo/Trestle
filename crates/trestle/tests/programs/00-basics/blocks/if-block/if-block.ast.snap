@@ -1,0 +1,81 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: If {
+                condition: Expression {
+                    kind: Binary(
+                        Gt,
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    159,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    163,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            159,
+                        ),
+                        length: 5,
+                    },
+                },
+                true_pathway: Expression {
+                    kind: Block(
+                        [
+                            Expression {
+                                kind: Literal(
+                                    Int(
+                                        10,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        172,
+                                    ),
+                                    length: 2,
+                                },
+                            },
+                        ],
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            166,
+                        ),
+                        length: 10,
+                    },
+                },
+                false_pathway: None,
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    155,
+                ),
+                length: 22,
+            },
+        },
+    ],
+}
