@@ -289,6 +289,44 @@ fn infer_type_of_expression(
             let ty = analysed.last().map_or(Type::Unit, |e| e.ty.clone());
             (ExpressionKind::Block(analysed), ty)
         }
+        ResolvedExpressionKind::If {
+            condition,
+            true_condition,
+            false_condition,
+        } => {
+            let typed_condition = infer_type_of_expression(*condition, env, bindings)?;
+            // Unify the typed_condition value with boolean.
+            unify(&typed_condition.ty, &Type::Literal(Literal::Bool), span)?;
+
+            let true_condition = infer_type_of_expression(*true_condition, env, bindings)?;
+            let true_condition_type = true_condition.ty.clone();
+
+            match false_condition {
+                None => (
+                    ExpressionKind::If {
+                        condition: Box::new(typed_condition),
+                        then_branch: Box::new(true_condition),
+                        else_branch: None,
+                    },
+                    true_condition_type,
+                ),
+                Some(false_condition) => {
+                    let false_condition =
+                        infer_type_of_expression(*false_condition, env, bindings)?;
+
+                    unify(&false_condition.ty, &true_condition.ty, span)?;
+
+                    (
+                        ExpressionKind::If {
+                            condition: Box::new(typed_condition),
+                            then_branch: Box::new(true_condition),
+                            else_branch: None,
+                        },
+                        true_condition_type,
+                    )
+                }
+            }
+        }
     };
 
     Ok(AnalysedExpression { kind, span, ty })

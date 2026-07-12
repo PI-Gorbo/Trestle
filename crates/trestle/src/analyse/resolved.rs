@@ -40,6 +40,11 @@ pub enum ResolvedExpressionKind {
         value: Box<ResolvedExpression>,
     },
     Block(Vec<ResolvedExpression>),
+    If {
+        condition: Box<ResolvedExpression>,
+        true_condition: Box<ResolvedExpression>,
+        false_condition: Option<Box<ResolvedExpression>>,
+    },
 }
 
 #[derive(Debug, PartialEq)]

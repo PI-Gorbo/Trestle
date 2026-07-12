@@ -1,0 +1,85 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+AnalysedProgram {
+    expressions: [
+        AnalysedExpression {
+            kind: If {
+                condition: AnalysedExpression {
+                    kind: Binary(
+                        Gt,
+                        AnalysedExpression {
+                            kind: Literal(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    325,
+                                ),
+                                length: 1,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
+                        AnalysedExpression {
+                            kind: Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    329,
+                                ),
+                                length: 1,
+                            },
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            325,
+                        ),
+                        length: 5,
+                    },
+                    ty: Literal(
+                        Bool,
+                    ),
+                },
+                then_branch: AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            10,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            332,
+                        ),
+                        length: 2,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+                else_branch: None,
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    321,
+                ),
+                length: 14,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
+    ],
+    bindings: [],
+}

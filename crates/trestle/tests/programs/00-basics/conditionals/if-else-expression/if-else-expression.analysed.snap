@@ -1,32 +1,37 @@
 ---
 source: crates/trestle/tests/corpus.rs
-expression: program
+expression: analysed
 ---
-LoweredProgram {
+AnalysedProgram {
     expressions: [
-        Expression {
+        AnalysedExpression {
             kind: Let {
-                name: "abs",
-                value: Expression {
+                binding: BindingId(
+                    1,
+                ),
+                value: AnalysedExpression {
                     kind: Lambda(
                         Lambda {
                             parameter: Some(
                                 Param {
-                                    name: "n",
-                                    type_dec: Named(
-                                        "Int",
+                                    binding: BindingId(
+                                        0,
+                                    ),
+                                    ty: Literal(
+                                        Int,
                                     ),
                                 },
                             ),
-                            return_type: None,
-                            body: Expression {
+                            body: AnalysedExpression {
                                 kind: If {
-                                    condition: Expression {
+                                    condition: AnalysedExpression {
                                         kind: Binary(
                                             Lt,
-                                            Expression {
+                                            AnalysedExpression {
                                                 kind: Var(
-                                                    "n",
+                                                    BindingId(
+                                                        0,
+                                                    ),
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
@@ -34,8 +39,11 @@ LoweredProgram {
                                                     ),
                                                     length: 1,
                                                 },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
                                             },
-                                            Expression {
+                                            AnalysedExpression {
                                                 kind: Literal(
                                                     Int(
                                                         0,
@@ -47,6 +55,9 @@ LoweredProgram {
                                                     ),
                                                     length: 1,
                                                 },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
                                             },
                                         ),
                                         span: SourceSpan {
@@ -55,11 +66,14 @@ LoweredProgram {
                                             ),
                                             length: 5,
                                         },
+                                        ty: Literal(
+                                            Bool,
+                                        ),
                                     },
-                                    true_pathway: Expression {
+                                    then_branch: AnalysedExpression {
                                         kind: Binary(
                                             Sub,
-                                            Expression {
+                                            AnalysedExpression {
                                                 kind: Literal(
                                                     Int(
                                                         0,
@@ -71,10 +85,15 @@ LoweredProgram {
                                                     ),
                                                     length: 1,
                                                 },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
                                             },
-                                            Expression {
+                                            AnalysedExpression {
                                                 kind: Var(
-                                                    "n",
+                                                    BindingId(
+                                                        0,
+                                                    ),
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
@@ -82,6 +101,9 @@ LoweredProgram {
                                                     ),
                                                     length: 1,
                                                 },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
                                             },
                                         ),
                                         span: SourceSpan {
@@ -90,20 +112,11 @@ LoweredProgram {
                                             ),
                                             length: 5,
                                         },
+                                        ty: Literal(
+                                            Int,
+                                        ),
                                     },
-                                    false_pathway: Some(
-                                        Expression {
-                                            kind: Var(
-                                                "n",
-                                            ),
-                                            span: SourceSpan {
-                                                offset: SourceOffset(
-                                                    303,
-                                                ),
-                                                length: 1,
-                                            },
-                                        },
-                                    ),
+                                    else_branch: None,
                                 },
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -111,6 +124,9 @@ LoweredProgram {
                                     ),
                                     length: 24,
                                 },
+                                ty: Literal(
+                                    Int,
+                                ),
                             },
                         },
                     ),
@@ -120,6 +136,16 @@ LoweredProgram {
                         ),
                         length: 36,
                     },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                        Literal(
+                            Int,
+                        ),
+                    ),
                 },
             },
             span: SourceSpan {
@@ -128,16 +154,19 @@ LoweredProgram {
                 ),
                 length: 46,
             },
+            ty: Unit,
         },
-        Expression {
+        AnalysedExpression {
             kind: Let {
-                name: "bigger",
-                value: Expression {
+                binding: BindingId(
+                    2,
+                ),
+                value: AnalysedExpression {
                     kind: If {
-                        condition: Expression {
+                        condition: AnalysedExpression {
                             kind: Binary(
                                 Gt,
-                                Expression {
+                                AnalysedExpression {
                                     kind: Literal(
                                         Int(
                                             3,
@@ -149,8 +178,11 @@ LoweredProgram {
                                         ),
                                         length: 1,
                                     },
+                                    ty: Literal(
+                                        Int,
+                                    ),
                                 },
-                                Expression {
+                                AnalysedExpression {
                                     kind: Literal(
                                         Int(
                                             2,
@@ -162,6 +194,9 @@ LoweredProgram {
                                         ),
                                         length: 1,
                                     },
+                                    ty: Literal(
+                                        Int,
+                                    ),
                                 },
                             ),
                             span: SourceSpan {
@@ -170,8 +205,11 @@ LoweredProgram {
                                 ),
                                 length: 5,
                             },
+                            ty: Literal(
+                                Bool,
+                            ),
                         },
-                        true_pathway: Expression {
+                        then_branch: AnalysedExpression {
                             kind: Literal(
                                 String(
                                     "\"Bigger\"",
@@ -183,22 +221,11 @@ LoweredProgram {
                                 ),
                                 length: 8,
                             },
+                            ty: Literal(
+                                String,
+                            ),
                         },
-                        false_pathway: Some(
-                            Expression {
-                                kind: Literal(
-                                    String(
-                                        "\"Smaller\"",
-                                    ),
-                                ),
-                                span: SourceSpan {
-                                    offset: SourceOffset(
-                                        367,
-                                    ),
-                                    length: 9,
-                                },
-                            },
-                        ),
+                        else_branch: None,
                     },
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -206,8 +233,57 @@ LoweredProgram {
                         ),
                         length: 63,
                     },
+                    ty: Literal(
+                        String,
+                    ),
                 },
             },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    305,
+                ),
+                length: 80,
+            },
+            ty: Unit,
+        },
+    ],
+    bindings: [
+        AnalysedBinding {
+            name: "n",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    269,
+                ),
+                length: 36,
+            },
+        },
+        AnalysedBinding {
+            name: "abs",
+            ty: Fn(
+                Some(
+                    Literal(
+                        Int,
+                    ),
+                ),
+                Literal(
+                    Int,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    259,
+                ),
+                length: 46,
+            },
+        },
+        AnalysedBinding {
+            name: "bigger",
+            ty: Literal(
+                String,
+            ),
             span: SourceSpan {
                 offset: SourceOffset(
                     305,

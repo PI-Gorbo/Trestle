@@ -29,9 +29,7 @@ use crate::analyse::resolved::{
 use crate::parse::ast::{self, Expression, ExpressionKind, Literal, Param};
 
 /// Resolve every name in `program` to a [`BindingId`](super::analysed::BindingId).
-pub(super) fn resolve(
-    program: ast::LoweredProgram,
-) -> Result<ResolvedProgram, Vec<AnalysisError>> {
+pub(super) fn resolve(program: ast::LoweredProgram) -> Result<ResolvedProgram, Vec<AnalysisError>> {
     let mut bindings_arena = BindingArena::new();
     let mut scope = Scope::Empty;
     let mut expressions = Vec::new();
@@ -253,10 +251,12 @@ fn resolve_subexpr(
         } => {
             let binding = match scope.lookup(&function_name) {
                 Some(binding) => binding,
-                None => return Err(AnalysisError::UnboundName {
-                    name: function_name,
-                    span,
-                }),
+                None => {
+                    return Err(AnalysisError::UnboundName {
+                        name: function_name,
+                        span,
+                    });
+                }
             };
 
             let arg_count = expressions.len();
@@ -299,11 +299,31 @@ fn resolve_subexpr(
         // `if` parses into the AST but has no resolved/typed form yet — reject it here in pass 1
         // so the later passes never have to carry a variant they can't handle. Remove this arm
         // when `if` is threaded end-to-end.
-        ExpressionKind::If { .. } => {
-            return Err(AnalysisError::Unsupported {
-                construct: "if",
-                span,
-            });
+        ExpressionKind::If {
+            condition,
+            true_pathway,
+            false_pathway,
+        } => {
+            let (resolved_condition, _) = resolve_expression(*condition, scope, bindings_arena);
+
+            let (resolved_true_pathway, _) =
+                resolve_expression(*true_pathway, scope, bindings_arena);
+
+            let optional_else = false_pathway
+                .map(|false_pathway| resolve_expression(*false_pathway, scope, bindings_arena));
+
+            match optional_else {
+                None => ResolvedExpressionKind::If {
+                    condition: resolved_condition.map(Box::new)?,
+                    true_condition: resolved_true_pathway.map(Box::new)?,
+                    false_condition: None,
+                },
+                Some((resolved_false_condition, _)) => ResolvedExpressionKind::If {
+                    condition: resolved_condition.map(Box::new)?,
+                    true_condition: resolved_true_pathway.map(Box::new)?,
+                    false_condition: resolved_false_condition.map(Box::new).map(Some)?,
+                },
+            }
         }
     };
 

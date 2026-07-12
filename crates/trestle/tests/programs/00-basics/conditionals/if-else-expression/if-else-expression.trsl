@@ -5,6 +5,6 @@
 let abs = (n: Int) => if (n < 0) 0 - n else n
 let bigger =
     if (3 > 2)
-        10
+        "Bigger"
     else
-        20   // 10
+        "Smaller"   // 10

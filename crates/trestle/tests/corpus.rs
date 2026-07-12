@@ -296,12 +296,12 @@ trsl_test!(
 trsl_test!(
     basics_conditionals_if_expression,
     "00-basics/conditionals/if-expression/if-expression.trsl",
-    [ast]
+    [ast, analyse]
 );
 trsl_test!(
     basics_conditionals_if_else_expression,
     "00-basics/conditionals/if-else-expression/if-else-expression.trsl",
-    [ast]
+    [ast, analyse]
 );
 
 // ── blocks ────────────────────────────────────────────────

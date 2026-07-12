@@ -66,7 +66,7 @@ pub enum ExpressionKind {
     If {
         condition: Box<AnalysedExpression>,
         then_branch: Box<AnalysedExpression>,
-        else_branch: Box<AnalysedExpression>,
+        else_branch: Option<Box<AnalysedExpression>>,
     },
     Lambda(Lambda),
     FunctionInvocation(BindingId, Vec<AnalysedExpression>), // callee resolved; was String
