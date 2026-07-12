@@ -9,7 +9,7 @@
 
 use miette::SourceSpan;
 
-use crate::parse::ast::BinaryOp;
+use crate::parse::ast::{BinaryOp, UnaryOp};
 
 /// Index of a binding site (a `let` or a lambda parameter). Assigned during analysis;
 /// indexes into [`AnalysedProgram::bindings`].
@@ -63,6 +63,7 @@ pub enum ExpressionKind {
     Literal(AnalysedLiteral),
     Var(BindingId), // was Var(String)
     Binary(BinaryOp, Box<AnalysedExpression>, Box<AnalysedExpression>),
+    Unary(UnaryOp, Box<AnalysedExpression>),
     If {
         condition: Box<AnalysedExpression>,
         then_branch: Box<AnalysedExpression>,

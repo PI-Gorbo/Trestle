@@ -1,0 +1,139 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "both",
+                value: Expression {
+                    kind: Binary(
+                        And,
+                        Expression {
+                            kind: Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    222,
+                                ),
+                                length: 4,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Bool(
+                                    false,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    230,
+                                ),
+                                length: 5,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            222,
+                        ),
+                        length: 13,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    208,
+                ),
+                length: 27,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "either",
+                value: Expression {
+                    kind: Binary(
+                        Or,
+                        Expression {
+                            kind: Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    250,
+                                ),
+                                length: 4,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Bool(
+                                    false,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    258,
+                                ),
+                                length: 5,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            250,
+                        ),
+                        length: 13,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 27,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "negated",
+                value: Expression {
+                    kind: Unary(
+                        Not,
+                        Expression {
+                            kind: Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    280,
+                                ),
+                                length: 4,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            279,
+                        ),
+                        length: 5,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    264,
+                ),
+                length: 21,
+            },
+        },
+    ],
+}

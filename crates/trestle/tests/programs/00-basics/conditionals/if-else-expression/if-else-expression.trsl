@@ -7,4 +7,4 @@ let bigger =
     if (3 > 2)
         "Bigger"
     else
-        "Smaller"   // 10
+        "Smaller"

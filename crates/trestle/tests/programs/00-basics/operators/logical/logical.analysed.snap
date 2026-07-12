@@ -1,0 +1,210 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+AnalysedProgram {
+    expressions: [
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    0,
+                ),
+                value: AnalysedExpression {
+                    kind: Binary(
+                        And,
+                        AnalysedExpression {
+                            kind: Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    222,
+                                ),
+                                length: 4,
+                            },
+                            ty: Literal(
+                                Bool,
+                            ),
+                        },
+                        AnalysedExpression {
+                            kind: Literal(
+                                Bool(
+                                    false,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    230,
+                                ),
+                                length: 5,
+                            },
+                            ty: Literal(
+                                Bool,
+                            ),
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            222,
+                        ),
+                        length: 13,
+                    },
+                    ty: Literal(
+                        Bool,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    208,
+                ),
+                length: 27,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    1,
+                ),
+                value: AnalysedExpression {
+                    kind: Binary(
+                        Or,
+                        AnalysedExpression {
+                            kind: Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    250,
+                                ),
+                                length: 4,
+                            },
+                            ty: Literal(
+                                Bool,
+                            ),
+                        },
+                        AnalysedExpression {
+                            kind: Literal(
+                                Bool(
+                                    false,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    258,
+                                ),
+                                length: 5,
+                            },
+                            ty: Literal(
+                                Bool,
+                            ),
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            250,
+                        ),
+                        length: 13,
+                    },
+                    ty: Literal(
+                        Bool,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 27,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    2,
+                ),
+                value: AnalysedExpression {
+                    kind: Unary(
+                        Not,
+                        AnalysedExpression {
+                            kind: Literal(
+                                Bool(
+                                    true,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    280,
+                                ),
+                                length: 4,
+                            },
+                            ty: Literal(
+                                Bool,
+                            ),
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            279,
+                        ),
+                        length: 5,
+                    },
+                    ty: Literal(
+                        Bool,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    264,
+                ),
+                length: 21,
+            },
+            ty: Unit,
+        },
+    ],
+    bindings: [
+        AnalysedBinding {
+            name: "both",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    208,
+                ),
+                length: 27,
+            },
+        },
+        AnalysedBinding {
+            name: "either",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 27,
+            },
+        },
+        AnalysedBinding {
+            name: "negated",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    264,
+                ),
+                length: 21,
+            },
+        },
+    ],
+}

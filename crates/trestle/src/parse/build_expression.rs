@@ -11,7 +11,7 @@ use std::sync::LazyLock;
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
 
-use crate::parse::ast::{BinaryOp, Literal};
+use crate::parse::ast::{BinaryOp, Literal, UnaryOp};
 
 use super::{BuildError, Rule};
 
@@ -22,11 +22,14 @@ use super::ast::{
 
 /// The operator-precedence table — the single, explicit statement of Trestle's
 /// order of operations. Levels are listed loosest-binding first, so:
-///   comparison  <  additive  <  multiplicative
-/// Every operator is left-associative (pest offers only `Left`/`Right`, so a
-/// chain like `a < b < c` parses as `(a < b) < c` and later type-errors).
+///   or  <  and  <  comparison  <  additive  <  multiplicative  <  prefix
+/// Every infix operator is left-associative (pest offers only `Left`/`Right`, so a
+/// chain like `a < b < c` parses as `(a < b) < c` and later type-errors). Prefix ops
+/// bind tightest, so `!a && b` is `(!a) && b` and `-a * b` is `(-a) * b`.
 static PRATT: LazyLock<PrattParser<Rule>> = LazyLock::new(|| {
     PrattParser::new()
+        .op(Op::infix(Rule::or, Assoc::Left))
+        .op(Op::infix(Rule::and, Assoc::Left))
         .op(Op::infix(Rule::eq, Assoc::Left)
             | Op::infix(Rule::neq, Assoc::Left)
             | Op::infix(Rule::lt, Assoc::Left)
@@ -35,6 +38,7 @@ static PRATT: LazyLock<PrattParser<Rule>> = LazyLock::new(|| {
             | Op::infix(Rule::ge, Assoc::Left))
         .op(Op::infix(Rule::add, Assoc::Left) | Op::infix(Rule::subtract, Assoc::Left))
         .op(Op::infix(Rule::multiply, Assoc::Left) | Op::infix(Rule::divide, Assoc::Left))
+        .op(Op::prefix(Rule::negate) | Op::prefix(Rule::logical_not))
 });
 
 /// Wrap an [`ExpressionKind`] with the source span of the pest pair it came from.
@@ -238,6 +242,8 @@ fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                 Rule::subtract => BinaryOp::Sub,
                 Rule::multiply => BinaryOp::Mul,
                 Rule::divide => BinaryOp::Div,
+                Rule::and => BinaryOp::And,
+                Rule::or => BinaryOp::Or,
                 Rule::lt => BinaryOp::Lt,
                 Rule::gt => BinaryOp::Gt,
                 Rule::le => BinaryOp::Le,
@@ -253,6 +259,27 @@ fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             };
             Ok(Expression {
                 kind: ExpressionKind::Binary(binary_op, Box::new(lhs), Box::new(rhs)),
+                span,
+            })
+        })
+        .map_prefix(|op, rhs| {
+            let rhs = rhs?;
+            // Span runs from the operator token through the operand: `merge_spans`
+            // assumes the first span starts at or before the second, which holds
+            // here since the prefix operator precedes its operand.
+            let span = merge_spans(source_span_from_pest_span(op.as_span()), rhs.span);
+            let unary_op = match op.as_rule() {
+                Rule::negate => UnaryOp::Neg,
+                Rule::logical_not => UnaryOp::Not,
+                rule => {
+                    return Err(BuildError::UnexpectedRule {
+                        rule,
+                        span: source_span_from_pest_span(op.as_span()),
+                    });
+                }
+            };
+            Ok(Expression {
+                kind: ExpressionKind::Unary(unary_op, Box::new(rhs)),
                 span,
             })
         })
@@ -389,7 +416,7 @@ mod tests {
         );
     }
 
-    use crate::parse::ast::{BinaryOp, ExpressionKind, Literal};
+    use crate::parse::ast::{BinaryOp, ExpressionKind, Literal, UnaryOp};
 
     /// Pull the single top-level expression's kind out of a parsed program.
     fn only_expr_kind(source: &str) -> ExpressionKind {
@@ -433,6 +460,31 @@ mod tests {
                 assert!(false_pathway.is_none(), "expected no else branch");
             }
             other => panic!("expected If, got {other:?}"),
+        }
+    }
+
+    /// A prefix operator binds tighter than a binary one: `!a && b` is `(!a) && b`,
+    /// so the `Not` wraps only `a` and the whole thing is an `And`.
+    #[test]
+    fn logical_not_binds_tighter_than_and() {
+        match only_expr_kind("!a && b") {
+            ExpressionKind::Binary(BinaryOp::And, lhs, rhs) => {
+                assert!(matches!(lhs.kind, ExpressionKind::Unary(UnaryOp::Not, _)));
+                assert!(matches!(rhs.kind, ExpressionKind::Var(ref v) if v == "b"));
+            }
+            other => panic!("expected And, got {other:?}"),
+        }
+    }
+
+    /// Likewise arithmetic negation binds tighter than `*`: `-a * b` is `(-a) * b`.
+    #[test]
+    fn negation_binds_tighter_than_multiply() {
+        match only_expr_kind("-a * b") {
+            ExpressionKind::Binary(BinaryOp::Mul, lhs, rhs) => {
+                assert!(matches!(lhs.kind, ExpressionKind::Unary(UnaryOp::Neg, _)));
+                assert!(matches!(rhs.kind, ExpressionKind::Var(ref v) if v == "b"));
+            }
+            other => panic!("expected Mul, got {other:?}"),
         }
     }
 

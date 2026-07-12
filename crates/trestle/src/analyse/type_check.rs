@@ -25,7 +25,7 @@ use crate::analyse::analysed::{
 use crate::analyse::resolved::{
     ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
 };
-use crate::parse::ast::{BinaryOp, TypeDeclaration};
+use crate::parse::ast::{BinaryOp, TypeDeclaration, UnaryOp};
 
 use super::AnalysisError;
 use super::analysed::AnalysedProgram;
@@ -177,25 +177,41 @@ fn infer_type_of_expression(
         ResolvedExpressionKind::Binary(op, lhs, rhs) => {
             let lhs = infer_type_of_expression(*lhs, env, bindings)?;
             let rhs = infer_type_of_expression(*rhs, env, bindings)?;
-            // Every operator (arithmetic and comparison) takes two `Int`s for now; unify each
-            // operand against `Int`. The result type is what distinguishes them: arithmetic
-            // yields an `Int`, comparison yields a `Bool`.
+            // The operator fixes both the operand type and the result type. Arithmetic is
+            // `Int × Int → Int`; comparison is `Int × Int → Bool`; the boolean combinators are
+            // `Bool × Bool → Bool`. Unify each operand against the required operand type.
             let int = Type::Literal(Literal::Int);
-            unify(&lhs.ty, &int, lhs.span)?;
-            unify(&rhs.ty, &int, rhs.span)?;
-            let result_ty = match op {
-                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => int,
+            let bool = Type::Literal(Literal::Bool);
+            let (operand_ty, result_ty) = match op {
+                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => {
+                    (int.clone(), int)
+                }
                 BinaryOp::Lt
                 | BinaryOp::Gt
                 | BinaryOp::Le
                 | BinaryOp::Ge
                 | BinaryOp::Eq
-                | BinaryOp::Neq => Type::Literal(Literal::Bool),
+                | BinaryOp::Neq => (int, bool),
+                BinaryOp::And | BinaryOp::Or => (bool.clone(), bool),
             };
+            unify(&lhs.ty, &operand_ty, lhs.span)?;
+            unify(&rhs.ty, &operand_ty, rhs.span)?;
             (
                 ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
                 result_ty,
             )
+        }
+
+        ResolvedExpressionKind::Unary(op, operand) => {
+            let operand = infer_type_of_expression(*operand, env, bindings)?;
+            // `-` negates an `Int` (→ `Int`); `!` inverts a `Bool` (→ `Bool`). Operand and result
+            // type coincide for both, so unify the operand against that one type.
+            let ty = match op {
+                UnaryOp::Neg => Type::Literal(Literal::Int),
+                UnaryOp::Not => Type::Literal(Literal::Bool),
+            };
+            unify(&operand.ty, &ty, operand.span)?;
+            (ExpressionKind::Unary(op, Box::new(operand)), ty)
         }
 
         ResolvedExpressionKind::Lambda(resolved_lambda) => {

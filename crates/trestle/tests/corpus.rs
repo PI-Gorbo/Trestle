@@ -222,7 +222,7 @@ trsl_test!(
 trsl_test!(
     basics_operators_negation,
     "00-basics/operators/negation/negation.trsl",
-    ignore = "needs unary negation (-)"
+    [ast, analyse]
 );
 trsl_test!(
     basics_operators_comparison,
@@ -232,7 +232,7 @@ trsl_test!(
 trsl_test!(
     basics_operators_logical,
     "00-basics/operators/logical/logical.trsl",
-    ignore = "needs boolean operators + booleans"
+    [ast, analyse]
 );
 
 // ── bindings ──────────────────────────────────────────────

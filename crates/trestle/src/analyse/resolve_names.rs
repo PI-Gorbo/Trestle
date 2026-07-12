@@ -227,6 +227,11 @@ fn resolve_subexpr(
             let rhs = resolve_subexpr(*rhs, scope, bindings_arena)?;
             ResolvedExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs))
         }
+        // Same as `Binary`: the `UnaryOp` tag just passes through resolution.
+        ExpressionKind::Unary(op, operand) => {
+            let operand = resolve_subexpr(*operand, scope, bindings_arena)?;
+            ResolvedExpressionKind::Unary(op, Box::new(operand))
+        }
         ExpressionKind::Lambda(lambda) => {
             let (parameter, updated_scope) = match lambda.parameter {
                 Some(param) => {

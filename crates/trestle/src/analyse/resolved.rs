@@ -11,7 +11,7 @@
 use miette::SourceSpan;
 
 use super::analysed::BindingId;
-use crate::parse::ast::{BinaryOp, TypeDeclaration};
+use crate::parse::ast::{BinaryOp, TypeDeclaration, UnaryOp};
 
 /// A name-resolved, not-yet-typed expression: what it is (`kind`) and where it came from (`span`).
 #[derive(Debug, PartialEq)]
@@ -33,6 +33,7 @@ pub enum ResolvedExpressionKind {
     Literal(ResolvedLiteral),
     Var(BindingId), // was Var(String)
     Binary(BinaryOp, Box<ResolvedExpression>, Box<ResolvedExpression>),
+    Unary(UnaryOp, Box<ResolvedExpression>),
     Lambda(ResolvedLambda),
     FunctionInvocation(BindingId, Vec<ResolvedExpression>), // callee resolved; was String
     Let {

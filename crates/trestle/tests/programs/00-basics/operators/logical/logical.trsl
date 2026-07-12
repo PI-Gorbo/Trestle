@@ -1,4 +1,3 @@
-// @skip: needs boolean operators + booleans (tier 00)
 // TARGET: the boolean combinators — binary `&&`, binary `||`, and unary `!`.
 // Boolean literals are covered in literals/bool; the comparisons that feed these
 // in real code are in operators/comparison.
