@@ -204,7 +204,7 @@ LoweredProgram {
                         offset: SourceOffset(
                             322,
                         ),
-                        length: 63,
+                        length: 55,
                     },
                 },
             },
@@ -212,7 +212,7 @@ LoweredProgram {
                 offset: SourceOffset(
                     305,
                 ),
-                length: 80,
+                length: 72,
             },
         },
     ],

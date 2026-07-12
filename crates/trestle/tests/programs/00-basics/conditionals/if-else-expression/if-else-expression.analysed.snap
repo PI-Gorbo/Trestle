@@ -231,7 +231,7 @@ AnalysedProgram {
                         offset: SourceOffset(
                             322,
                         ),
-                        length: 63,
+                        length: 55,
                     },
                     ty: Literal(
                         String,
@@ -242,7 +242,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     305,
                 ),
-                length: 80,
+                length: 72,
             },
             ty: Unit,
         },
@@ -288,7 +288,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     305,
                 ),
-                length: 80,
+                length: 72,
             },
         },
     ],
