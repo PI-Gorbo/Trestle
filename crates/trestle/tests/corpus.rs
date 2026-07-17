@@ -346,32 +346,32 @@ trsl_test!(
 trsl_test!(
     basics_blocks_block_single_expr,
     "00-basics/blocks/block-single-expr/block-single-expr.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_blocks_block_multi_expr,
     "00-basics/blocks/block-multi-expr/block-multi-expr.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_blocks_block_with_bindings,
     "00-basics/blocks/block-with-bindings/block-with-bindings.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_blocks_nested_block,
     "00-basics/blocks/nested-block/nested-block.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_blocks_if_block,
     "00-basics/blocks/if-block/if-block.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_blocks_if_else_block,
     "00-basics/blocks/if-else-block/if-else-block.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 
 // ══ 01 pipelines ══════════════════════════════════════════
