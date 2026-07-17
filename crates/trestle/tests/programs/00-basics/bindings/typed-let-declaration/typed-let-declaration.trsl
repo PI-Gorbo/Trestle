@@ -4,3 +4,4 @@
 // to carry an Option<TypeDeclaration> (like Param.type_dec) before this snapshots cleanly.
 
 let x: Int = 42
+x

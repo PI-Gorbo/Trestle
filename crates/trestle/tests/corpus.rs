@@ -252,17 +252,17 @@ trsl_test!(
 trsl_test!(
     basics_bindings_let_declaration,
     "00-basics/bindings/let-declaration/let-declaration.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_bindings_arithmetic,
     "00-basics/bindings/arithmetic/arithmetic.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_bindings_typed_let_declaration,
     "00-basics/bindings/typed-let-declaration/typed-let-declaration.trsl",
-    ignore = "needs Let bindings to carry a type declaration on the AST"
+    [ast, analyse, eval]
 );
 
 // ── functions ─────────────────────────────────────────────
