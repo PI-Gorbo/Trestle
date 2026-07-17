@@ -212,7 +212,7 @@ AnalysedProgram {
                         then_branch: AnalysedExpression {
                             kind: Literal(
                                 String(
-                                    "\"Bigger\"",
+                                    "Bigger",
                                 ),
                             ),
                             span: SourceSpan {

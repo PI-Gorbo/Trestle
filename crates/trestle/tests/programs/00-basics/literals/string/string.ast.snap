@@ -7,7 +7,7 @@ LoweredProgram {
         Expression {
             kind: Literal(
                 String(
-                    "\"hello\"",
+                    "hello",
                 ),
             ),
             span: SourceSpan {

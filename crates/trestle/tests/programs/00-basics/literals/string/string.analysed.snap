@@ -7,7 +7,7 @@ AnalysedProgram {
         AnalysedExpression {
             kind: Literal(
                 String(
-                    "\"hello\"",
+                    "hello",
                 ),
             ),
             span: SourceSpan {

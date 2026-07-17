@@ -174,7 +174,7 @@ LoweredProgram {
                         true_pathway: Expression {
                             kind: Literal(
                                 String(
-                                    "\"Bigger\"",
+                                    "Bigger",
                                 ),
                             ),
                             span: SourceSpan {
@@ -188,7 +188,7 @@ LoweredProgram {
                             Expression {
                                 kind: Literal(
                                     String(
-                                        "\"Smaller\"",
+                                        "Smaller",
                                     ),
                                 ),
                                 span: SourceSpan {

@@ -178,17 +178,17 @@ trsl_test!(
 trsl_test!(
     basics_literals_string,
     "00-basics/literals/string/string.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_literals_bool,
     "00-basics/literals/bool/bool.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_literals_float,
     "00-basics/literals/float/float.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 
 // ── operators ─────────────────────────────────────────────

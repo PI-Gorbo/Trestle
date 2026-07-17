@@ -338,10 +338,17 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                 child.as_str().parse().expect("int literal fits in usize"),
             )),
         )),
-        Rule::string => Ok(spanned(
-            span,
-            ExpressionKind::Literal(Literal::String(child.as_str().to_string())),
-        )),
+        Rule::string => {
+            // `as_str()` is the raw token incl. the surrounding quotes; strip them,
+            // then resolve escape sequences to their runtime characters.
+            let raw = child.as_str();
+            let inner = &raw[1..raw.len() - 1]; // quotes are single-byte ASCII
+            let value = unescaper::unescape(inner).map_err(|err| BuildError::InvalidStringEscape {
+                message: err.to_string(),
+                span: source_span_from_pest_span(span),
+            })?;
+            Ok(spanned(span, ExpressionKind::Literal(Literal::String(value))))
+        }
         Rule::boolean => Ok(spanned(
             span,
             ExpressionKind::Literal(Literal::Bool(child.as_str() == "true")),
@@ -413,6 +420,29 @@ mod tests {
         assert!(
             rendered.contains("requires a type annotation"),
             "expected a missing-type diagnostic, got:\n{rendered}"
+        );
+    }
+
+    /// A string literal's escape sequences are resolved to their runtime characters:
+    /// the source `"a\nb"` stores the three-character value `a<newline>b`, and the
+    /// surrounding quotes are stripped.
+    #[test]
+    fn string_literal_escapes_are_unescaped() {
+        match only_expr_kind(r#""a\nb""#) {
+            ExpressionKind::Literal(Literal::String(s)) => assert_eq!(s, "a\nb"),
+            other => panic!("expected string literal, got {other:?}"),
+        }
+    }
+
+    /// An invalid escape sequence is rejected with a targeted diagnostic rather than
+    /// silently mangling the value or panicking.
+    #[test]
+    fn invalid_string_escape_reports_diagnostic() {
+        let report = parse(r#""a\xZZ""#).expect_err("invalid escape must be rejected");
+        let rendered = format!("{report:?}");
+        assert!(
+            rendered.contains("invalid escape sequence"),
+            "expected an invalid-escape diagnostic, got:\n{rendered}"
         );
     }
 

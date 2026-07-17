@@ -46,6 +46,14 @@ pub enum BuildError {
         span: SourceSpan,
     },
 
+    #[error("invalid escape sequence in string literal: {message}")]
+    #[diagnostic(code(trestle::invalid_string_escape))]
+    InvalidStringEscape {
+        message: String,
+        #[label("this string has an invalid escape sequence")]
+        span: SourceSpan,
+    },
+
     #[error("internal invariant violated")]
     #[diagnostic(code(trestle::invariant))]
     Invariant { span: SourceSpan },

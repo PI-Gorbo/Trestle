@@ -1,0 +1,7 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: value
+---
+Float(
+    0.5,
+)
