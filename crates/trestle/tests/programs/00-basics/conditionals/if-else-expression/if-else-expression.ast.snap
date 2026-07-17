@@ -135,78 +135,97 @@ LoweredProgram {
                 name: "bigger",
                 type_dec: None,
                 value: Expression {
-                    kind: If {
-                        condition: Expression {
-                            kind: Binary(
-                                Gt,
-                                Expression {
-                                    kind: Literal(
-                                        Int(
-                                            3,
-                                        ),
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "n",
+                                    type_dec: Named(
+                                        "Int",
                                     ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            332,
-                                        ),
-                                        length: 1,
-                                    },
-                                },
-                                Expression {
-                                    kind: Literal(
-                                        Int(
-                                            2,
-                                        ),
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            336,
-                                        ),
-                                        length: 1,
-                                    },
                                 },
                             ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    332,
-                                ),
-                                length: 5,
-                            },
-                        },
-                        true_pathway: Expression {
-                            kind: Literal(
-                                String(
-                                    "Bigger",
-                                ),
-                            ),
-                            span: SourceSpan {
-                                offset: SourceOffset(
-                                    348,
-                                ),
-                                length: 8,
-                            },
-                        },
-                        false_pathway: Some(
-                            Expression {
-                                kind: Literal(
-                                    String(
-                                        "Smaller",
+                            return_type: None,
+                            body: Expression {
+                                kind: If {
+                                    condition: Expression {
+                                        kind: Binary(
+                                            Gt,
+                                            Expression {
+                                                kind: Var(
+                                                    "n",
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        344,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                            Expression {
+                                                kind: Literal(
+                                                    Int(
+                                                        3,
+                                                    ),
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        348,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                344,
+                                            ),
+                                            length: 5,
+                                        },
+                                    },
+                                    true_pathway: Expression {
+                                        kind: Literal(
+                                            String(
+                                                "Bigger",
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                360,
+                                            ),
+                                            length: 8,
+                                        },
+                                    },
+                                    false_pathway: Some(
+                                        Expression {
+                                            kind: Literal(
+                                                String(
+                                                    "Smaller",
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    388,
+                                                ),
+                                                length: 9,
+                                            },
+                                        },
                                     ),
-                                ),
+                                },
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        376,
+                                        340,
                                     ),
-                                    length: 9,
+                                    length: 61,
                                 },
                             },
-                        ),
-                    },
+                        },
+                    ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            328,
+                            323,
                         ),
-                        length: 61,
+                        length: 78,
                     },
                 },
             },
@@ -214,18 +233,57 @@ LoweredProgram {
                 offset: SourceOffset(
                     310,
                 ),
-                length: 79,
+                length: 91,
             },
         },
         Expression {
-            kind: Var(
-                "bigger",
-            ),
+            kind: FunctionInvocation {
+                function_name: "bigger",
+                expressions: [
+                    Expression {
+                        kind: FunctionInvocation {
+                            function_name: "abs",
+                            expressions: [
+                                Expression {
+                                    kind: Unary(
+                                        Neg,
+                                        Expression {
+                                            kind: Literal(
+                                                Int(
+                                                    10,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    413,
+                                                ),
+                                                length: 2,
+                                            },
+                                        },
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            412,
+                                        ),
+                                        length: 3,
+                                    },
+                                },
+                            ],
+                        },
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                408,
+                            ),
+                            length: 8,
+                        },
+                    },
+                ],
+            },
             span: SourceSpan {
                 offset: SourceOffset(
-                    389,
+                    401,
                 ),
-                length: 6,
+                length: 16,
             },
         },
     ],

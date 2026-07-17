@@ -3,10 +3,10 @@
 // and an else-expression. Needs booleans + comparison (and subtraction for `0 - n`).
 
 let abs = (n: Int) => if (n < 0) 0 - n else n
-let bigger =
-    if (3 > 2)
+let bigger = (n: Int) =>
+    if (n > 3)
         "Bigger"
     else
         "Smaller"
 
-bigger
+bigger(abs(-10))
