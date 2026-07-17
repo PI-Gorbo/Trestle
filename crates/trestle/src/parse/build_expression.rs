@@ -79,29 +79,27 @@ fn build_list_of_expressions(pair: Pair<Rule>) -> Result<Expression, BuildError>
 fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
 
-    let (name, value) =
-        pair.into_inner()
-            .fold((String::new(), None), |(mut name, mut value), p| {
-                match p.as_rule() {
-                    Rule::let_kw => {}
-                    Rule::identifier_with_optional_type_declaration => {
-                        let ident = p
-                            .into_inner()
-                            .next()
-                            .expect("binding target starts with an identifier");
-                        name = ident.as_str().to_string();
-                    }
-                    Rule::expr => value = Some(build_expr(p)),
-                    rule => unreachable!("unexpected rule in let_binding: {:?}", rule),
+    let (name, type_dec, value) = pair.into_inner().fold(
+        (String::new(), None, None),
+        |(mut name, mut type_dec, mut value), p| {
+            match p.as_rule() {
+                Rule::let_kw => {}
+                Rule::identifier_with_optional_type_declaration => {
+                    (name, type_dec) = build_binding_target(p);
                 }
-                (name, value)
-            });
+                Rule::expr => value = Some(build_expr(p)),
+                rule => unreachable!("unexpected rule in let_binding: {:?}", rule),
+            }
+            (name, type_dec, value)
+        },
+    );
 
     match value {
         Some(expr) => Ok(spanned(
             span,
             ExpressionKind::Let {
                 name,
+                type_dec,
                 value: Box::new(expr?),
             },
         )),
@@ -174,45 +172,34 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     ))
 }
 
-struct BuildParamCtx {
-    name: Option<String>,
-    type_dec: Option<TypeDeclaration>,
+/// Parse an `identifier_with_optional_type_declaration` (`identifier ~
+/// (type_declaration)?`) into its binding name and optional type annotation.
+/// Shared by `let` bindings (annotation optional) and `build_param` (annotation
+/// required — the caller enforces it). The grammar guarantees the identifier.
+fn build_binding_target(pair: Pair<Rule>) -> (String, Option<TypeDeclaration>) {
+    pair.into_inner()
+        .fold((String::new(), None), |(mut name, mut type_dec), p| {
+            match p.as_rule() {
+                Rule::identifier => name = p.as_str().to_string(),
+                Rule::type_declaration => type_dec = Some(build_type(p)),
+                rule => unreachable!(
+                    "unexpected rule in identifier_with_optional_type_declaration: {:?}",
+                    rule
+                ),
+            }
+            (name, type_dec)
+        })
 }
 
 fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {
     let span = source_span_from_pest_span(pair.as_span());
 
-    pair.into_inner()
-        .try_fold(
-            BuildParamCtx {
-                name: None,
-                type_dec: None,
-            },
-            |state, pair| match pair.as_rule() {
-                Rule::identifier => Ok(BuildParamCtx {
-                    name: Some(pair.as_str().to_string()),
-                    ..state
-                }),
-                Rule::type_declaration => Ok(BuildParamCtx {
-                    type_dec: Some(build_type(pair)),
-                    ..state
-                }),
-                rule => Err(BuildError::UnexpectedRule { rule, span }),
-            },
-        )
-        // The grammar accepts untyped params (so `=>` commits the lambda branch); a
-        // required type that's missing is rejected here, pointing the caret at the param.
-        .and_then(|values| match values {
-            BuildParamCtx {
-                name: Some(name),
-                type_dec: Some(type_dec),
-            } => Ok(Param { name, type_dec }),
-            BuildParamCtx {
-                name: Some(name),
-                type_dec: None,
-            } => Err(BuildError::MissingParamType { name, span }),
-            _ => Err(BuildError::Invariant { span }),
-        })
+    // The grammar accepts untyped params (so `=>` commits the lambda branch); a
+    // required type that's missing is rejected here, pointing the caret at the param.
+    match build_binding_target(pair) {
+        (name, Some(type_dec)) => Ok(Param { name, type_dec }),
+        (name, None) => Err(BuildError::MissingParamType { name, span }),
+    }
 }
 
 fn build_type_opt(pair: Pair<Rule>) -> Option<TypeDeclaration> {
@@ -343,11 +330,15 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             // then resolve escape sequences to their runtime characters.
             let raw = child.as_str();
             let inner = &raw[1..raw.len() - 1]; // quotes are single-byte ASCII
-            let value = unescaper::unescape(inner).map_err(|err| BuildError::InvalidStringEscape {
-                message: err.to_string(),
-                span: source_span_from_pest_span(span),
-            })?;
-            Ok(spanned(span, ExpressionKind::Literal(Literal::String(value))))
+            let value =
+                unescaper::unescape(inner).map_err(|err| BuildError::InvalidStringEscape {
+                    message: err.to_string(),
+                    span: source_span_from_pest_span(span),
+                })?;
+            Ok(spanned(
+                span,
+                ExpressionKind::Literal(Literal::String(value)),
+            ))
         }
         Rule::boolean => Ok(spanned(
             span,

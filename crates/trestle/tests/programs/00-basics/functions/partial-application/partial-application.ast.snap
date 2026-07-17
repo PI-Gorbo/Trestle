@@ -7,6 +7,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "add",
+                type_dec: None,
                 value: Expression {
                     kind: Lambda(
                         Lambda {
@@ -93,6 +94,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "mul",
+                type_dec: None,
                 value: Expression {
                     kind: Lambda(
                         Lambda {
@@ -179,6 +181,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "inc",
+                type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
                         function_name: "add",
@@ -216,6 +219,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "triple",
+                type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
                         function_name: "mul",
@@ -253,6 +257,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "result",
+                type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
                         function_name: "triple",

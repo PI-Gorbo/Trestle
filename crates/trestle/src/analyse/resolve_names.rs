@@ -169,12 +169,17 @@ fn resolve_expression(
         // A `let` mints a binding and hands an extended scope to its successors — even when its
         // value fails to resolve, so later references to the name don't cascade into spurious
         // `UnboundName`s.
-        ExpressionKind::Let { name, value } => {
+        ExpressionKind::Let {
+            name,
+            type_dec,
+            value,
+        } => {
             let value = resolve_subexpr(*value, scope, bindings_arena);
             let (binding, extended) = bind_let(name, span, scope, bindings_arena);
             let node = value.map(|value| ResolvedExpression {
                 kind: ResolvedExpressionKind::Let {
                     binding,
+                    type_dec,
                     value: Box::new(value),
                 },
                 span,
@@ -278,11 +283,16 @@ fn resolve_subexpr(
         }
         // A `let` here is in expression position: its binding has no following siblings to see it,
         // so the extended scope is discarded (only [`resolve_expression`] threads it to siblings).
-        ExpressionKind::Let { name, value } => {
+        ExpressionKind::Let {
+            name,
+            type_dec,
+            value,
+        } => {
             let value = resolve_subexpr(*value, scope, bindings_arena)?;
             let (binding, _extended) = bind_let(name, span, scope, bindings_arena);
             ResolvedExpressionKind::Let {
                 binding,
+                type_dec,
                 value: Box::new(value),
             }
         }

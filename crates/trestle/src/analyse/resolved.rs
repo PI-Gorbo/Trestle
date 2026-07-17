@@ -38,6 +38,8 @@ pub enum ResolvedExpressionKind {
     FunctionInvocation(BindingId, Vec<ResolvedExpression>), // callee resolved; was String
     Let {
         binding: BindingId, // was name: String
+        /// Raw annotation, still unresolved — pass 2 interprets it into a [`Type`](super::analysed::Type).
+        type_dec: Option<TypeDeclaration>,
         value: Box<ResolvedExpression>,
     },
     Block(Vec<ResolvedExpression>),

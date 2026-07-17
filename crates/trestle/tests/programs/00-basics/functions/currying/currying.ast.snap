@@ -7,6 +7,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "add",
+                type_dec: None,
                 value: Expression {
                     kind: Lambda(
                         Lambda {
@@ -93,6 +94,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "add10",
+                type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
                         function_name: "add",
@@ -130,6 +132,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "z",
+                type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
                         function_name: "add10",
@@ -167,6 +170,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "w",
+                type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
                         function_name: "add",

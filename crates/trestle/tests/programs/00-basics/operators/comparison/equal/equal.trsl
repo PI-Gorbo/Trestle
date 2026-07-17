@@ -1,0 +1,4 @@
+// TARGET: binary `==` — equality comparison. Binary(Eq, 2 + 2, 4) -> Bool.
+// Keeps the nested `2 + 2` so `==` is exercised over a compound operand.
+
+2 + 2 == 4

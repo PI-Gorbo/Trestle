@@ -7,6 +7,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "a",
+                type_dec: None,
                 value: Expression {
                     kind: Binary(
                         Add,
@@ -79,6 +80,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "b",
+                type_dec: None,
                 value: Expression {
                     kind: Binary(
                         Mul,
@@ -151,6 +153,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "c",
+                type_dec: None,
                 value: Expression {
                     kind: Binary(
                         Add,

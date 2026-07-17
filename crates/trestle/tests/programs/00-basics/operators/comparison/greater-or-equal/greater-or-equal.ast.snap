@@ -1,0 +1,45 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Binary(
+                Ge,
+                Expression {
+                    kind: Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            176,
+                        ),
+                        length: 1,
+                    },
+                },
+                Expression {
+                    kind: Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            181,
+                        ),
+                        length: 1,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    176,
+                ),
+                length: 6,
+            },
+        },
+    ],
+}

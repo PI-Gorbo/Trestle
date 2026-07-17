@@ -281,10 +281,24 @@ fn infer_type_of_expression(
             )
         }
 
-        ResolvedExpressionKind::Let { binding, value } => {
+        ResolvedExpressionKind::Let {
+            binding,
+            type_dec,
+            value,
+        } => {
             let value = infer_type_of_expression(*value, env, bindings)?;
-            // Record the binding's type for later references: `env.set(binding, value.ty…)`.
-            env.set(binding, value.ty.clone());
+            // With an annotation the binding takes the annotated type; without one it takes the
+            // value's inferred type. Record it *before* unifying so that a mismatch still leaves the
+            // binding typed — otherwise `zip_bindings_with_types` would mask the `TypeMismatch` with
+            // an `UntypedBindingAfterTypeCheck`.
+            let bound_ty = match &type_dec {
+                Some(dec) => resolve_type_dec(dec, span)?,
+                None => value.ty.clone(),
+            };
+            env.set(binding, bound_ty.clone());
+            // The value's type must unify with the binding's; for an annotated `let` a differing
+            // value type is a `TypeMismatch` (expected = annotation, found = value).
+            unify(&value.ty, &bound_ty, span)?;
 
             (
                 ExpressionKind::Let {
@@ -446,6 +460,14 @@ mod tests {
             span: SourceSpan::from((0, 0)),
             ty: Type::Literal(Literal::Int),
         }
+    }
+
+    #[test]
+    fn let_annotation_mismatch_is_an_error() {
+        // Annotating a String value as `Int` must be a type error.
+        let errors = analyse_src("let x: Int = \"hello\"")
+            .expect_err("String value annotated Int is a type error");
+        assert!(matches!(errors[0], AnalysisError::TypeMismatch { .. }));
     }
 
     #[test]

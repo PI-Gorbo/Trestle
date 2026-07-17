@@ -1,0 +1,69 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Binary(
+                Eq,
+                Expression {
+                    kind: Binary(
+                        Add,
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    153,
+                                ),
+                                length: 1,
+                            },
+                        },
+                        Expression {
+                            kind: Literal(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    157,
+                                ),
+                                length: 1,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            153,
+                        ),
+                        length: 5,
+                    },
+                },
+                Expression {
+                    kind: Literal(
+                        Int(
+                            4,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            162,
+                        ),
+                        length: 1,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    153,
+                ),
+                length: 10,
+            },
+        },
+    ],
+}

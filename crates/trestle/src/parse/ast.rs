@@ -83,6 +83,7 @@ pub enum ExpressionKind {
     },
     Let {
         name: String,
+        type_dec: Option<TypeDeclaration>,
         value: Box<Expression>,
     },
     Block(Vec<Expression>),

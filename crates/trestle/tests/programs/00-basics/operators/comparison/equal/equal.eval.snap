@@ -2,4 +2,6 @@
 source: crates/trestle/tests/corpus.rs
 expression: value
 ---
-Unit
+Bool(
+    true,
+)

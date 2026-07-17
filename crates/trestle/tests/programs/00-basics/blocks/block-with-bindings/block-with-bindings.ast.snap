@@ -7,12 +7,14 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "total",
+                type_dec: None,
                 value: Expression {
                     kind: Block(
                         [
                             Expression {
                                 kind: Let {
                                     name: "a",
+                                    type_dec: None,
                                     value: Expression {
                                         kind: Literal(
                                             Int(
@@ -37,6 +39,7 @@ LoweredProgram {
                             Expression {
                                 kind: Let {
                                     name: "b",
+                                    type_dec: None,
                                     value: Expression {
                                         kind: Literal(
                                             Int(

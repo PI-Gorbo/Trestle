@@ -7,12 +7,14 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "x",
+                type_dec: None,
                 value: Expression {
                     kind: Block(
                         [
                             Expression {
                                 kind: Let {
                                     name: "inner",
+                                    type_dec: None,
                                     value: Expression {
                                         kind: Block(
                                             [

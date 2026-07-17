@@ -228,8 +228,33 @@ trsl_test!(
     [ast, analyse, eval]
 );
 trsl_test!(
-    basics_operators_comparison,
-    "00-basics/operators/comparison/comparison.trsl",
+    basics_operators_comparison_greater_than,
+    "00-basics/operators/comparison/greater-than/greater-than.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_comparison_less_than,
+    "00-basics/operators/comparison/less-than/less-than.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_comparison_greater_or_equal,
+    "00-basics/operators/comparison/greater-or-equal/greater-or-equal.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_comparison_less_or_equal,
+    "00-basics/operators/comparison/less-or-equal/less-or-equal.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_comparison_equal,
+    "00-basics/operators/comparison/equal/equal.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_comparison_not_equal,
+    "00-basics/operators/comparison/not-equal/not-equal.trsl",
     [ast, analyse, eval]
 );
 trsl_test!(
@@ -269,22 +294,22 @@ trsl_test!(
 trsl_test!(
     basics_functions_lambda,
     "00-basics/functions/lambda/lambda.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_functions_typed_lambda,
     "00-basics/functions/typed-lambda/typed-lambda.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_functions_nested_lambda,
     "00-basics/functions/nested-lambda/nested-lambda.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_functions_function_invocation,
     "00-basics/functions/function-invocation/function-invocation.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_functions_currying,

@@ -1,0 +1,99 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: value
+---
+Closure {
+    lambda: Lambda {
+        parameter: Some(
+            Param {
+                binding: BindingId(
+                    0,
+                ),
+                ty: Literal(
+                    Int,
+                ),
+            },
+        ),
+        body: AnalysedExpression {
+            kind: Lambda(
+                Lambda {
+                    parameter: Some(
+                        Param {
+                            binding: BindingId(
+                                1,
+                            ),
+                            ty: Literal(
+                                Int,
+                            ),
+                        },
+                    ),
+                    body: AnalysedExpression {
+                        kind: Binary(
+                            Add,
+                            AnalysedExpression {
+                                kind: Var(
+                                    BindingId(
+                                        0,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        264,
+                                    ),
+                                    length: 1,
+                                },
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                            AnalysedExpression {
+                                kind: Var(
+                                    BindingId(
+                                        1,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        268,
+                                    ),
+                                    length: 1,
+                                },
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                264,
+                            ),
+                            length: 5,
+                        },
+                        ty: Literal(
+                            Int,
+                        ),
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    252,
+                ),
+                length: 17,
+            },
+            ty: Fn(
+                Some(
+                    Literal(
+                        Int,
+                    ),
+                ),
+                Literal(
+                    Int,
+                ),
+            ),
+        },
+    },
+    env: Environment(
+        None,
+    ),
+}

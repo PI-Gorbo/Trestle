@@ -7,6 +7,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "abs",
+                type_dec: None,
                 value: Expression {
                     kind: Lambda(
                         Lambda {
@@ -132,6 +133,7 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "bigger",
+                type_dec: None,
                 value: Expression {
                     kind: If {
                         condition: Expression {

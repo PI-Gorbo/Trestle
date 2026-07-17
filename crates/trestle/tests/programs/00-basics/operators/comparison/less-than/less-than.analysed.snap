@@ -1,0 +1,55 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+AnalysedProgram {
+    expressions: [
+        AnalysedExpression {
+            kind: Binary(
+                Lt,
+                AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            3,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            163,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+                AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            5,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            167,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    163,
+                ),
+                length: 5,
+            },
+            ty: Literal(
+                Bool,
+            ),
+        },
+    ],
+    bindings: [],
+}

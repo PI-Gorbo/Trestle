@@ -1,0 +1,4 @@
+// TARGET: binary `>` — greater-than comparison. Binary(Gt, 5, 3) -> Bool.
+// The rest of the family live beside this: comparison/less-than, greater-or-equal, …
+
+5 > 3

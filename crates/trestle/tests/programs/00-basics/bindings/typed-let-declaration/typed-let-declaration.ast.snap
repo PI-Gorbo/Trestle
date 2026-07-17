@@ -7,6 +7,11 @@ LoweredProgram {
         Expression {
             kind: Let {
                 name: "x",
+                type_dec: Some(
+                    Named(
+                        "Int",
+                    ),
+                ),
                 value: Expression {
                     kind: Literal(
                         Int(
@@ -15,7 +20,7 @@ LoweredProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            349,
+                            13,
                         ),
                         length: 2,
                     },
@@ -23,7 +28,7 @@ LoweredProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    336,
+                    0,
                 ),
                 length: 16,
             },
@@ -34,7 +39,7 @@ LoweredProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    352,
+                    16,
                 ),
                 length: 1,
             },
