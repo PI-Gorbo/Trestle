@@ -1,7 +1,0 @@
-// TARGET: the boolean combinators — binary `&&`, binary `||`, and unary `!`.
-// Boolean literals are covered in literals/bool; the comparisons that feed these
-// in real code are in operators/comparison.
-
-let both    = true && false
-let either  = true || false
-let negated  = !true

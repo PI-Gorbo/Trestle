@@ -244,5 +244,16 @@ LoweredProgram {
                 length: 34,
             },
         },
+        Expression {
+            kind: Var(
+                "nested",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    196,
+                ),
+                length: 6,
+            },
+        },
     ],
 }

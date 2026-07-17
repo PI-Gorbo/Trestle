@@ -195,42 +195,57 @@ trsl_test!(
 trsl_test!(
     basics_operators_addition,
     "00-basics/operators/addition/addition.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_operators_multiplication,
     "00-basics/operators/multiplication/multiplication.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_operators_precedence_and_grouping,
     "00-basics/operators/precedence-and-grouping/precedence-and-grouping.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_operators_subtraction,
     "00-basics/operators/subtraction/subtraction.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_operators_division,
     "00-basics/operators/division/division.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_integer_division,
+    "00-basics/operators/integer-division/integer-division.trsl",
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_operators_negation,
     "00-basics/operators/negation/negation.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_operators_comparison,
     "00-basics/operators/comparison/comparison.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
-    basics_operators_logical,
-    "00-basics/operators/logical/logical.trsl",
-    [ast, analyse]
+    basics_operators_logical_and,
+    "00-basics/operators/logical/and/and.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_logical_or,
+    "00-basics/operators/logical/or/or.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    basics_operators_logical_negation,
+    "00-basics/operators/logical/logical-negation/logical-negation.trsl",
+    [ast, analyse, eval]
 );
 
 // ── bindings ──────────────────────────────────────────────

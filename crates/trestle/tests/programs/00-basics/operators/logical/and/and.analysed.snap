@@ -6,48 +6,48 @@ AnalysedProgram {
     expressions: [
         AnalysedExpression {
             kind: Binary(
-                Sub,
+                And,
                 AnalysedExpression {
                     kind: Literal(
-                        Int(
-                            5,
+                        Bool(
+                            true,
                         ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            86,
+                            165,
                         ),
-                        length: 1,
+                        length: 4,
                     },
                     ty: Literal(
-                        Int,
+                        Bool,
                     ),
                 },
                 AnalysedExpression {
                     kind: Literal(
-                        Int(
-                            7,
+                        Bool(
+                            false,
                         ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            90,
+                            173,
                         ),
-                        length: 1,
+                        length: 5,
                     },
                     ty: Literal(
-                        Int,
+                        Bool,
                     ),
                 },
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    86,
+                    165,
                 ),
-                length: 5,
+                length: 13,
             },
             ty: Literal(
-                Int,
+                Bool,
             ),
         },
     ],

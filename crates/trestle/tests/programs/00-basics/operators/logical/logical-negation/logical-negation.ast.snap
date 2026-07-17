@@ -6,26 +6,26 @@ LoweredProgram {
     expressions: [
         Expression {
             kind: Unary(
-                Neg,
+                Not,
                 Expression {
                     kind: Literal(
-                        Int(
-                            7,
+                        Bool(
+                            true,
                         ),
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            292,
+                            146,
                         ),
-                        length: 1,
+                        length: 4,
                     },
                 },
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    291,
+                    145,
                 ),
-                length: 2,
+                length: 5,
             },
         },
     ],

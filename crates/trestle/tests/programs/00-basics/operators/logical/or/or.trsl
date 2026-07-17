@@ -1,0 +1,3 @@
+// TARGET: binary `||` — short-circuiting logical OR. Binary(Or, true, false).
+
+true || false

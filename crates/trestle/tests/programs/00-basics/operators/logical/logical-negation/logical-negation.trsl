@@ -1,0 +1,4 @@
+// TARGET: unary `!` — logical NOT. Unary(Not, true). Distinct from numeric
+// negation `-` (see operators/negation), which negates a number.
+
+!true

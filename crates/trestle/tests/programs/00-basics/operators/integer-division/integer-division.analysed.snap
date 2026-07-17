@@ -5,8 +5,8 @@ expression: analysed
 AnalysedProgram {
     expressions: [
         AnalysedExpression {
-            kind: Unary(
-                Neg,
+            kind: Binary(
+                Div,
                 AnalysedExpression {
                     kind: Literal(
                         Int(
@@ -15,7 +15,23 @@ AnalysedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            292,
+                            103,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+                AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            2,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            107,
                         ),
                         length: 1,
                     },
@@ -26,9 +42,9 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    291,
+                    103,
                 ),
-                length: 2,
+                length: 5,
             },
             ty: Literal(
                 Int,

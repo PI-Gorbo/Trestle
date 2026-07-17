@@ -1,0 +1,4 @@
+// TARGET: binary `&&` — short-circuiting logical AND. Binary(And, true, false).
+// The other combinators live beside this: logical/or, logical/logical-negation.
+
+true && false

@@ -1,0 +1,3 @@
+// TARGET: integer division truncates toward zero — Binary(Div, 7, 2) evaluates to Int(3), not 3.5.
+
+7 / 2
