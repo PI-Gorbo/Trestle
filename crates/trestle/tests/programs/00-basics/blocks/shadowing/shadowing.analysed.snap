@@ -1,0 +1,197 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+AnalysedProgram {
+    expressions: [
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    0,
+                ),
+                value: AnalysedExpression {
+                    kind: Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            244,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 10,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    2,
+                ),
+                value: AnalysedExpression {
+                    kind: Block(
+                        [
+                            AnalysedExpression {
+                                kind: Let {
+                                    binding: BindingId(
+                                        1,
+                                    ),
+                                    value: AnalysedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                100,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                272,
+                                            ),
+                                            length: 3,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        264,
+                                    ),
+                                    length: 61,
+                                },
+                                ty: Unit,
+                            },
+                            AnalysedExpression {
+                                kind: Var(
+                                    BindingId(
+                                        1,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        325,
+                                    ),
+                                    length: 1,
+                                },
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                        ],
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            258,
+                        ),
+                        length: 89,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    246,
+                ),
+                length: 101,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Binary(
+                Add,
+                AnalysedExpression {
+                    kind: Var(
+                        BindingId(
+                            2,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            348,
+                        ),
+                        length: 5,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+                AnalysedExpression {
+                    kind: Var(
+                        BindingId(
+                            0,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            356,
+                        ),
+                        length: 1,
+                    },
+                    ty: Literal(
+                        Int,
+                    ),
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    348,
+                ),
+                length: 9,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
+    ],
+    bindings: [
+        AnalysedBinding {
+            name: "x",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 10,
+            },
+        },
+        AnalysedBinding {
+            name: "x",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    264,
+                ),
+                length: 61,
+            },
+        },
+        AnalysedBinding {
+            name: "inner",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    246,
+                ),
+                length: 101,
+            },
+        },
+    ],
+}

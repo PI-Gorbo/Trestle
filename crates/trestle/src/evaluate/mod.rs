@@ -162,6 +162,15 @@ fn eval_expr(env: &Environment, expr: &AnalysedExpression) -> Result<Value, Eval
                 .lookup(*callee)
                 .expect("resolved function is bound in the environment")
                 .clone();
+            // A zero-arg call `f()` invokes a nullary closure once — there are no arguments to
+            // fold, but the call must still run the body (`apply` discards the unit argument).
+            if args.is_empty() {
+                if let Value::Closure { lambda, .. } = &callee {
+                    if lambda.parameter.is_none() {
+                        callee = apply(callee, Value::Unit)?;
+                    }
+                }
+            }
             for arg in args {
                 let arg = eval_expr(env, arg)?;
                 callee = apply(callee, arg)?;

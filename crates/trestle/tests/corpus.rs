@@ -17,9 +17,11 @@
 //!
 //! Each `trsl_test!` line lists the stages that are currently expected to pass
 //! for that program and generates one `#[test]` per stage (`<name>_ast`,
-//! `<name>_analysed`, `<name>_eval`). Stages are opt-in because `analyse` and
-//! `evaluate` are still being built out — add `analyse`/`eval` to a program's list
-//! once that stage works for it. See the macro docs below.
+//! `<name>_analysed`, `<name>_eval`, `<name>_error`). Stages are opt-in because
+//! `analyse` and `evaluate` are still being built out — add `analyse`/`eval` to a
+//! program's list once that stage works for it. Use `error` for a program that is
+//! *meant* to be rejected: it snapshots the batch of `AnalysisError`s. See the
+//! macro docs below.
 
 use miette::{NamedSource, Report};
 use trestle::analyse::AnalysisError;
@@ -38,11 +40,15 @@ fn render_analysis_errors(path: &str, src: &str, errors: Vec<AnalysisError>) -> 
 }
 
 /// A compiler stage to snapshot. Each maps to a public entry point and a
-/// snapshot-file suffix (`.ast` / `.analysed` / `.eval`).
+/// snapshot-file suffix (`.ast` / `.analysed` / `.eval` / `.error`).
 enum Stage {
     Ast,
     Analyse,
     Eval,
+    /// Analyse a program that is *expected to fail*, snapshotting the batch of
+    /// `AnalysisError`s (suffix `.error`) rather than a success value. This is how
+    /// the corpus pins down diagnostics — e.g. an out-of-scope reference.
+    Error,
 }
 
 /// Run one stage of one program and snapshot its `Debug` output *next to the
@@ -101,6 +107,15 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                     .unwrap_or_else(|e| panic!("failed to eval `{path}`:\n{e:?}"));
                 insta::assert_debug_snapshot!(format!("{stem}.eval"), value);
             }
+            // Inverse of `Analyse`: the program is *meant* to be rejected, so a success is
+            // the failure mode. Snapshot the errors' structured `Debug` (matching the other
+            // stages' style) rather than the miette-rendered text, keeping the snapshot stable.
+            Stage::Error => match trestle::analyse::analyse(program) {
+                Ok(_) => panic!("expected `{path}` to fail analysis, but it succeeded"),
+                Err(errors) => {
+                    insta::assert_debug_snapshot!(format!("{stem}.error"), errors);
+                }
+            },
         }
     });
 }
@@ -109,7 +124,8 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
 ///
 /// The path is the program's location under `programs/`, e.g.
 /// `"00-basics/operators/addition/addition.trsl"`. Each active stage becomes its
-/// own `#[test]` (`<name>_ast`, `<name>_analysed`, `<name>_eval`).
+/// own `#[test]` (`<name>_ast`, `<name>_analysed`, `<name>_eval`, `<name>_error`).
+/// The `error` stage expects analysis to *fail* and snapshots the errors.
 ///
 /// - `trsl_test!(name, "path.trsl")` — default stage list `[ast]`.
 /// - `trsl_test!(name, "path.trsl", [ast, analyse, eval])` — opt into more stages
@@ -160,6 +176,15 @@ macro_rules! trsl_test {
             $(#[ignore = $reason])?
             fn [<$name _eval>]() {
                 run_stage($path, include_str!(concat!("programs/", $path)), Stage::Eval);
+            }
+        }
+    };
+    (@stage $name:ident, $path:literal, error $(, ignore = $reason:literal)?) => {
+        paste::paste! {
+            #[test]
+            $(#[ignore = $reason])?
+            fn [<$name _error>]() {
+                run_stage($path, include_str!(concat!("programs/", $path)), Stage::Error);
             }
         }
     };
@@ -289,6 +314,13 @@ trsl_test!(
     "00-basics/bindings/typed-let-declaration/typed-let-declaration.trsl",
     [ast, analyse, eval]
 );
+// Re-declaring a name in the same scope is a `DuplicateBinding` error (shadowing
+// needs a new scope). The `error` stage pins that diagnostic.
+trsl_test!(
+    basics_bindings_duplicate_binding,
+    "00-basics/bindings/duplicate-binding/duplicate-binding.trsl",
+    [ast, error]
+);
 
 // ── functions ─────────────────────────────────────────────
 trsl_test!(
@@ -324,6 +356,12 @@ trsl_test!(
 trsl_test!(
     basics_functions_zero_param_lambda,
     "00-basics/functions/zero-param-lambda/zero-param-lambda.trsl",
+    [ast, analyse, eval]
+);
+
+trsl_test!(
+    basics_functions_closures,
+    "00-basics/functions/closures/closure.trsl",
     [ast, analyse, eval]
 );
 
@@ -371,6 +409,21 @@ trsl_test!(
 trsl_test!(
     basics_blocks_if_else_block,
     "00-basics/blocks/if-else-block/if-else-block.trsl",
+    [ast, analyse, eval]
+);
+// A block-local binding referenced after its block closes is an `UnboundName`
+// error — the block's scope does not leak. The `error` stage pins that diagnostic.
+trsl_test!(
+    basics_blocks_block_scope_leak,
+    "00-basics/blocks/block-scope-leak/block-scope-leak.trsl",
+    [ast, error]
+);
+// A block-local `let` may reuse an enclosing name: the inner binding shadows the
+// outer one *within* the block, and the outer binding is restored once the block
+// closes. The eval value pins that the inner binding wins and the outer is intact.
+trsl_test!(
+    basics_blocks_shadowing,
+    "00-basics/blocks/shadowing/shadowing.trsl",
     [ast, analyse, eval]
 );
 

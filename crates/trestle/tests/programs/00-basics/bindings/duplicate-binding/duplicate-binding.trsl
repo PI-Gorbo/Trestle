@@ -1,0 +1,7 @@
+// A name may not be declared twice in the same scope. Shadowing requires a *new*
+// scope (a block or a lambda param); re-`let`-ing `x` at the same level is a
+// `DuplicateBinding` error, caught at analysis time.
+
+let x = 1
+let x = 2
+x

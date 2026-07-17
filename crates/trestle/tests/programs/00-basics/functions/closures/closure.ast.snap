@@ -1,0 +1,132 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "create_closure",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: None,
+                            return_type: None,
+                            body: Expression {
+                                kind: Block(
+                                    [
+                                        Expression {
+                                            kind: Let {
+                                                name: "myValue",
+                                                type_dec: None,
+                                                value: Expression {
+                                                    kind: Literal(
+                                                        Int(
+                                                            1,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            48,
+                                                        ),
+                                                        length: 1,
+                                                    },
+                                                },
+                                            },
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    34,
+                                                ),
+                                                length: 23,
+                                            },
+                                        },
+                                        Expression {
+                                            kind: Lambda(
+                                                Lambda {
+                                                    parameter: None,
+                                                    return_type: None,
+                                                    body: Expression {
+                                                        kind: Var(
+                                                            "myValue",
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                63,
+                                                            ),
+                                                            length: 7,
+                                                        },
+                                                    },
+                                                },
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    57,
+                                                ),
+                                                length: 15,
+                                            },
+                                        },
+                                    ],
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        27,
+                                    ),
+                                    length: 46,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            21,
+                        ),
+                        length: 52,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 73,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "closure",
+                type_dec: None,
+                value: Expression {
+                    kind: FunctionInvocation {
+                        function_name: "create_closure",
+                        expressions: [],
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            91,
+                        ),
+                        length: 16,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    77,
+                ),
+                length: 34,
+            },
+        },
+        Expression {
+            kind: FunctionInvocation {
+                function_name: "closure",
+                expressions: [],
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    111,
+                ),
+                length: 9,
+            },
+        },
+    ],
+}

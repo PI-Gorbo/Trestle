@@ -1,0 +1,126 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "x",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            244,
+                        ),
+                        length: 1,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    236,
+                ),
+                length: 10,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "inner",
+                type_dec: None,
+                value: Expression {
+                    kind: Block(
+                        [
+                            Expression {
+                                kind: Let {
+                                    name: "x",
+                                    type_dec: None,
+                                    value: Expression {
+                                        kind: Literal(
+                                            Int(
+                                                100,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                272,
+                                            ),
+                                            length: 3,
+                                        },
+                                    },
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        264,
+                                    ),
+                                    length: 61,
+                                },
+                            },
+                            Expression {
+                                kind: Var(
+                                    "x",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        325,
+                                    ),
+                                    length: 1,
+                                },
+                            },
+                        ],
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            258,
+                        ),
+                        length: 89,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    246,
+                ),
+                length: 101,
+            },
+        },
+        Expression {
+            kind: Binary(
+                Add,
+                Expression {
+                    kind: Var(
+                        "inner",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            348,
+                        ),
+                        length: 5,
+                    },
+                },
+                Expression {
+                    kind: Var(
+                        "x",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            356,
+                        ),
+                        length: 1,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    348,
+                ),
+                length: 9,
+            },
+        },
+    ],
+}

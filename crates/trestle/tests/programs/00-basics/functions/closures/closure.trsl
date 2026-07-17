@@ -1,0 +1,9 @@
+let create_closure = () => {
+    let myValue = 1
+
+    () => myValue
+}
+
+let closure = create_closure()
+
+closure()

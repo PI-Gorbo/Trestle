@@ -1,0 +1,69 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+LoweredProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "x",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            223,
+                        ),
+                        length: 1,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    215,
+                ),
+                length: 10,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "x",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            2,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            233,
+                        ),
+                        length: 1,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    225,
+                ),
+                length: 10,
+            },
+        },
+        Expression {
+            kind: Var(
+                "x",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    235,
+                ),
+                length: 1,
+            },
+        },
+    ],
+}

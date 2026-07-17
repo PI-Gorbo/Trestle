@@ -1,0 +1,10 @@
+// Shadowing: a block-local `let` may reuse a name from an enclosing scope. Inside
+// the block the inner binding wins; the outer binding is untouched and visible
+// again once the block closes — shadowing masks, it does not mutate.
+
+let x = 1
+let inner = {
+    let x = 100   // shadows the outer `x` within this block
+    x             // 100
+}
+inner + x         // 100 + 1 = 101

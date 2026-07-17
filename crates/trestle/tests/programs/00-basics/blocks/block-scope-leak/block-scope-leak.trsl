@@ -1,0 +1,9 @@
+// A block-local binding is scoped to its block. Referencing it after the block
+// closes is an unbound-name error, caught at analysis time: the binding does
+// not leak into the enclosing scope.
+
+let x = {
+    let inner = 1 + 1
+    inner + 10
+}
+inner

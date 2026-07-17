@@ -387,6 +387,15 @@ fn get_type_after_applying_arguments(
     arguments: &[AnalysedExpression],
     span: SourceSpan,
 ) -> Result<Type, AnalysisError> {
+    // A zero-argument call `f()` is a nullary invocation: peel the single `Fn(None, R)`
+    // arrow to its result `R`. (A bare reference `f` is a `Var`, never a FunctionInvocation,
+    // so an empty argument list here is always an explicit call.)
+    if arguments.is_empty() {
+        if let Type::Fn(None, return_type) = fn_type {
+            return Ok((**return_type).clone());
+        }
+    }
+
     // Before applying anything: a non-function callee is `NotAFunction`. This is distinct from
     // the over-application error, which we can only detect once we've started peeling arrows.
     if !arguments.is_empty() && !matches!(fn_type, Type::Fn(..)) {
