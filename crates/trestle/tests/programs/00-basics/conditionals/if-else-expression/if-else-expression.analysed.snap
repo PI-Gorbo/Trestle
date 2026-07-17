@@ -231,7 +231,7 @@ AnalysedProgram {
                         offset: SourceOffset(
                             328,
                         ),
-                        length: 59,
+                        length: 61,
                     },
                     ty: Literal(
                         String,
@@ -242,9 +242,25 @@ AnalysedProgram {
                 offset: SourceOffset(
                     310,
                 ),
-                length: 77,
+                length: 79,
             },
             ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Var(
+                BindingId(
+                    2,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    389,
+                ),
+                length: 6,
+            },
+            ty: Literal(
+                String,
+            ),
         },
     ],
     bindings: [
@@ -288,7 +304,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     310,
                 ),
-                length: 77,
+                length: 79,
             },
         },
     ],

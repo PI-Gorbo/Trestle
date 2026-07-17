@@ -8,3 +8,5 @@ let bigger =
         "Bigger"
     else
         "Smaller"
+
+bigger

@@ -206,7 +206,7 @@ LoweredProgram {
                         offset: SourceOffset(
                             328,
                         ),
-                        length: 59,
+                        length: 61,
                     },
                 },
             },
@@ -214,7 +214,18 @@ LoweredProgram {
                 offset: SourceOffset(
                     310,
                 ),
-                length: 77,
+                length: 79,
+            },
+        },
+        Expression {
+            kind: Var(
+                "bigger",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    389,
+                ),
+                length: 6,
             },
         },
     ],
