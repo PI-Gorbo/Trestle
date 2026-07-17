@@ -218,5 +218,16 @@ LoweredProgram {
                 length: 40,
             },
         },
+        Expression {
+            kind: Var(
+                "z",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    334,
+                ),
+                length: 1,
+            },
+        },
     ],
 }

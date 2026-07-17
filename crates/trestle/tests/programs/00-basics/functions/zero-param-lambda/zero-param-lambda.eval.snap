@@ -1,0 +1,28 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: value
+---
+Closure {
+    lambda: Lambda {
+        parameter: None,
+        body: AnalysedExpression {
+            kind: Literal(
+                Int(
+                    42,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    273,
+                ),
+                length: 2,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
+    },
+    env: Environment(
+        None,
+    ),
+}

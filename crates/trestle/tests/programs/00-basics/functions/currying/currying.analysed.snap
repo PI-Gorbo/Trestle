@@ -302,6 +302,22 @@ AnalysedProgram {
             },
             ty: Unit,
         },
+        AnalysedExpression {
+            kind: Var(
+                BindingId(
+                    4,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    334,
+                ),
+                length: 1,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
     ],
     bindings: [
         AnalysedBinding {

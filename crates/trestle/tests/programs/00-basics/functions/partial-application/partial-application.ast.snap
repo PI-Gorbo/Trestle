@@ -305,5 +305,16 @@ LoweredProgram {
                 length: 50,
             },
         },
+        Expression {
+            kind: Var(
+                "result",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    392,
+                ),
+                length: 6,
+            },
+        },
     ],
 }

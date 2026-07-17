@@ -8,3 +8,4 @@ let inc     = add(1)     // awaits `b`; inc(n) = n + 1
 let triple  = mul(3)     // awaits `b`; triple(n) = n * 3
 
 let result = triple(inc(9))   // triple(10) => 30
+result

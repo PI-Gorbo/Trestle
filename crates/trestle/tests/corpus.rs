@@ -314,17 +314,17 @@ trsl_test!(
 trsl_test!(
     basics_functions_currying,
     "00-basics/functions/currying/currying.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_functions_partial_application,
     "00-basics/functions/partial-application/partial-application.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_functions_zero_param_lambda,
     "00-basics/functions/zero-param-lambda/zero-param-lambda.trsl",
-    [ast, analyse]
+    [ast, analyse, eval]
 );
 
 // ── conditionals ──────────────────────────────────────────
