@@ -2,12 +2,16 @@
 // TARGET: "builders are just pipelines" — data-last, curried functions chained
 // with |> replace fluent method chains (Trestle has no `.` method calls).
 
-let withHost = (host, config) => config     // stubbed transforms; data-last
-let withPort = (port, config) => config
-let build    = (config) => config
+let withHost = (host: String, config: String) => config     // stubbed transforms; data-last
+let withPort = (port: Int, config: String) => config
+let build    = (config: String) => config
+
+let emptyConfig = "This is an example builder pattern"
 
 let server =
     emptyConfig
     |> withHost("localhost")
     |> withPort(8080)
     |> build
+
+server

@@ -1,0 +1,652 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+AnalysedProgram {
+    expressions: [
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    2,
+                ),
+                value: AnalysedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        0,
+                                    ),
+                                    ty: Literal(
+                                        String,
+                                    ),
+                                },
+                            ),
+                            body: AnalysedExpression {
+                                kind: Lambda(
+                                    Lambda {
+                                        parameter: Some(
+                                            Param {
+                                                binding: BindingId(
+                                                    1,
+                                                ),
+                                                ty: Literal(
+                                                    String,
+                                                ),
+                                            },
+                                        ),
+                                        body: AnalysedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    1,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    271,
+                                                ),
+                                                length: 6,
+                                            },
+                                            ty: Literal(
+                                                String,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        237,
+                                    ),
+                                    length: 78,
+                                },
+                                ty: Fn(
+                                    Some(
+                                        Literal(
+                                            String,
+                                        ),
+                                    ),
+                                    Literal(
+                                        String,
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            237,
+                        ),
+                        length: 78,
+                    },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                String,
+                            ),
+                        ),
+                        Fn(
+                            Some(
+                                Literal(
+                                    String,
+                                ),
+                            ),
+                            Literal(
+                                String,
+                            ),
+                        ),
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    222,
+                ),
+                length: 93,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    5,
+                ),
+                value: AnalysedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        3,
+                                    ),
+                                    ty: Literal(
+                                        Int,
+                                    ),
+                                },
+                            ),
+                            body: AnalysedExpression {
+                                kind: Lambda(
+                                    Lambda {
+                                        parameter: Some(
+                                            Param {
+                                                binding: BindingId(
+                                                    4,
+                                                ),
+                                                ty: Literal(
+                                                    String,
+                                                ),
+                                            },
+                                        ),
+                                        body: AnalysedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    4,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    361,
+                                                ),
+                                                length: 6,
+                                            },
+                                            ty: Literal(
+                                                String,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        330,
+                                    ),
+                                    length: 38,
+                                },
+                                ty: Fn(
+                                    Some(
+                                        Literal(
+                                            String,
+                                        ),
+                                    ),
+                                    Literal(
+                                        String,
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            330,
+                        ),
+                        length: 38,
+                    },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                        Fn(
+                            Some(
+                                Literal(
+                                    String,
+                                ),
+                            ),
+                            Literal(
+                                String,
+                            ),
+                        ),
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    315,
+                ),
+                length: 53,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    7,
+                ),
+                value: AnalysedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        6,
+                                    ),
+                                    ty: Literal(
+                                        String,
+                                    ),
+                                },
+                            ),
+                            body: AnalysedExpression {
+                                kind: Var(
+                                    BindingId(
+                                        6,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        403,
+                                    ),
+                                    length: 6,
+                                },
+                                ty: Literal(
+                                    String,
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            383,
+                        ),
+                        length: 28,
+                    },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                String,
+                            ),
+                        ),
+                        Literal(
+                            String,
+                        ),
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    368,
+                ),
+                length: 43,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    8,
+                ),
+                value: AnalysedExpression {
+                    kind: Literal(
+                        String(
+                            "This is an example builder pattern",
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            429,
+                        ),
+                        length: 36,
+                    },
+                    ty: Literal(
+                        String,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    411,
+                ),
+                length: 56,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    9,
+                ),
+                value: AnalysedExpression {
+                    kind: Binary(
+                        Pipe,
+                        AnalysedExpression {
+                            kind: Binary(
+                                Pipe,
+                                AnalysedExpression {
+                                    kind: Binary(
+                                        Pipe,
+                                        AnalysedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    8,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    484,
+                                                ),
+                                                length: 11,
+                                            },
+                                            ty: Literal(
+                                                String,
+                                            ),
+                                        },
+                                        AnalysedExpression {
+                                            kind: FunctionInvocation(
+                                                BindingId(
+                                                    2,
+                                                ),
+                                                [
+                                                    AnalysedExpression {
+                                                        kind: Literal(
+                                                            String(
+                                                                "localhost",
+                                                            ),
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                512,
+                                                            ),
+                                                            length: 11,
+                                                        },
+                                                        ty: Literal(
+                                                            String,
+                                                        ),
+                                                    },
+                                                ],
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    503,
+                                                ),
+                                                length: 21,
+                                            },
+                                            ty: Fn(
+                                                Some(
+                                                    Literal(
+                                                        String,
+                                                    ),
+                                                ),
+                                                Literal(
+                                                    String,
+                                                ),
+                                            ),
+                                        },
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            484,
+                                        ),
+                                        length: 40,
+                                    },
+                                    ty: Literal(
+                                        String,
+                                    ),
+                                },
+                                AnalysedExpression {
+                                    kind: FunctionInvocation(
+                                        BindingId(
+                                            5,
+                                        ),
+                                        [
+                                            AnalysedExpression {
+                                                kind: Literal(
+                                                    Int(
+                                                        8080,
+                                                    ),
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        541,
+                                                    ),
+                                                    length: 4,
+                                                },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
+                                            },
+                                        ],
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            532,
+                                        ),
+                                        length: 14,
+                                    },
+                                    ty: Fn(
+                                        Some(
+                                            Literal(
+                                                String,
+                                            ),
+                                        ),
+                                        Literal(
+                                            String,
+                                        ),
+                                    ),
+                                },
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    484,
+                                ),
+                                length: 62,
+                            },
+                            ty: Literal(
+                                String,
+                            ),
+                        },
+                        AnalysedExpression {
+                            kind: Var(
+                                BindingId(
+                                    7,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    554,
+                                ),
+                                length: 5,
+                            },
+                            ty: Fn(
+                                Some(
+                                    Literal(
+                                        String,
+                                    ),
+                                ),
+                                Literal(
+                                    String,
+                                ),
+                            ),
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            484,
+                        ),
+                        length: 75,
+                    },
+                    ty: Literal(
+                        String,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    467,
+                ),
+                length: 92,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Var(
+                BindingId(
+                    9,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    561,
+                ),
+                length: 6,
+            },
+            ty: Literal(
+                String,
+            ),
+        },
+    ],
+    bindings: [
+        AnalysedBinding {
+            name: "host",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    237,
+                ),
+                length: 78,
+            },
+        },
+        AnalysedBinding {
+            name: "config",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    237,
+                ),
+                length: 78,
+            },
+        },
+        AnalysedBinding {
+            name: "withHost",
+            ty: Fn(
+                Some(
+                    Literal(
+                        String,
+                    ),
+                ),
+                Fn(
+                    Some(
+                        Literal(
+                            String,
+                        ),
+                    ),
+                    Literal(
+                        String,
+                    ),
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    222,
+                ),
+                length: 93,
+            },
+        },
+        AnalysedBinding {
+            name: "port",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    330,
+                ),
+                length: 38,
+            },
+        },
+        AnalysedBinding {
+            name: "config",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    330,
+                ),
+                length: 38,
+            },
+        },
+        AnalysedBinding {
+            name: "withPort",
+            ty: Fn(
+                Some(
+                    Literal(
+                        Int,
+                    ),
+                ),
+                Fn(
+                    Some(
+                        Literal(
+                            String,
+                        ),
+                    ),
+                    Literal(
+                        String,
+                    ),
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    315,
+                ),
+                length: 53,
+            },
+        },
+        AnalysedBinding {
+            name: "config",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    383,
+                ),
+                length: 28,
+            },
+        },
+        AnalysedBinding {
+            name: "build",
+            ty: Fn(
+                Some(
+                    Literal(
+                        String,
+                    ),
+                ),
+                Literal(
+                    String,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    368,
+                ),
+                length: 43,
+            },
+        },
+        AnalysedBinding {
+            name: "emptyConfig",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    411,
+                ),
+                length: 56,
+            },
+        },
+        AnalysedBinding {
+            name: "server",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    467,
+                ),
+                length: 92,
+            },
+        },
+    ],
+}

@@ -447,7 +447,7 @@ trsl_test!(
 trsl_test!(
     pipelines_builder_as_pipeline,
     "01-pipelines/builder-as-pipeline/builder-as-pipeline.trsl",
-    ignore = "needs match / pattern matching — proposed syntax"
+    [ast, analyse, eval]
 );
 
 // ══ 02 control flow ═══════════════════════════════════════
