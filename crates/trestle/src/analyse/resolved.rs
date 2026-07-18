@@ -26,6 +26,7 @@ pub enum ResolvedLiteral {
     Bool(bool),
     Float(f64),
     String(String),
+    Unit,
 }
 
 #[derive(Debug, PartialEq)]

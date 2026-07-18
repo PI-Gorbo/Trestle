@@ -1,0 +1,66 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+AnalysedProgram {
+    expressions: [
+        AnalysedExpression {
+            kind: Let {
+                binding: BindingId(
+                    0,
+                ),
+                value: AnalysedExpression {
+                    kind: Literal(
+                        Unit,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            12,
+                        ),
+                        length: 4,
+                    },
+                    ty: Literal(
+                        Unit,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 18,
+            },
+            ty: Unit,
+        },
+        AnalysedExpression {
+            kind: Var(
+                BindingId(
+                    0,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    18,
+                ),
+                length: 5,
+            },
+            ty: Literal(
+                Unit,
+            ),
+        },
+    ],
+    bindings: [
+        AnalysedBinding {
+            name: "value",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 18,
+            },
+        },
+    ],
+}

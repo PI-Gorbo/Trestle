@@ -216,6 +216,12 @@ trsl_test!(
     [ast, analyse, eval]
 );
 
+trsl_test!(
+    basics_literals_unit,
+    "00-basics/literals/unit/unit.trsl",
+    [ast, analyse, eval]
+);
+
 // ── operators ─────────────────────────────────────────────
 trsl_test!(
     basics_operators_addition,

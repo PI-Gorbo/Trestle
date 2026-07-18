@@ -32,6 +32,7 @@ pub enum Literal {
     Bool,
     Float,
     String,
+    Unit,
 }
 
 /// Name + resolved type + definition site for each [`BindingId`].
@@ -57,6 +58,7 @@ pub enum AnalysedLiteral {
     Bool(bool),
     Float(f64),
     String(String),
+    Unit,
 }
 
 #[derive(Debug, Clone, PartialEq)]

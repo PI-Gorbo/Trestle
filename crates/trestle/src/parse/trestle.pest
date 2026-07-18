@@ -26,7 +26,8 @@ float            = @{ int ~ "." ~ int }
 true             = @{ "true" ~ !(alphanumeric_word_boundary) }
 false            = @{ "false" ~ !(alphanumeric_word_boundary) }
 boolean          =  { true | false }
-literal          =  { boolean | string | float | int }
+unit             = @{ "unit" }
+literal          =  { boolean | unit | string | float | int }
 
 primary = { function_invocation | literal | identifier | "(" ~ expr ~ ")" }
 // Prefix operators may stack before any primary (`--x`, `!!b`). They occupy a

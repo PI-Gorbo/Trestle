@@ -7,7 +7,7 @@ AnalysedProgram {
         AnalysedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    2,
                 ),
                 value: AnalysedExpression {
                     kind: Lambda(
@@ -23,104 +23,12 @@ AnalysedProgram {
                                 },
                             ),
                             body: AnalysedExpression {
-                                kind: Binary(
-                                    Mul,
-                                    AnalysedExpression {
-                                        kind: Var(
-                                            BindingId(
-                                                0,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                286,
-                                            ),
-                                            length: 1,
-                                        },
-                                        ty: Literal(
-                                            Int,
-                                        ),
-                                    },
-                                    AnalysedExpression {
-                                        kind: Literal(
-                                            Int(
-                                                2,
-                                            ),
-                                        ),
-                                        span: SourceSpan {
-                                            offset: SourceOffset(
-                                                290,
-                                            ),
-                                            length: 1,
-                                        },
-                                        ty: Literal(
-                                            Int,
-                                        ),
-                                    },
-                                ),
-                                span: SourceSpan {
-                                    offset: SourceOffset(
-                                        286,
-                                    ),
-                                    length: 5,
-                                },
-                                ty: Literal(
-                                    Int,
-                                ),
-                            },
-                        },
-                    ),
-                    span: SourceSpan {
-                        offset: SourceOffset(
-                            274,
-                        ),
-                        length: 17,
-                    },
-                    ty: Fn(
-                        Some(
-                            Literal(
-                                Int,
-                            ),
-                        ),
-                        Literal(
-                            Int,
-                        ),
-                    ),
-                },
-            },
-            span: SourceSpan {
-                offset: SourceOffset(
-                    261,
-                ),
-                length: 30,
-            },
-            ty: Unit,
-        },
-        AnalysedExpression {
-            kind: Let {
-                binding: BindingId(
-                    4,
-                ),
-                value: AnalysedExpression {
-                    kind: Lambda(
-                        Lambda {
-                            parameter: Some(
-                                Param {
-                                    binding: BindingId(
-                                        2,
-                                    ),
-                                    ty: Literal(
-                                        Int,
-                                    ),
-                                },
-                            ),
-                            body: AnalysedExpression {
                                 kind: Lambda(
                                     Lambda {
                                         parameter: Some(
                                             Param {
                                                 binding: BindingId(
-                                                    3,
+                                                    1,
                                                 ),
                                                 ty: Literal(
                                                     Int,
@@ -133,12 +41,12 @@ AnalysedProgram {
                                                 AnalysedExpression {
                                                     kind: Var(
                                                         BindingId(
-                                                            2,
+                                                            0,
                                                         ),
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            322,
+                                                            291,
                                                         ),
                                                         length: 1,
                                                     },
@@ -149,12 +57,12 @@ AnalysedProgram {
                                                 AnalysedExpression {
                                                     kind: Var(
                                                         BindingId(
-                                                            3,
+                                                            1,
                                                         ),
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            326,
+                                                            295,
                                                         ),
                                                         length: 1,
                                                     },
@@ -165,7 +73,7 @@ AnalysedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    322,
+                                                    291,
                                                 ),
                                                 length: 5,
                                             },
@@ -177,7 +85,7 @@ AnalysedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        302,
+                                        271,
                                     ),
                                     length: 25,
                                 },
@@ -196,7 +104,7 @@ AnalysedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            302,
+                            271,
                         ),
                         length: 25,
                     },
@@ -221,7 +129,7 @@ AnalysedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    292,
+                    261,
                 ),
                 length: 35,
             },
@@ -230,7 +138,7 @@ AnalysedProgram {
         AnalysedExpression {
             kind: Let {
                 binding: BindingId(
-                    6,
+                    4,
                 ),
                 value: AnalysedExpression {
                     kind: Lambda(
@@ -238,7 +146,7 @@ AnalysedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        5,
+                                        3,
                                     ),
                                     ty: Literal(
                                         Int,
@@ -248,12 +156,12 @@ AnalysedProgram {
                             body: AnalysedExpression {
                                 kind: Var(
                                     BindingId(
-                                        5,
+                                        3,
                                     ),
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        356,
+                                        325,
                                     ),
                                     length: 5,
                                 },
@@ -265,7 +173,7 @@ AnalysedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            340,
+                            309,
                         ),
                         length: 23,
                     },
@@ -283,7 +191,7 @@ AnalysedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    328,
+                    297,
                 ),
                 length: 35,
             },
@@ -292,7 +200,7 @@ AnalysedProgram {
         AnalysedExpression {
             kind: Let {
                 binding: BindingId(
-                    7,
+                    6,
                 ),
                 value: AnalysedExpression {
                     kind: Binary(
@@ -311,7 +219,7 @@ AnalysedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    378,
+                                                    347,
                                                 ),
                                                 length: 1,
                                             },
@@ -322,7 +230,7 @@ AnalysedProgram {
                                         AnalysedExpression {
                                             kind: FunctionInvocation(
                                                 BindingId(
-                                                    4,
+                                                    2,
                                                 ),
                                                 [
                                                     AnalysedExpression {
@@ -333,7 +241,7 @@ AnalysedProgram {
                                                         ),
                                                         span: SourceSpan {
                                                             offset: SourceOffset(
-                                                                391,
+                                                                360,
                                                             ),
                                                             length: 1,
                                                         },
@@ -345,7 +253,7 @@ AnalysedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    387,
+                                                    356,
                                                 ),
                                                 length: 6,
                                             },
@@ -363,7 +271,7 @@ AnalysedProgram {
                                     ),
                                     span: SourceSpan {
                                         offset: SourceOffset(
-                                            378,
+                                            347,
                                         ),
                                         length: 15,
                                     },
@@ -372,16 +280,71 @@ AnalysedProgram {
                                     ),
                                 },
                                 AnalysedExpression {
-                                    kind: Var(
-                                        BindingId(
-                                            1,
-                                        ),
+                                    kind: Lambda(
+                                        Lambda {
+                                            parameter: Some(
+                                                Param {
+                                                    binding: BindingId(
+                                                        5,
+                                                    ),
+                                                    ty: Literal(
+                                                        Int,
+                                                    ),
+                                                },
+                                            ),
+                                            body: AnalysedExpression {
+                                                kind: Binary(
+                                                    Mul,
+                                                    AnalysedExpression {
+                                                        kind: Var(
+                                                            BindingId(
+                                                                5,
+                                                            ),
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                408,
+                                                            ),
+                                                            length: 5,
+                                                        },
+                                                        ty: Literal(
+                                                            Int,
+                                                        ),
+                                                    },
+                                                    AnalysedExpression {
+                                                        kind: Literal(
+                                                            Int(
+                                                                2,
+                                                            ),
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                416,
+                                                            ),
+                                                            length: 1,
+                                                        },
+                                                        ty: Literal(
+                                                            Int,
+                                                        ),
+                                                    },
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        408,
+                                                    ),
+                                                    length: 9,
+                                                },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
+                                            },
+                                        },
                                     ),
                                     span: SourceSpan {
                                         offset: SourceOffset(
-                                            422,
+                                            392,
                                         ),
-                                        length: 6,
+                                        length: 25,
                                     },
                                     ty: Fn(
                                         Some(
@@ -397,9 +360,9 @@ AnalysedProgram {
                             ),
                             span: SourceSpan {
                                 offset: SourceOffset(
-                                    378,
+                                    347,
                                 ),
-                                length: 50,
+                                length: 70,
                             },
                             ty: Literal(
                                 Int,
@@ -408,12 +371,12 @@ AnalysedProgram {
                         AnalysedExpression {
                             kind: Var(
                                 BindingId(
-                                    6,
+                                    4,
                                 ),
                             ),
                             span: SourceSpan {
                                 offset: SourceOffset(
-                                    458,
+                                    426,
                                 ),
                                 length: 5,
                             },
@@ -431,9 +394,9 @@ AnalysedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            378,
+                            347,
                         ),
-                        length: 85,
+                        length: 84,
                     },
                     ty: Literal(
                         Int,
@@ -442,21 +405,21 @@ AnalysedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    363,
+                    332,
                 ),
-                length: 100,
+                length: 99,
             },
             ty: Unit,
         },
         AnalysedExpression {
             kind: Var(
                 BindingId(
-                    7,
+                    6,
                 ),
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    482,
+                    450,
                 ),
                 length: 4,
             },
@@ -467,44 +430,13 @@ AnalysedProgram {
     ],
     bindings: [
         AnalysedBinding {
-            name: "x",
-            ty: Literal(
-                Int,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    274,
-                ),
-                length: 17,
-            },
-        },
-        AnalysedBinding {
-            name: "double",
-            ty: Fn(
-                Some(
-                    Literal(
-                        Int,
-                    ),
-                ),
-                Literal(
-                    Int,
-                ),
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    261,
-                ),
-                length: 30,
-            },
-        },
-        AnalysedBinding {
             name: "a",
             ty: Literal(
                 Int,
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    302,
+                    271,
                 ),
                 length: 25,
             },
@@ -516,7 +448,7 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    302,
+                    271,
                 ),
                 length: 25,
             },
@@ -542,7 +474,7 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    292,
+                    261,
                 ),
                 length: 35,
             },
@@ -554,7 +486,7 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    340,
+                    309,
                 ),
                 length: 23,
             },
@@ -573,9 +505,21 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    328,
+                    297,
                 ),
                 length: 35,
+            },
+        },
+        AnalysedBinding {
+            name: "value",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    392,
+                ),
+                length: 25,
             },
         },
         AnalysedBinding {
@@ -585,9 +529,9 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    363,
+                    332,
                 ),
-                length: 100,
+                length: 99,
             },
         },
     ],

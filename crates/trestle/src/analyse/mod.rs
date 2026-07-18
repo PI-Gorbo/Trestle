@@ -23,6 +23,7 @@ use analysed::{AnalysedProgram, Type};
 /// Name-resolution and type-checking failures. Reported as a batch (`Vec`) so the user
 /// sees all problems at once. Representative variants — grow as you implement.
 #[derive(Error, Diagnostic, Debug)]
+#[allow(dead_code)] // fields/variants retained for future diagnostics; not all read yet
 pub enum AnalysisError {
     #[error("`{name}` is not defined")]
     #[diagnostic(code(trestle::unbound_name))]

@@ -38,6 +38,7 @@ pub enum Literal {
     Bool(bool),
     Float(f64),
     String(String),
+    Unit,
 }
 
 /// A binary operator. The single source of truth for the operator set —

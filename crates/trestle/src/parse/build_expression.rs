@@ -354,6 +354,7 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                 child.as_str().parse().expect("float literal parses as f64"),
             )),
         )),
+        Rule::unit => Ok(spanned(span, ExpressionKind::Literal(Literal::Unit))),
         rule => Err(BuildError::UnexpectedRule {
             rule,
             span: source_span_from_pest_span(span),

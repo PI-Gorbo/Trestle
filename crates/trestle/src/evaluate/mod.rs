@@ -112,6 +112,7 @@ fn eval_expr(env: &Environment, expr: &AnalysedExpression) -> Result<Value, Eval
             AnalysedLiteral::Float(value) => Value::Float(*value),
             // The string is stored verbatim (quotes included) — carry it through as-is.
             AnalysedLiteral::String(value) => Value::String(value.clone()),
+            AnalysedLiteral::Unit => Value::Unit,
         }),
 
         // Name resolution guarantees the binding exists by the time we reach its use.

@@ -214,6 +214,9 @@ fn resolve_subexpr(
                 });
             }
         },
+        ExpressionKind::Literal(Literal::Unit) => {
+            ResolvedExpressionKind::Literal(ResolvedLiteral::Unit)
+        }
         ExpressionKind::Literal(Literal::Int(v)) => {
             ResolvedExpressionKind::Literal(ResolvedLiteral::Int(v))
         }

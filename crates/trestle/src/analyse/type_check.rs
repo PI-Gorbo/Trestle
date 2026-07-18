@@ -137,6 +137,11 @@ fn infer_type_of_expression(
 ) -> Result<AnalysedExpression, AnalysisError> {
     let span = untyped_expression.span;
     let (kind, ty) = match untyped_expression.kind {
+        ResolvedExpressionKind::Literal(ResolvedLiteral::Unit) => (
+            ExpressionKind::Literal(AnalysedLiteral::Unit),
+            // An integer literal is a `Literal::Int`.
+            Type::Literal(Literal::Unit),
+        ),
         ResolvedExpressionKind::Literal(ResolvedLiteral::Int(value)) => (
             ExpressionKind::Literal(AnalysedLiteral::Int(value)),
             // An integer literal is a `Literal::Int`.
