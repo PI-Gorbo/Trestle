@@ -123,7 +123,7 @@ fn eval_expr(env: &Environment, expr: &AnalysedExpression) -> Result<Value, Eval
         ExpressionKind::Binary(op, lhs, rhs) => {
             let lhs = eval_expr(env, lhs)?;
             let rhs = eval_expr(env, rhs)?;
-            Ok(eval_binary(*op, lhs, rhs))
+            eval_binary(*op, lhs, rhs)
         }
 
         ExpressionKind::Unary(op, operand) => {
@@ -189,8 +189,8 @@ fn eval_expr(env: &Environment, expr: &AnalysedExpression) -> Result<Value, Eval
 
 /// Apply one argument to a closure: bind the parameter in the closure's captured
 /// environment and evaluate its body.
-fn apply(callee: Value, arg: Value) -> Result<Value, EvalError> {
-    let Value::Closure { lambda, env } = callee else {
+fn apply(closure: Value, arg: Value) -> Result<Value, EvalError> {
+    let Value::Closure { lambda, env } = closure else {
         unreachable!("callee type-checks as a function");
     };
     let env = match &lambda.parameter {
@@ -200,27 +200,34 @@ fn apply(callee: Value, arg: Value) -> Result<Value, EvalError> {
     eval_expr(&env, &lambda.body)
 }
 
-fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Value {
+fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Result<Value, EvalError> {
     match op {
         // Arithmetic: Int × Int → Int.
         BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => {
             let (Value::Int(l), Value::Int(r)) = (lhs, rhs) else {
                 unreachable!("arithmetic operands type-check as Int");
             };
-            Value::Int(match op {
+
+            Ok(Value::Int(match op {
                 BinaryOp::Add => l + r,
                 BinaryOp::Sub => l - r,
                 BinaryOp::Mul => l * r,
                 BinaryOp::Div => l / r,
                 _ => unreachable!(),
-            })
+            }))
         }
         // Comparison: Int × Int → Bool.
-        BinaryOp::Lt | BinaryOp::Gt | BinaryOp::Le | BinaryOp::Ge | BinaryOp::Eq | BinaryOp::Neq => {
+        BinaryOp::Lt
+        | BinaryOp::Gt
+        | BinaryOp::Le
+        | BinaryOp::Ge
+        | BinaryOp::Eq
+        | BinaryOp::Neq => {
             let (Value::Int(l), Value::Int(r)) = (lhs, rhs) else {
                 unreachable!("comparison operands type-check as Int");
             };
-            Value::Bool(match op {
+
+            Ok(Value::Bool(match op {
                 BinaryOp::Lt => l < r,
                 BinaryOp::Gt => l > r,
                 BinaryOp::Le => l <= r,
@@ -228,18 +235,23 @@ fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Value {
                 BinaryOp::Eq => l == r,
                 BinaryOp::Neq => l != r,
                 _ => unreachable!(),
-            })
+            }))
         }
         // Logical combinators: Bool × Bool → Bool.
         BinaryOp::And | BinaryOp::Or => {
             let (Value::Bool(l), Value::Bool(r)) = (lhs, rhs) else {
                 unreachable!("logical operands type-check as Bool");
             };
-            Value::Bool(match op {
+
+            Ok(Value::Bool(match op {
                 BinaryOp::And => l && r,
                 BinaryOp::Or => l || r,
                 _ => unreachable!(),
-            })
+            }))
+        }
+        BinaryOp::Pipe => {
+            let output = apply(rhs, lhs)?;
+            Ok(output)
         }
     }
 }

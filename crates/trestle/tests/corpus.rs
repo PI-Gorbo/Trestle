@@ -431,17 +431,17 @@ trsl_test!(
 trsl_test!(
     pipelines_pipeline,
     "01-pipelines/pipeline/pipeline.trsl",
-    ignore = "needs the |> operator + leading-pipe continuation"
+    [ast, analyse, eval]
 );
 trsl_test!(
     pipelines_single_line_pipe,
     "01-pipelines/single-line-pipe/single-line-pipe.trsl",
-    ignore = "needs the |> operator"
+    ignore = "needs match / pattern matching — proposed syntax"
 );
 trsl_test!(
     pipelines_builder_as_pipeline,
     "01-pipelines/builder-as-pipeline/builder-as-pipeline.trsl",
-    ignore = "needs the |> operator + partial application"
+    ignore = "needs match / pattern matching — proposed syntax"
 );
 
 // ══ 02 control flow ═══════════════════════════════════════

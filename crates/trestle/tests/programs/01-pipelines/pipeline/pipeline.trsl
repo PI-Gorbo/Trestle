@@ -3,11 +3,14 @@
 // A line that begins with |> continues the previous expression
 // (like Kotlin's leading `.`), so the chain needs no semicolons.
 
-let double = (x) => x * 2
-let add = (a, b) => a + b
+let double = (x: Int) => x * 2
+let add = (a: Int, b: Int) => a + b
+let print = (value: Int) => value
 
 let main =
     5
     |> add(3)    // add(3)(5)  = 8
     |> double    // double(8)  = 16
     |> print     // prints 16
+
+main

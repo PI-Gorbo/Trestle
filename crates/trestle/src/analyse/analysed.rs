@@ -22,6 +22,7 @@ pub struct BindingId(pub usize);
 pub enum Type {
     Unit,
     Literal(Literal),
+    Var(),
     Fn(Option<Box<Type>>, Box<Type>), // curried: one arg -> result
 }
 

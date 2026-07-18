@@ -28,7 +28,7 @@ false            = @{ "false" ~ !(alphanumeric_word_boundary) }
 boolean          =  { true | false }
 literal          =  { boolean | string | float | int }
 
-primary           = { function_invocation | literal | identifier | "(" ~ expr ~ ")" }
+primary = { function_invocation | literal | identifier | "(" ~ expr ~ ")" }
 // Prefix operators may stack before any primary (`--x`, `!!b`). They occupy a
 // distinct grammar slot from the infix operators, so `negate`/`subtract` (both
 // `-`) never collide: the PrattParser owns which one applies where.
@@ -37,7 +37,7 @@ binary_expression = { prefix_operator* ~ primary ~ (infix_operator ~ prefix_oper
 // Operator tokens. Silent group: PEG tries alternatives in order, so multi-char
 // operators MUST precede the single-char ops they'd otherwise shadow (le before
 // lt, ge before gt). Precedence/associativity live in the PrattParser, not here.
-infix_operator = _{ and | or | add | subtract | multiply | divide | eq | neq | le | ge | lt | gt }
+infix_operator = _{ and | or | add | subtract | multiply | divide | eq | neq | le | ge | lt | gt | pipe }
 add            =  { "+" }
 subtract       =  { "-" }
 multiply       =  { "*" }
@@ -50,6 +50,7 @@ le             =  { "<=" }
 ge             =  { ">=" }
 lt             =  { "<" }
 gt             =  { ">" }
+pipe           =  { "|>" }
 
 // Prefix (unary) operators. `logical_not` lives only in this prefix slot, so the
 // bare `!` never shadows infix `neq` (`!=`). `negate` is `-` in prefix position;

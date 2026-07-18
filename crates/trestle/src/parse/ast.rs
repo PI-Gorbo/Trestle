@@ -59,6 +59,7 @@ pub enum BinaryOp {
     Ge,
     Eq,
     Neq,
+    Pipe,
 }
 
 /// A prefix (unary) operator. Like [`BinaryOp`], the single source of truth reused by

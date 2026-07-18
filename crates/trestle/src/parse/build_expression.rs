@@ -22,12 +22,15 @@ use super::ast::{
 
 /// The operator-precedence table — the single, explicit statement of Trestle's
 /// order of operations. Levels are listed loosest-binding first, so:
-///   or  <  and  <  comparison  <  additive  <  multiplicative  <  prefix
+///   pipe  <  or  <  and  <  comparison  <  additive  <  multiplicative  <  prefix
+/// `|>` binds loosest so `a + b |> f` is `(a + b) |> f` and a chain
+/// `x |> f |> g` is `(x |> f) |> g == g(f(x))`.
 /// Every infix operator is left-associative (pest offers only `Left`/`Right`, so a
 /// chain like `a < b < c` parses as `(a < b) < c` and later type-errors). Prefix ops
 /// bind tightest, so `!a && b` is `(!a) && b` and `-a * b` is `(-a) * b`.
 static PRATT: LazyLock<PrattParser<Rule>> = LazyLock::new(|| {
     PrattParser::new()
+        .op(Op::infix(Rule::pipe, Assoc::Left))
         .op(Op::infix(Rule::or, Assoc::Left))
         .op(Op::infix(Rule::and, Assoc::Left))
         .op(Op::infix(Rule::eq, Assoc::Left)
@@ -237,6 +240,7 @@ fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                 Rule::ge => BinaryOp::Ge,
                 Rule::eq => BinaryOp::Eq,
                 Rule::neq => BinaryOp::Neq,
+                Rule::pipe => BinaryOp::Pipe,
                 rule => {
                     return Err(BuildError::UnexpectedRule {
                         rule,

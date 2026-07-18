@@ -180,26 +180,56 @@ fn infer_type_of_expression(
             // The operator fixes both the operand type and the result type. Arithmetic is
             // `Int × Int → Int`; comparison is `Int × Int → Bool`; the boolean combinators are
             // `Bool × Bool → Bool`. Unify each operand against the required operand type.
-            let int = Type::Literal(Literal::Int);
-            let bool = Type::Literal(Literal::Bool);
-            let (operand_ty, result_ty) = match op {
-                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => {
-                    (int.clone(), int)
-                }
+            match op {
+                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => unify_binary_op(
+                    op,
+                    lhs,
+                    Type::Literal(Literal::Int),
+                    rhs,
+                    Type::Literal(Literal::Int),
+                    Type::Literal(Literal::Int),
+                )?,
                 BinaryOp::Lt
                 | BinaryOp::Gt
                 | BinaryOp::Le
                 | BinaryOp::Ge
                 | BinaryOp::Eq
-                | BinaryOp::Neq => (int, bool),
-                BinaryOp::And | BinaryOp::Or => (bool.clone(), bool),
-            };
-            unify(&lhs.ty, &operand_ty, lhs.span)?;
-            unify(&rhs.ty, &operand_ty, rhs.span)?;
-            (
-                ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
-                result_ty,
-            )
+                | BinaryOp::Neq => unify_binary_op(
+                    op,
+                    lhs,
+                    Type::Literal(Literal::Int),
+                    rhs,
+                    Type::Literal(Literal::Int),
+                    Type::Literal(Literal::Bool),
+                )?,
+                BinaryOp::And | BinaryOp::Or => unify_binary_op(
+                    op,
+                    lhs,
+                    Type::Literal(Literal::Bool),
+                    rhs,
+                    Type::Literal(Literal::Bool),
+                    Type::Literal(Literal::Bool),
+                )?,
+                BinaryOp::Pipe => {
+                    let Type::Fn(input, output) = rhs.ty.clone() else {
+                        return Err(AnalysisError::NotAFunction {
+                            found: rhs.ty,
+                            span,
+                        });
+                    };
+
+                    let Some(input) = input else {
+                        return Err(AnalysisError::PipeIntoArgumentlessFunction { span: rhs.span });
+                    };
+
+                    unify(&lhs.ty, &input, span)?;
+
+                    (
+                        ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
+                        *output,
+                    )
+                }
+            }
         }
 
         ResolvedExpressionKind::Unary(op, operand) => {
@@ -360,6 +390,23 @@ fn infer_type_of_expression(
     };
 
     Ok(AnalysedExpression { kind, span, ty })
+}
+
+fn unify_binary_op(
+    op: BinaryOp,
+    lhs: AnalysedExpression,
+    lhs_type: Type,
+    rhs: AnalysedExpression,
+    rhs_type: Type,
+    return_type: Type,
+) -> Result<(ExpressionKind, Type), AnalysisError> {
+    unify(&lhs.ty, &lhs_type, lhs.span)?;
+    unify(&rhs.ty, &rhs_type, rhs.span)?;
+
+    Ok((
+        ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
+        return_type,
+    ))
 }
 
 /// Reconcile two types, returning the type they agree on or a [`TypeMismatch`] at `span`.

@@ -73,6 +73,13 @@ pub enum AnalysisError {
         span: SourceSpan,
     },
 
+    #[error("the right-hand side of `|>` takes no arguments, so there is nothing to pipe into")]
+    #[diagnostic(code(trestle::pipe_into_argumentless_function))]
+    PipeIntoArgumentlessFunction {
+        #[label("this takes no arguments")]
+        span: SourceSpan,
+    },
+
     #[error("unknown type `{name}`")]
     #[diagnostic(code(trestle::unknown_type))]
     UnknownType {
