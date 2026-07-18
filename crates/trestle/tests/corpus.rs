@@ -442,7 +442,7 @@ trsl_test!(
 trsl_test!(
     pipelines_single_line_pipe,
     "01-pipelines/single-line-pipe/single-line-pipe.trsl",
-    ignore = "needs match / pattern matching — proposed syntax"
+    [ast, analyse, eval]
 );
 trsl_test!(
     pipelines_builder_as_pipeline,
