@@ -28,7 +28,7 @@ LoweredProgram {
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            49,
+                                                            48,
                                                         ),
                                                         length: 1,
                                                     },
@@ -36,9 +36,9 @@ LoweredProgram {
                                             },
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    34,
+                                                    33,
                                                 ),
-                                                length: 24,
+                                                length: 22,
                                             },
                                         },
                                         Expression {
@@ -52,7 +52,7 @@ LoweredProgram {
                                                         ),
                                                         span: SourceSpan {
                                                             offset: SourceOffset(
-                                                                64,
+                                                                61,
                                                             ),
                                                             length: 8,
                                                         },
@@ -61,9 +61,9 @@ LoweredProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    58,
+                                                    55,
                                                 ),
-                                                length: 16,
+                                                length: 15,
                                             },
                                         },
                                     ],
@@ -72,7 +72,7 @@ LoweredProgram {
                                     offset: SourceOffset(
                                         27,
                                     ),
-                                    length: 48,
+                                    length: 44,
                                 },
                             },
                         },
@@ -81,7 +81,7 @@ LoweredProgram {
                         offset: SourceOffset(
                             21,
                         ),
-                        length: 54,
+                        length: 50,
                     },
                 },
             },
@@ -89,7 +89,7 @@ LoweredProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 75,
+                length: 71,
             },
         },
         Expression {
@@ -103,7 +103,7 @@ LoweredProgram {
                     },
                     span: SourceSpan {
                         offset: SourceOffset(
-                            93,
+                            87,
                         ),
                         length: 16,
                     },
@@ -111,9 +111,9 @@ LoweredProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    79,
+                    73,
                 ),
-                length: 34,
+                length: 32,
             },
         },
         Expression {
@@ -123,7 +123,7 @@ LoweredProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    113,
+                    105,
                 ),
                 length: 9,
             },

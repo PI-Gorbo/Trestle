@@ -29,7 +29,7 @@ AnalysedProgram {
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            49,
+                                                            48,
                                                         ),
                                                         length: 1,
                                                     },
@@ -40,9 +40,9 @@ AnalysedProgram {
                                             },
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    34,
+                                                    33,
                                                 ),
-                                                length: 24,
+                                                length: 22,
                                             },
                                             ty: Unit,
                                         },
@@ -58,7 +58,7 @@ AnalysedProgram {
                                                         ),
                                                         span: SourceSpan {
                                                             offset: SourceOffset(
-                                                                64,
+                                                                61,
                                                             ),
                                                             length: 8,
                                                         },
@@ -70,9 +70,9 @@ AnalysedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    58,
+                                                    55,
                                                 ),
-                                                length: 16,
+                                                length: 15,
                                             },
                                             ty: Fn(
                                                 None,
@@ -87,7 +87,7 @@ AnalysedProgram {
                                     offset: SourceOffset(
                                         27,
                                     ),
-                                    length: 48,
+                                    length: 44,
                                 },
                                 ty: Fn(
                                     None,
@@ -102,7 +102,7 @@ AnalysedProgram {
                         offset: SourceOffset(
                             21,
                         ),
-                        length: 54,
+                        length: 50,
                     },
                     ty: Fn(
                         None,
@@ -119,7 +119,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 75,
+                length: 71,
             },
             ty: Unit,
         },
@@ -137,7 +137,7 @@ AnalysedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            93,
+                            87,
                         ),
                         length: 16,
                     },
@@ -151,9 +151,9 @@ AnalysedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    79,
+                    73,
                 ),
-                length: 34,
+                length: 32,
             },
             ty: Unit,
         },
@@ -166,7 +166,7 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    113,
+                    105,
                 ),
                 length: 9,
             },
@@ -183,9 +183,9 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    34,
+                    33,
                 ),
-                length: 24,
+                length: 22,
             },
         },
         AnalysedBinding {
@@ -203,7 +203,7 @@ AnalysedProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 75,
+                length: 71,
             },
         },
         AnalysedBinding {
@@ -216,9 +216,9 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    79,
+                    73,
                 ),
-                length: 34,
+                length: 32,
             },
         },
     ],

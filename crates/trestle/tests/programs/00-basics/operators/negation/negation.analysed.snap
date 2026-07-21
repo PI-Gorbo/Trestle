@@ -15,7 +15,7 @@ AnalysedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            292,
+                            287,
                         ),
                         length: 1,
                     },
@@ -26,7 +26,7 @@ AnalysedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    291,
+                    286,
                 ),
                 length: 2,
             },
