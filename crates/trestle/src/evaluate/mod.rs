@@ -1,7 +1,7 @@
 //! Evaluation: tree-walk a [`TypeCheckedProgram`] to a [`Value`].
 //!
 //! Because name resolution and type checking happen in
-//! [`analyse`](crate::analyse::analyse), the errors this stage used to risk (unbound
+//! [`analyse`](crate::analyse), the errors this stage used to risk (unbound
 //! name, arithmetic on a non-`Int`) can't occur for a well-typed program — so
 //! [`EvalError`] is empty for now, kept only for later tiers (overflow, effects).
 

@@ -24,7 +24,7 @@
 //! macro docs below.
 
 use miette::{Diagnostic, NamedSource, Report};
-use trestle::analyse::AnalysisError;
+use trestle::AnalysisError;
 
 /// Render a phase-tagged analysis failure as miette's fancy diagnostics, with the program source
 /// attached so each error shows its snippet + caret.
@@ -100,7 +100,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                 insta::assert_debug_snapshot!(format!("{stem}.ast"), program);
             }
             Stage::Analyse => {
-                let analysed = trestle::analyse::analyse(program).unwrap_or_else(|e| {
+                let analysed = trestle::analyse(program).unwrap_or_else(|e| {
                     panic!(
                         "failed to analyse `{path}`:\n{}",
                         render_analysis_error(path, src, e)
@@ -109,7 +109,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                 insta::assert_debug_snapshot!(format!("{stem}.analysed"), analysed);
             }
             Stage::Eval => {
-                let analysed = trestle::analyse::analyse(program).unwrap_or_else(|e| {
+                let analysed = trestle::analyse(program).unwrap_or_else(|e| {
                     panic!(
                         "failed to analyse `{path}`:\n{}",
                         render_analysis_error(path, src, e)
@@ -122,7 +122,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
             // Inverse of `Analyse`: the program is *meant* to be rejected, so a success is
             // the failure mode. Snapshot the errors' structured `Debug` (matching the other
             // stages' style) rather than the miette-rendered text, keeping the snapshot stable.
-            Stage::Error => match trestle::analyse::analyse(program) {
+            Stage::Error => match trestle::analyse(program) {
                 Ok(_) => panic!("expected `{path}` to fail analysis, but it succeeded"),
                 Err(errors) => {
                     insta::assert_debug_snapshot!(format!("{stem}.error"), errors);
