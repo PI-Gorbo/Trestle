@@ -14,8 +14,10 @@ LoweredProgram {
                             parameter: Some(
                                 Param {
                                     name: "host",
-                                    type_dec: Named(
-                                        "String",
+                                    type_dec: Some(
+                                        Named(
+                                            "String",
+                                        ),
                                     ),
                                 },
                             ),
@@ -26,8 +28,10 @@ LoweredProgram {
                                         parameter: Some(
                                             Param {
                                                 name: "config",
-                                                type_dec: Named(
-                                                    "String",
+                                                type_dec: Some(
+                                                    Named(
+                                                        "String",
+                                                    ),
                                                 ),
                                             },
                                         ),
@@ -79,8 +83,10 @@ LoweredProgram {
                             parameter: Some(
                                 Param {
                                     name: "port",
-                                    type_dec: Named(
-                                        "Int",
+                                    type_dec: Some(
+                                        Named(
+                                            "Int",
+                                        ),
                                     ),
                                 },
                             ),
@@ -91,8 +97,10 @@ LoweredProgram {
                                         parameter: Some(
                                             Param {
                                                 name: "config",
-                                                type_dec: Named(
-                                                    "String",
+                                                type_dec: Some(
+                                                    Named(
+                                                        "String",
+                                                    ),
                                                 ),
                                             },
                                         ),
@@ -144,8 +152,10 @@ LoweredProgram {
                             parameter: Some(
                                 Param {
                                     name: "config",
-                                    type_dec: Named(
-                                        "String",
+                                    type_dec: Some(
+                                        Named(
+                                            "String",
+                                        ),
                                     ),
                                 },
                             ),

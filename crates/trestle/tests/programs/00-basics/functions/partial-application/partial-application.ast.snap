@@ -14,8 +14,10 @@ LoweredProgram {
                             parameter: Some(
                                 Param {
                                     name: "a",
-                                    type_dec: Named(
-                                        "Int",
+                                    type_dec: Some(
+                                        Named(
+                                            "Int",
+                                        ),
                                     ),
                                 },
                             ),
@@ -26,8 +28,10 @@ LoweredProgram {
                                         parameter: Some(
                                             Param {
                                                 name: "b",
-                                                type_dec: Named(
-                                                    "Int",
+                                                type_dec: Some(
+                                                    Named(
+                                                        "Int",
+                                                    ),
                                                 ),
                                             },
                                         ),
@@ -101,8 +105,10 @@ LoweredProgram {
                             parameter: Some(
                                 Param {
                                     name: "a",
-                                    type_dec: Named(
-                                        "Int",
+                                    type_dec: Some(
+                                        Named(
+                                            "Int",
+                                        ),
                                     ),
                                 },
                             ),
@@ -113,8 +119,10 @@ LoweredProgram {
                                         parameter: Some(
                                             Param {
                                                 name: "b",
-                                                type_dec: Named(
-                                                    "Int",
+                                                type_dec: Some(
+                                                    Named(
+                                                        "Int",
+                                                    ),
                                                 ),
                                             },
                                         ),

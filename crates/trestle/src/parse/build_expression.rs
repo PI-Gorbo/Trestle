@@ -195,14 +195,11 @@ fn build_binding_target(pair: Pair<Rule>) -> (String, Option<TypeDeclaration>) {
 }
 
 fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {
-    let span = source_span_from_pest_span(pair.as_span());
-
     // The grammar accepts untyped params (so `=>` commits the lambda branch); a
     // required type that's missing is rejected here, pointing the caret at the param.
-    match build_binding_target(pair) {
-        (name, Some(type_dec)) => Ok(Param { name, type_dec }),
-        (name, None) => Err(BuildError::MissingParamType { name, span }),
-    }
+    let (name, type_dec) = build_binding_target(pair);
+
+    Ok(Param { name, type_dec })
 }
 
 fn build_type_opt(pair: Pair<Rule>) -> Option<TypeDeclaration> {
@@ -404,20 +401,6 @@ fn build_if_expression(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 #[cfg(test)]
 mod tests {
     use crate::parse::parse;
-
-    /// A lambda whose param lacks a type must fail with a *targeted* message pointing at
-    /// the param — not the old raw-pest "expected EOI/operator" error at `=>`. The grammar
-    /// admits untyped params so the `=>` commits the lambda branch; the missing type is
-    /// then rejected in `build_param`.
-    #[test]
-    fn untyped_lambda_param_reports_missing_type() {
-        let report = parse("(n) => n").expect_err("untyped param must be rejected");
-        let rendered = format!("{report:?}");
-        assert!(
-            rendered.contains("requires a type annotation"),
-            "expected a missing-type diagnostic, got:\n{rendered}"
-        );
-    }
 
     /// A string literal's escape sequences are resolved to their runtime characters:
     /// the source `"a\nb"` stores the three-character value `a<newline>b`, and the

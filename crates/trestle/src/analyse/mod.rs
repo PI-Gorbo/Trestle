@@ -91,6 +91,17 @@ mod error {
             span: SourceSpan,
         },
 
+        #[error(
+            "function shape mismatch: one function takes a parameter and the other does not (expected {expected:?}, found {found:?})"
+        )]
+        #[diagnostic(code(trestle::function_parameter_mismatch))]
+        FunctionParameterMismatch {
+            expected: Type,
+            found: Type,
+            #[label("here")]
+            span: SourceSpan,
+        },
+
         #[error("unknown type `{name}`")]
         #[diagnostic(code(trestle::unknown_type))]
         UnknownType {
@@ -121,6 +132,14 @@ mod error {
         Unsupported {
             construct: &'static str,
             #[label("not supported yet")]
+            span: SourceSpan,
+        },
+
+        #[error("internal compiler error: {message}")]
+        #[diagnostic(code(trestle::internal_error))]
+        InternalError {
+            message: String,
+            #[label("while type-checking this")]
             span: SourceSpan,
         },
     }

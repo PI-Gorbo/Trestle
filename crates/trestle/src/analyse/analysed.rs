@@ -16,13 +16,14 @@ use crate::parse::ast::{BinaryOp, UnaryOp};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BindingId(pub usize);
 
-/// An analysed type. Concrete for now; add a `Var(TypeVarId)` variant here if you later
-/// want inference for unannotated params (e.g. `(a, b) => a + b`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct TypeVarId(pub usize);
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Type {
     Unit,
     Literal(Literal),
-    Var(),
+    Var(TypeVarId),
     Fn(Option<Box<Type>>, Box<Type>), // curried: one arg -> result
 }
 

@@ -450,6 +450,13 @@ trsl_test!(
     [ast, analyse, eval]
 );
 
+// == 01 unification ========================================
+trsl_test!(
+    unification_int_lambda_parameter,
+    "01-unification/lambda-parameters/int-lambda-parameter.trsl",
+    [ast, analyse, eval]
+);
+
 // ══ 02 control flow ═══════════════════════════════════════
 trsl_test!(
     control_match_expression,

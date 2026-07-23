@@ -10,8 +10,10 @@ LoweredProgram {
                     parameter: Some(
                         Param {
                             name: "x",
-                            type_dec: Named(
-                                "Int",
+                            type_dec: Some(
+                                Named(
+                                    "Int",
+                                ),
                             ),
                         },
                     ),
