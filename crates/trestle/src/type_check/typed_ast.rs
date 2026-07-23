@@ -1,6 +1,6 @@
 //! The type-checked AST: the binding-resolved AST
 //! ([`BindingResolvedProgram`](crate::binding_resolution::BindingResolvedProgram)) after type
-//! checking. [`analyse`](super::analyse) produces this; [`evaluate`](crate::evaluate::evaluate)
+//! checking. [`type_check`](super::type_check) produces this; [`evaluate`](crate::evaluate::evaluate)
 //! consumes it.
 //!
 //! It mirrors the binding-resolved tree, differing only where type checking changes a field: every

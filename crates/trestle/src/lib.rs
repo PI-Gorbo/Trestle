@@ -45,5 +45,5 @@ pub enum AnalysisError {
 pub fn analyse(program: ParsedProgram) -> Result<TypeCheckedProgram, AnalysisError> {
     let resolved = binding_resolution::resolve(program).map_err(AnalysisError::BindingResolution)?;
 
-    type_check::analyse(resolved).map_err(AnalysisError::TypeCheck)
+    type_check::type_check(resolved).map_err(AnalysisError::TypeCheck)
 }

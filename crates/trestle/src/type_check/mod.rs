@@ -35,7 +35,7 @@ struct TypeCheckState {
 }
 
 /// Type-check a name-resolved program into a fully typed [`TypeCheckedProgram`].
-pub fn analyse(
+pub fn type_check(
     program: BindingResolvedProgram,
 ) -> Result<TypeCheckedProgram, Vec<TypeCheckError>> {
     let BindingResolvedProgram {
@@ -101,7 +101,7 @@ mod tests {
         let parsed = crate::parse::parse(src).expect("test source should parse");
         let resolved =
             crate::binding_resolution::resolve(parsed).expect("test source should resolve");
-        analyse(resolved)
+        type_check(resolved)
     }
 
     #[test]
