@@ -68,20 +68,22 @@ pub fn type_check(
         },
     );
 
-    let mut typed_bindings = zip_bindings_with_types(bindings, &final_state.binding_type_map)
-        .map_err(|err| vec![err])?;
-
     // Binding types are recorded during inference with their type variables intact (a `let`
     // without an annotation is bound to a fresh `Var`), so resolve them the same way the
     // expression tree is resolved below.
-    for binding in &mut typed_bindings {
-        binding.ty = final_state.unification_map.subsitute(&binding.ty);
-    }
+    let typed_bindings = zip_bindings_with_types(bindings, &final_state.binding_type_map)
+        .map_err(|err| vec![err])?
+        .into_iter()
+        .map(|mut binding| {
+            binding.ty = final_state.unification_map.subsitute(&binding.ty);
+            binding
+        })
+        .collect::<Vec<_>>();
 
     let mut subsituted_expressions = final_state.expressions;
-    for expr in &mut subsituted_expressions {
-        subsitute(&final_state.unification_map, expr);
-    }
+    subsituted_expressions
+        .iter_mut()
+        .for_each(|expr| subsitute(&final_state.unification_map, expr));
 
     match final_state.errors.is_empty() {
         true => Ok(TypeCheckedProgram {
