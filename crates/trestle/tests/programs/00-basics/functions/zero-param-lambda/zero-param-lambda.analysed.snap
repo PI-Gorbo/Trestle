@@ -2,13 +2,13 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Lambda(
                 Lambda {
                     parameter: None,
-                    body: AnalysedExpression {
+                    body: TypeCheckedExpression {
                         kind: Literal(
                             Int(
                                 42,

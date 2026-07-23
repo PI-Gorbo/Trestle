@@ -2,14 +2,14 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     1,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Lambda(
                         Lambda {
                             parameter: Some(
@@ -22,10 +22,10 @@ AnalysedProgram {
                                     ),
                                 },
                             ),
-                            body: AnalysedExpression {
+                            body: TypeCheckedExpression {
                                 kind: Binary(
                                     Add,
-                                    AnalysedExpression {
+                                    TypeCheckedExpression {
                                         kind: Var(
                                             BindingId(
                                                 0,
@@ -41,7 +41,7 @@ AnalysedProgram {
                                             Int,
                                         ),
                                     },
-                                    AnalysedExpression {
+                                    TypeCheckedExpression {
                                         kind: Literal(
                                             Int(
                                                 3,
@@ -96,13 +96,13 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: FunctionInvocation(
                 BindingId(
                     1,
                 ),
                 [
-                    AnalysedExpression {
+                    TypeCheckedExpression {
                         kind: Literal(
                             Int(
                                 2,
@@ -132,7 +132,7 @@ AnalysedProgram {
         },
     ],
     bindings: [
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "a",
             ty: Literal(
                 Int,
@@ -144,7 +144,7 @@ AnalysedProgram {
                 length: 12,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "add3",
             ty: Fn(
                 Some(

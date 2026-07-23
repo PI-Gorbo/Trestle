@@ -115,7 +115,7 @@ pub struct Lambda {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct LoweredProgram {
+pub struct ParsedProgram {
     pub expressions: Vec<Expression>,
 }
 

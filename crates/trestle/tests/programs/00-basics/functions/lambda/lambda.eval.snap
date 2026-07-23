@@ -14,7 +14,7 @@ Closure {
                 ),
             },
         ),
-        body: AnalysedExpression {
+        body: TypeCheckedExpression {
             kind: Var(
                 BindingId(
                     0,

@@ -1,11 +1,11 @@
-//! Walker for `Rule::program` → [`Program`].
+//! Walker for `Rule::program` → [`ParsedProgram`].
 use pest::iterators::Pair;
 
 use super::Rule;
 use super::ast::source_span_from_pest_span;
 use super::build_expression::build_expr;
 
-use super::ast::LoweredProgram;
+use super::ast::ParsedProgram;
 
 pub use error::BuildError;
 
@@ -71,8 +71,8 @@ mod error {
     }
 }
 
-/// Build a `Program` from a `Rule::program` pair.
-pub fn build_program(pair: Pair<Rule>) -> Result<LoweredProgram, BuildError> {
+/// Build a `ParsedProgram` from a `Rule::program` pair.
+pub fn build_program(pair: Pair<Rule>) -> Result<ParsedProgram, BuildError> {
     let expressions = pair
         .into_inner()
         .try_fold(Vec::new(), |mut statements, pair| {
@@ -93,5 +93,5 @@ pub fn build_program(pair: Pair<Rule>) -> Result<LoweredProgram, BuildError> {
             }
         })?;
 
-    Ok(LoweredProgram { expressions })
+    Ok(ParsedProgram { expressions })
 }

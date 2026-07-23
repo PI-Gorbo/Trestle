@@ -1,17 +1,23 @@
-//! The resolved AST: the LoweredAst ([`ast`](crate::parse::ast)) after **name resolution only**
-//! ([`resolve_names`](super::resolve_names)), before type checking ([`type_check`](super::type_check)).
+//! The binding-resolved AST: the parsed AST ([`ast`](crate::parse::ast)) after **name resolution
+//! only** ([`resolve`](super::resolve)), before type checking ([`analyse`](crate::type_check::analyse)).
 //!
-//! It mirrors the *lowered* tree (not the analysed one), differing only where pass 1 changes a
-//! field: every `String` name becomes a [`BindingId`], and each binding's name+span is recorded
-//! in the side [`ResolvedProgram::bindings`] table (indexed by `BindingId`). Type annotations are
-//! carried through untouched as [`ast::TypeDeclaration`] — pass 2 interprets them into
-//! [`Type`](super::analysed::Type). No node carries a type yet. There is no `If` variant: the
-//! grammar parses `if`, but its lowering (an `ast::If`, and arms here + in type-check) is deferred.
+//! It mirrors the *parsed* tree (not the type-checked one), differing only where resolution changes
+//! a field: every `String` name becomes a [`BindingId`], and each binding's name+span is recorded
+//! in the side [`BindingResolvedProgram::bindings`] table (indexed by `BindingId`). Type annotations
+//! are carried through untouched as [`ast::TypeDeclaration`] — type checking interprets them into
+//! [`Type`](crate::type_check::typed_ast::Type). No node carries a type yet. There is no `If`
+//! variant: the grammar parses `if`, but its lowering (an `ast::If`, and arms here + in type-check)
+//! is deferred.
 
 use miette::SourceSpan;
 
-use super::analysed::BindingId;
 use crate::parse::ast::{BinaryOp, TypeDeclaration, UnaryOp};
+
+/// Index of a binding site (a `let` or a lambda parameter). Assigned during binding resolution;
+/// indexes into [`BindingResolvedProgram::bindings`] and, after type checking, into
+/// [`TypeCheckedProgram::bindings`](crate::type_check::typed_ast::TypeCheckedProgram).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct BindingId(pub usize);
 
 /// A name-resolved, not-yet-typed expression: what it is (`kind`) and where it came from (`span`).
 #[derive(Debug, PartialEq)]
@@ -39,7 +45,7 @@ pub enum ResolvedExpressionKind {
     FunctionInvocation(BindingId, Vec<ResolvedExpression>), // callee resolved; was String
     Let {
         binding: BindingId, // was name: String
-        /// Raw annotation, still unresolved — pass 2 interprets it into a [`Type`](super::analysed::Type).
+        /// Raw annotation, still unresolved — type checking interprets it into a [`Type`](crate::type_check::typed_ast::Type).
         type_dec: Option<TypeDeclaration>,
         value: Box<ResolvedExpression>,
     },
@@ -54,7 +60,7 @@ pub enum ResolvedExpressionKind {
 #[derive(Debug, PartialEq)]
 pub struct ResolvedParam {
     pub binding: BindingId,
-    /// Raw annotation, still unresolved — pass 2 turns this into a [`Type`](super::analysed::Type).
+    /// Raw annotation, still unresolved — type checking turns this into a [`Type`](crate::type_check::typed_ast::Type).
     pub type_dec: Option<TypeDeclaration>,
 }
 
@@ -65,8 +71,8 @@ pub struct ResolvedLambda {
     pub body: Box<ResolvedExpression>,
 }
 
-/// Name + definition site for each [`BindingId`]. Pass 2 pairs each with a computed type to
-/// produce the analysed [`BindingInfo`](super::analysed::BindingInfo).
+/// Name + definition site for each [`BindingId`]. Type checking pairs each with a computed type to
+/// produce the [`TypeCheckedBinding`](crate::type_check::typed_ast::TypeCheckedBinding).
 #[derive(Debug, PartialEq)]
 pub struct ResolvedBinding {
     pub name: String,
@@ -75,7 +81,7 @@ pub struct ResolvedBinding {
 
 /// A name-resolved program: the resolved tree plus the binding table (indexed by `BindingId`).
 #[derive(Debug, PartialEq)]
-pub struct ResolvedProgram {
+pub struct BindingResolvedProgram {
     pub expressions: Vec<ResolvedExpression>,
     pub bindings: Vec<ResolvedBinding>,
 }

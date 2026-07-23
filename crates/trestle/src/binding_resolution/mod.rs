@@ -1,35 +1,39 @@
-//! Pass 1 — name resolution. Turns the LoweredAst ([`ast::LoweredProgram`]) into a
-//! [`ResolvedProgram`] by assigning a unique [`BindingId`](super::analysed::BindingId) to every
-//! `let` and lambda parameter and replacing each `String` name (`Var`, `FunctionInvocation`,
-//! `Let`) with its id. No type logic lives here.
+//! Binding resolution — name resolution. Turns the parsed AST ([`ast::ParsedProgram`]) into a
+//! [`BindingResolvedProgram`] by assigning a unique [`BindingId`] to every `let` and lambda
+//! parameter and replacing each `String` name (`Var`, `FunctionInvocation`, `Let`) with its id. No
+//! type logic lives here.
 //!
 //! Intended implementation:
 //! - Carry a scope stack — a `Vec<(String, BindingId)>` searched from the back so the newest
 //!   binding wins (shadowing) — and truncate it back to its entry length on leaving a `let`
 //!   body or lambda. Each `let`/param mints a fresh `BindingId` (a monotonic counter) and pushes
-//!   a [`ResolvedBinding`](super::resolved::ResolvedBinding) (name + span) into the table.
+//!   a [`ResolvedBinding`] (name + span) into the table.
 //! - **Pre-register all top-level `let` names before resolving their bodies.** That is the seam
 //!   that later makes mutual recursion / forward references resolvable at the name level without
-//!   touching pass 2.
-//! - An unknown name is an [`AnalysisError::UnboundName`]. Collect all of them into the `Vec`
-//!   rather than bailing on the first.
+//!   touching type checking.
+//! - An unknown name is a [`BindingResolutionError::UnboundName`]. Collect all of them into the
+//!   `Vec` rather than bailing on the first.
+
+pub mod binding_resolved;
+mod error;
 
 use std::collections::HashMap;
 use std::rc::Rc;
 
 use miette::SourceSpan;
 
-use super::AnalysisError;
-use super::resolved::ResolvedProgram;
-use crate::analyse::analysed::BindingId;
-use crate::analyse::resolved::{
-    ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
-    ResolvedParam,
-};
 use crate::parse::ast::{self, Expression, ExpressionKind, Literal, Param};
 
-/// Resolve every name in `program` to a [`BindingId`](super::analysed::BindingId).
-pub(super) fn resolve(program: ast::LoweredProgram) -> Result<ResolvedProgram, Vec<AnalysisError>> {
+pub use binding_resolved::{
+    BindingId, BindingResolvedProgram, ResolvedBinding, ResolvedExpression, ResolvedExpressionKind,
+    ResolvedLambda, ResolvedLiteral, ResolvedParam,
+};
+pub use error::BindingResolutionError;
+
+/// Resolve every name in `program` to a [`BindingId`].
+pub fn resolve(
+    program: ast::ParsedProgram,
+) -> Result<BindingResolvedProgram, Vec<BindingResolutionError>> {
     let mut bindings_arena = BindingArena::new();
     let mut scope = Scope::Empty;
     let mut expressions = Vec::new();
@@ -49,7 +53,7 @@ pub(super) fn resolve(program: ast::LoweredProgram) -> Result<ResolvedProgram, V
         // Resolution itself (including the `let` scope threading below) is uniform across kinds.
         if let ExpressionKind::Let { name, .. } = &expression.kind {
             match declared.get(name.as_str()) {
-                Some(&original_span) => errors.push(AnalysisError::DuplicateBinding {
+                Some(&original_span) => errors.push(BindingResolutionError::DuplicateBinding {
                     name: name.clone(),
                     span: expression.span,
                     original_span,
@@ -70,7 +74,7 @@ pub(super) fn resolve(program: ast::LoweredProgram) -> Result<ResolvedProgram, V
     }
 
     match errors.is_empty() {
-        true => Ok(ResolvedProgram {
+        true => Ok(BindingResolvedProgram {
             expressions,
             bindings: bindings_arena.into_bindings(),
         }),
@@ -96,7 +100,7 @@ impl BindingArena {
         self.0.push(binding);
     }
 
-    /// Consume into the plain vec `ResolvedProgram` expects.
+    /// Consume into the plain vec `BindingResolvedProgram` expects.
     fn into_bindings(self) -> Vec<ResolvedBinding> {
         self.0
     }
@@ -162,7 +166,7 @@ fn resolve_expression(
     expr: Expression,
     scope: &Scope,
     bindings_arena: &mut BindingArena,
-) -> (Result<ResolvedExpression, AnalysisError>, Scope) {
+) -> (Result<ResolvedExpression, BindingResolutionError>, Scope) {
     let span = expr.span;
 
     match expr.kind {
@@ -202,13 +206,13 @@ fn resolve_subexpr(
     expr: Expression,
     scope: &Scope,
     bindings_arena: &mut BindingArena,
-) -> Result<ResolvedExpression, AnalysisError> {
+) -> Result<ResolvedExpression, BindingResolutionError> {
     let span = expr.span;
     let kind = match expr.kind {
         ExpressionKind::Var(string_identifier) => match scope.lookup(&string_identifier) {
             Some(binding) => ResolvedExpressionKind::Var(binding),
             None => {
-                return Err(AnalysisError::UnboundName {
+                return Err(BindingResolutionError::UnboundName {
                     name: string_identifier,
                     span,
                 });
@@ -265,7 +269,7 @@ fn resolve_subexpr(
             let binding = match scope.lookup(&function_name) {
                 Some(binding) => binding,
                 None => {
-                    return Err(AnalysisError::UnboundName {
+                    return Err(BindingResolutionError::UnboundName {
                         name: function_name,
                         span,
                     });
@@ -314,9 +318,9 @@ fn resolve_subexpr(
             )?;
             ResolvedExpressionKind::Block(resolved)
         }
-        // `if` parses into the AST but has no resolved/typed form yet — reject it here in pass 1
-        // so the later passes never have to carry a variant they can't handle. Remove this arm
-        // when `if` is threaded end-to-end.
+        // `if` parses into the AST but has no resolved/typed form yet — reject it here in binding
+        // resolution so the later passes never have to carry a variant they can't handle. Remove
+        // this arm when `if` is threaded end-to-end.
         ExpressionKind::If {
             condition,
             true_pathway,
@@ -377,7 +381,7 @@ fn resolve_parameter(
 mod tests {
     use super::*;
 
-    fn resolve_src(src: &str) -> Result<ResolvedProgram, Vec<AnalysisError>> {
+    fn resolve_src(src: &str) -> Result<BindingResolvedProgram, Vec<BindingResolutionError>> {
         let program = crate::parse::parse(src).expect("test source should parse");
         resolve(program)
     }
@@ -419,7 +423,7 @@ mod tests {
         assert_eq!(errors.len(), 1);
         assert!(matches!(
             errors[0],
-            AnalysisError::DuplicateBinding { ref name, .. } if name == "x"
+            BindingResolutionError::DuplicateBinding { ref name, .. } if name == "x"
         ));
     }
 
@@ -431,7 +435,7 @@ mod tests {
         assert!(
             errors
                 .iter()
-                .all(|error| matches!(error, AnalysisError::UnboundName { .. }))
+                .all(|error| matches!(error, BindingResolutionError::UnboundName { .. }))
         );
     }
 
@@ -442,6 +446,6 @@ mod tests {
         // block closes must be an unbound name, not a leak of the block's scope.
         let errors = resolve_src("let outer = { let inner = 1  inner }\ninner")
             .expect_err("`inner` must not escape its block");
-        assert!(matches!(errors[0], AnalysisError::UnboundName { .. }));
+        assert!(matches!(errors[0], BindingResolutionError::UnboundName { .. }));
     }
 }

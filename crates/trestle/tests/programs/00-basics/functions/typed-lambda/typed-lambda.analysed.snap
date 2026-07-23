@@ -2,9 +2,9 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Lambda(
                 Lambda {
                     parameter: Some(
@@ -17,7 +17,7 @@ AnalysedProgram {
                             ),
                         },
                     ),
-                    body: AnalysedExpression {
+                    body: TypeCheckedExpression {
                         kind: Lambda(
                             Lambda {
                                 parameter: Some(
@@ -30,10 +30,10 @@ AnalysedProgram {
                                         ),
                                     },
                                 ),
-                                body: AnalysedExpression {
+                                body: TypeCheckedExpression {
                                     kind: Binary(
                                         Add,
-                                        AnalysedExpression {
+                                        TypeCheckedExpression {
                                             kind: Var(
                                                 BindingId(
                                                     0,
@@ -49,7 +49,7 @@ AnalysedProgram {
                                                 Int,
                                             ),
                                         },
-                                        AnalysedExpression {
+                                        TypeCheckedExpression {
                                             kind: Var(
                                                 BindingId(
                                                     1,
@@ -123,7 +123,7 @@ AnalysedProgram {
         },
     ],
     bindings: [
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "a",
             ty: Literal(
                 Int,
@@ -135,7 +135,7 @@ AnalysedProgram {
                 length: 27,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "b",
             ty: Literal(
                 Int,

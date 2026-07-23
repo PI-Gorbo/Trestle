@@ -1,4 +1,4 @@
-//! Evaluation: tree-walk an [`AnalysedProgram`] to a [`Value`].
+//! Evaluation: tree-walk a [`TypeCheckedProgram`] to a [`Value`].
 //!
 //! Because name resolution and type checking happen in
 //! [`analyse`](crate::analyse::analyse), the errors this stage used to risk (unbound
@@ -7,10 +7,11 @@
 
 use std::rc::Rc;
 
-use crate::analyse::analysed::{
-    self, AnalysedExpression, AnalysedLiteral, AnalysedProgram, BindingId, ExpressionKind,
-};
+use crate::binding_resolution::BindingId;
 use crate::parse::ast::{BinaryOp, UnaryOp};
+use crate::type_check::typed_ast::{
+    self, ExpressionKind, TypeCheckedExpression, TypeCheckedLiteral, TypeCheckedProgram,
+};
 
 /// A runtime value. Replaces the empty `Output` struct.
 #[derive(Debug, Clone)]
@@ -24,7 +25,7 @@ pub enum Value {
     /// One-param closure (currying is desugared). Owns the lambda (via `Rc`, so cloning a
     /// `Value` stays cheap) and captures the environment it was defined in.
     Closure {
-        lambda: Rc<analysed::Lambda>,
+        lambda: Rc<typed_ast::Lambda>,
         env: Environment,
     },
 }
@@ -77,7 +78,7 @@ pub enum EvalError {}
 
 /// Evaluate a checked program: thread top-level `let`s through the environment and
 /// return the value of the last expression.
-pub fn evaluate(program: AnalysedProgram) -> Result<Value, EvalError> {
+pub fn evaluate(program: TypeCheckedProgram) -> Result<Value, EvalError> {
     eval_block(&Environment::empty(), &program.expressions)
 }
 
@@ -86,7 +87,7 @@ pub fn evaluate(program: AnalysedProgram) -> Result<Value, EvalError> {
 ///
 /// Shared by the top-level program and the `Block` expression — a block is just a nested
 /// sub-program with its own scope.
-fn eval_block(env: &Environment, exprs: &[AnalysedExpression]) -> Result<Value, EvalError> {
+fn eval_block(env: &Environment, exprs: &[TypeCheckedExpression]) -> Result<Value, EvalError> {
     let mut env = env.clone();
     let mut result = Value::Unit;
     for expr in exprs {
@@ -104,15 +105,15 @@ fn eval_block(env: &Environment, exprs: &[AnalysedExpression]) -> Result<Value, 
     Ok(result)
 }
 
-fn eval_expr(env: &Environment, expr: &AnalysedExpression) -> Result<Value, EvalError> {
+fn eval_expr(env: &Environment, expr: &TypeCheckedExpression) -> Result<Value, EvalError> {
     match &expr.kind {
         ExpressionKind::Literal(literal) => Ok(match literal {
-            AnalysedLiteral::Int(value) => Value::Int(*value as i64),
-            AnalysedLiteral::Bool(value) => Value::Bool(*value),
-            AnalysedLiteral::Float(value) => Value::Float(*value),
+            TypeCheckedLiteral::Int(value) => Value::Int(*value as i64),
+            TypeCheckedLiteral::Bool(value) => Value::Bool(*value),
+            TypeCheckedLiteral::Float(value) => Value::Float(*value),
             // The string is stored verbatim (quotes included) — carry it through as-is.
-            AnalysedLiteral::String(value) => Value::String(value.clone()),
-            AnalysedLiteral::Unit => Value::Unit,
+            TypeCheckedLiteral::String(value) => Value::String(value.clone()),
+            TypeCheckedLiteral::Unit => Value::Unit,
         }),
 
         // Name resolution guarantees the binding exists by the time we reach its use.

@@ -2,14 +2,14 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     0,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Literal(
                         Int(
                             42,
@@ -34,7 +34,7 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Var(
                 BindingId(
                     0,
@@ -52,7 +52,7 @@ AnalysedProgram {
         },
     ],
     bindings: [
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "x",
             ty: Literal(
                 Int,

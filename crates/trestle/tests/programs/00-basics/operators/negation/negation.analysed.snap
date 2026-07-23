@@ -2,12 +2,12 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Unary(
                 Neg,
-                AnalysedExpression {
+                TypeCheckedExpression {
                     kind: Literal(
                         Int(
                             7,

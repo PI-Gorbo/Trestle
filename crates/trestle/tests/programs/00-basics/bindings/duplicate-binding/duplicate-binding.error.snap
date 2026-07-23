@@ -2,20 +2,22 @@
 source: crates/trestle/tests/corpus.rs
 expression: errors
 ---
-[
-    DuplicateBinding {
-        name: "x",
-        span: SourceSpan {
-            offset: SourceOffset(
-                225,
-            ),
-            length: 10,
+BindingResolution(
+    [
+        DuplicateBinding {
+            name: "x",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    225,
+                ),
+                length: 10,
+            },
+            original_span: SourceSpan {
+                offset: SourceOffset(
+                    215,
+                ),
+                length: 10,
+            },
         },
-        original_span: SourceSpan {
-            offset: SourceOffset(
-                215,
-            ),
-            length: 10,
-        },
-    },
-]
+    ],
+)

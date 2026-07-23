@@ -2,26 +2,26 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     1,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Lambda(
                         Lambda {
                             parameter: None,
-                            body: AnalysedExpression {
+                            body: TypeCheckedExpression {
                                 kind: Block(
                                     [
-                                        AnalysedExpression {
+                                        TypeCheckedExpression {
                                             kind: Let {
                                                 binding: BindingId(
                                                     0,
                                                 ),
-                                                value: AnalysedExpression {
+                                                value: TypeCheckedExpression {
                                                     kind: Literal(
                                                         Int(
                                                             1,
@@ -46,11 +46,11 @@ AnalysedProgram {
                                             },
                                             ty: Unit,
                                         },
-                                        AnalysedExpression {
+                                        TypeCheckedExpression {
                                             kind: Lambda(
                                                 Lambda {
                                                     parameter: None,
-                                                    body: AnalysedExpression {
+                                                    body: TypeCheckedExpression {
                                                         kind: Var(
                                                             BindingId(
                                                                 0,
@@ -123,12 +123,12 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     2,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: FunctionInvocation(
                         BindingId(
                             1,
@@ -157,7 +157,7 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: FunctionInvocation(
                 BindingId(
                     2,
@@ -176,7 +176,7 @@ AnalysedProgram {
         },
     ],
     bindings: [
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "my_value",
             ty: Literal(
                 Int,
@@ -188,7 +188,7 @@ AnalysedProgram {
                 length: 22,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "create_closure",
             ty: Fn(
                 None,
@@ -206,7 +206,7 @@ AnalysedProgram {
                 length: 71,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "closure",
             ty: Fn(
                 None,

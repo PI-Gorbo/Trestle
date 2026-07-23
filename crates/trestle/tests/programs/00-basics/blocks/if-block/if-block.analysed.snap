@@ -2,14 +2,14 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: If {
-                condition: AnalysedExpression {
+                condition: TypeCheckedExpression {
                     kind: Binary(
                         Gt,
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Literal(
                                 Int(
                                     3,
@@ -25,7 +25,7 @@ AnalysedProgram {
                                 Int,
                             ),
                         },
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Literal(
                                 Int(
                                     2,
@@ -52,10 +52,10 @@ AnalysedProgram {
                         Bool,
                     ),
                 },
-                then_branch: AnalysedExpression {
+                then_branch: TypeCheckedExpression {
                     kind: Block(
                         [
-                            AnalysedExpression {
+                            TypeCheckedExpression {
                                 kind: Literal(
                                     Int(
                                         10,

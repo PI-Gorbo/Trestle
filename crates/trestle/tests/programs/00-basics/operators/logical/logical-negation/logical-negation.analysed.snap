@@ -2,12 +2,12 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Unary(
                 Not,
-                AnalysedExpression {
+                TypeCheckedExpression {
                     kind: Literal(
                         Bool(
                             true,

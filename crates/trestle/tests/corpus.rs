@@ -10,9 +10,9 @@
 //! ```text
 //! programs/00-basics/operators/addition/
 //!   addition.trsl            the source
-//!   addition.ast.snap        parse()    -> ast::Program
-//!   addition.analysed.snap   analyse()  -> AnalysedProgram (opt-in)
-//!   addition.eval.snap       evaluate() -> Value           (opt-in)
+//!   addition.ast.snap        parse()    -> ast::ParsedProgram
+//!   addition.analysed.snap   analyse()  -> TypeCheckedProgram (opt-in)
+//!   addition.eval.snap       evaluate() -> Value              (opt-in)
 //! ```
 //!
 //! Each `trsl_test!` line lists the stages that are currently expected to pass
@@ -23,20 +23,32 @@
 //! *meant* to be rejected: it snapshots the batch of `AnalysisError`s. See the
 //! macro docs below.
 
-use miette::{NamedSource, Report};
+use miette::{Diagnostic, NamedSource, Report};
 use trestle::analyse::AnalysisError;
 
-/// Render a batch of analysis errors as miette's fancy diagnostics, with the
-/// program source attached so each error shows its snippet + caret.
-fn render_analysis_errors(path: &str, src: &str, errors: Vec<AnalysisError>) -> String {
-    errors
-        .into_iter()
-        .map(|e| {
-            let report = Report::new(e).with_source_code(NamedSource::new(path, src.to_string()));
-            format!("{report:?}")
-        })
-        .collect::<Vec<_>>()
-        .join("\n")
+/// Render a phase-tagged analysis failure as miette's fancy diagnostics, with the program source
+/// attached so each error shows its snippet + caret.
+fn render_analysis_error(path: &str, src: &str, error: AnalysisError) -> String {
+    fn render_batch<E: Diagnostic + Send + Sync + 'static>(
+        path: &str,
+        src: &str,
+        errors: Vec<E>,
+    ) -> String {
+        errors
+            .into_iter()
+            .map(|e| {
+                let report =
+                    Report::new(e).with_source_code(NamedSource::new(path, src.to_string()));
+                format!("{report:?}")
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    match error {
+        AnalysisError::BindingResolution(errors) => render_batch(path, src, errors),
+        AnalysisError::TypeCheck(errors) => render_batch(path, src, errors),
+    }
 }
 
 /// A compiler stage to snapshot. Each maps to a public entry point and a
@@ -91,7 +103,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                 let analysed = trestle::analyse::analyse(program).unwrap_or_else(|e| {
                     panic!(
                         "failed to analyse `{path}`:\n{}",
-                        render_analysis_errors(path, src, e)
+                        render_analysis_error(path, src, e)
                     )
                 });
                 insta::assert_debug_snapshot!(format!("{stem}.analysed"), analysed);
@@ -100,7 +112,7 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                 let analysed = trestle::analyse::analyse(program).unwrap_or_else(|e| {
                     panic!(
                         "failed to analyse `{path}`:\n{}",
-                        render_analysis_errors(path, src, e)
+                        render_analysis_error(path, src, e)
                     )
                 });
                 let value = trestle::evaluate::evaluate(analysed)
@@ -372,9 +384,8 @@ trsl_test!(
 );
 
 // ── conditionals ──────────────────────────────────────────
-// `if` parses into the AST, but analyse/eval reject it for now (see the
-// `AnalysisError::Unsupported` stub in resolve_names). Re-add `analyse`/`eval` once
-// `if` is threaded through resolve_names + type_check.
+// `if` is threaded end-to-end: it parses into the AST, resolves in
+// `binding_resolution`, and type-checks in `type_check`.
 trsl_test!(
     basics_conditionals_if_expression,
     "00-basics/conditionals/if-expression/if-expression.trsl",

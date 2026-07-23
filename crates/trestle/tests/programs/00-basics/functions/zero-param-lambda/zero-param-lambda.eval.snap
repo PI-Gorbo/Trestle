@@ -5,7 +5,7 @@ expression: value
 Closure {
     lambda: Lambda {
         parameter: None,
-        body: AnalysedExpression {
+        body: TypeCheckedExpression {
             kind: Literal(
                 Int(
                     42,

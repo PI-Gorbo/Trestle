@@ -2,14 +2,16 @@
 source: crates/trestle/tests/corpus.rs
 expression: errors
 ---
-[
-    UnboundName {
-        name: "inner",
-        span: SourceSpan {
-            offset: SourceOffset(
-                246,
-            ),
-            length: 5,
+BindingResolution(
+    [
+        UnboundName {
+            name: "inner",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    246,
+                ),
+                length: 5,
+            },
         },
-    },
-]
+    ],
+)

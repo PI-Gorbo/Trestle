@@ -2,17 +2,17 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     0,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Binary(
                         Add,
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Literal(
                                 Int(
                                     1,
@@ -28,10 +28,10 @@ AnalysedProgram {
                                 Int,
                             ),
                         },
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Binary(
                                 Mul,
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             2,
@@ -47,7 +47,7 @@ AnalysedProgram {
                                         Int,
                                     ),
                                 },
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             3,
@@ -94,18 +94,18 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     1,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Binary(
                         Mul,
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Binary(
                                 Add,
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             1,
@@ -121,7 +121,7 @@ AnalysedProgram {
                                         Int,
                                     ),
                                 },
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             2,
@@ -148,7 +148,7 @@ AnalysedProgram {
                                 Int,
                             ),
                         },
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Literal(
                                 Int(
                                     3,
@@ -184,18 +184,18 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     2,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Binary(
                         Mul,
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Binary(
                                 Add,
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             1,
@@ -211,7 +211,7 @@ AnalysedProgram {
                                         Int,
                                     ),
                                 },
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             2,
@@ -238,10 +238,10 @@ AnalysedProgram {
                                 Int,
                             ),
                         },
-                        AnalysedExpression {
+                        TypeCheckedExpression {
                             kind: Binary(
                                 Add,
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             3,
@@ -257,7 +257,7 @@ AnalysedProgram {
                                         Int,
                                     ),
                                 },
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Literal(
                                         Int(
                                             4,
@@ -304,7 +304,7 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Var(
                 BindingId(
                     2,
@@ -322,7 +322,7 @@ AnalysedProgram {
         },
     ],
     bindings: [
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "natural",
             ty: Literal(
                 Int,
@@ -334,7 +334,7 @@ AnalysedProgram {
                 length: 23,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "grouped",
             ty: Literal(
                 Int,
@@ -346,7 +346,7 @@ AnalysedProgram {
                 length: 25,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "nested",
             ty: Literal(
                 Int,

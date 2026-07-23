@@ -2,14 +2,14 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     1,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Lambda(
                         Lambda {
                             parameter: Some(
@@ -22,12 +22,12 @@ AnalysedProgram {
                                     ),
                                 },
                             ),
-                            body: AnalysedExpression {
+                            body: TypeCheckedExpression {
                                 kind: If {
-                                    condition: AnalysedExpression {
+                                    condition: TypeCheckedExpression {
                                         kind: Binary(
                                             Lt,
-                                            AnalysedExpression {
+                                            TypeCheckedExpression {
                                                 kind: Var(
                                                     BindingId(
                                                         0,
@@ -43,7 +43,7 @@ AnalysedProgram {
                                                     Int,
                                                 ),
                                             },
-                                            AnalysedExpression {
+                                            TypeCheckedExpression {
                                                 kind: Literal(
                                                     Int(
                                                         0,
@@ -70,10 +70,10 @@ AnalysedProgram {
                                             Bool,
                                         ),
                                     },
-                                    then_branch: AnalysedExpression {
+                                    then_branch: TypeCheckedExpression {
                                         kind: Binary(
                                             Sub,
-                                            AnalysedExpression {
+                                            TypeCheckedExpression {
                                                 kind: Literal(
                                                     Int(
                                                         0,
@@ -89,7 +89,7 @@ AnalysedProgram {
                                                     Int,
                                                 ),
                                             },
-                                            AnalysedExpression {
+                                            TypeCheckedExpression {
                                                 kind: Var(
                                                     BindingId(
                                                         0,
@@ -156,12 +156,12 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
                     3,
                 ),
-                value: AnalysedExpression {
+                value: TypeCheckedExpression {
                     kind: Lambda(
                         Lambda {
                             parameter: Some(
@@ -174,12 +174,12 @@ AnalysedProgram {
                                     ),
                                 },
                             ),
-                            body: AnalysedExpression {
+                            body: TypeCheckedExpression {
                                 kind: If {
-                                    condition: AnalysedExpression {
+                                    condition: TypeCheckedExpression {
                                         kind: Binary(
                                             Gt,
-                                            AnalysedExpression {
+                                            TypeCheckedExpression {
                                                 kind: Var(
                                                     BindingId(
                                                         2,
@@ -195,7 +195,7 @@ AnalysedProgram {
                                                     Int,
                                                 ),
                                             },
-                                            AnalysedExpression {
+                                            TypeCheckedExpression {
                                                 kind: Literal(
                                                     Int(
                                                         3,
@@ -222,7 +222,7 @@ AnalysedProgram {
                                             Bool,
                                         ),
                                     },
-                                    then_branch: AnalysedExpression {
+                                    then_branch: TypeCheckedExpression {
                                         kind: Literal(
                                             String(
                                                 "Bigger",
@@ -278,22 +278,22 @@ AnalysedProgram {
             },
             ty: Unit,
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: FunctionInvocation(
                 BindingId(
                     3,
                 ),
                 [
-                    AnalysedExpression {
+                    TypeCheckedExpression {
                         kind: FunctionInvocation(
                             BindingId(
                                 1,
                             ),
                             [
-                                AnalysedExpression {
+                                TypeCheckedExpression {
                                     kind: Unary(
                                         Neg,
-                                        AnalysedExpression {
+                                        TypeCheckedExpression {
                                             kind: Literal(
                                                 Int(
                                                     10,
@@ -346,7 +346,7 @@ AnalysedProgram {
         },
     ],
     bindings: [
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "n",
             ty: Literal(
                 Int,
@@ -358,7 +358,7 @@ AnalysedProgram {
                 length: 36,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "abs",
             ty: Fn(
                 Some(
@@ -377,7 +377,7 @@ AnalysedProgram {
                 length: 46,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "n",
             ty: Literal(
                 Int,
@@ -389,7 +389,7 @@ AnalysedProgram {
                 length: 72,
             },
         },
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "bigger",
             ty: Fn(
                 Some(

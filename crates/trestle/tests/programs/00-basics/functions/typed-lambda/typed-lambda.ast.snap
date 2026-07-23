@@ -2,7 +2,7 @@
 source: crates/trestle/tests/corpus.rs
 expression: program
 ---
-LoweredProgram {
+ParsedProgram {
     expressions: [
         Expression {
             kind: Lambda(

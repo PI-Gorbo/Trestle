@@ -2,12 +2,12 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Binary(
                 Lt,
-                AnalysedExpression {
+                TypeCheckedExpression {
                     kind: Literal(
                         Int(
                             3,
@@ -23,7 +23,7 @@ AnalysedProgram {
                         Int,
                     ),
                 },
-                AnalysedExpression {
+                TypeCheckedExpression {
                     kind: Literal(
                         Int(
                             5,

@@ -2,9 +2,9 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Literal(
                 Bool(
                     true,
@@ -20,7 +20,7 @@ AnalysedProgram {
                 Bool,
             ),
         },
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Literal(
                 Bool(
                     false,

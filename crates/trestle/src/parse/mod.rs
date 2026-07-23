@@ -7,7 +7,7 @@ use miette::{IntoDiagnostic, NamedSource, Report, Result};
 use pest::Parser;
 use pest_derive::Parser;
 
-/// The lowered AST — currying is already desugared here (see [`ast::Lambda`]).
+/// The parsed AST — currying is already desugared here (see [`ast::Lambda`]).
 pub mod ast;
 mod build_expression;
 mod build_program;
@@ -20,12 +20,12 @@ pub use build_program::{BuildError, build_program};
 #[grammar = "parse/trestle.pest"]
 pub struct TrestleParser;
 
-/// Parse Trestle source text into a [`ast::Program`].
+/// Parse Trestle source text into a [`ast::ParsedProgram`].
 ///
 /// Both failure modes are surfaced as a [`miette::Report`]: the `pest` syntax
 /// error via [`IntoDiagnostic`], and the AST-walk [`BuildError`] with the
 /// source text attached here (the walker itself stays source-free).
-pub fn parse(src: &str) -> Result<ast::LoweredProgram> {
+pub fn parse(src: &str) -> Result<ast::ParsedProgram> {
     let program_pair = TrestleParser::parse(Rule::program, src)
         .into_diagnostic()?
         .next()

@@ -2,9 +2,9 @@
 source: crates/trestle/tests/corpus.rs
 expression: analysed
 ---
-AnalysedProgram {
+TypeCheckedProgram {
     expressions: [
-        AnalysedExpression {
+        TypeCheckedExpression {
             kind: Lambda(
                 Lambda {
                     parameter: Some(
@@ -17,7 +17,7 @@ AnalysedProgram {
                             ),
                         },
                     ),
-                    body: AnalysedExpression {
+                    body: TypeCheckedExpression {
                         kind: Var(
                             BindingId(
                                 0,
@@ -54,7 +54,7 @@ AnalysedProgram {
         },
     ],
     bindings: [
-        AnalysedBinding {
+        TypeCheckedBinding {
             name: "x",
             ty: Literal(
                 Int,
