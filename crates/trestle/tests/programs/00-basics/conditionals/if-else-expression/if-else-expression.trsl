@@ -9,4 +9,6 @@ let bigger = (n: Int) =>
     else
         "Smaller"
 
-bigger(abs(-10))
+let valueTrue = bigger(abs(-10))
+let falseValue = bigger(0)
+falseValue

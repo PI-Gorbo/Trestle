@@ -241,53 +241,114 @@ ParsedProgram {
             },
         },
         Expression {
-            kind: FunctionInvocation {
-                function_name: "bigger",
-                expressions: [
-                    Expression {
-                        kind: FunctionInvocation {
-                            function_name: "abs",
-                            expressions: [
-                                Expression {
-                                    kind: Unary(
-                                        Neg,
+            kind: Let {
+                name: "valueTrue",
+                type_dec: None,
+                value: Expression {
+                    kind: FunctionInvocation {
+                        function_name: "bigger",
+                        expressions: [
+                            Expression {
+                                kind: FunctionInvocation {
+                                    function_name: "abs",
+                                    expressions: [
                                         Expression {
-                                            kind: Literal(
-                                                Int(
-                                                    10,
-                                                ),
+                                            kind: Unary(
+                                                Neg,
+                                                Expression {
+                                                    kind: Literal(
+                                                        Int(
+                                                            10,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            418,
+                                                        ),
+                                                        length: 2,
+                                                    },
+                                                },
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    402,
+                                                    417,
                                                 ),
-                                                length: 2,
+                                                length: 3,
                                             },
                                         },
-                                    ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            401,
-                                        ),
-                                        length: 3,
-                                    },
+                                    ],
                                 },
-                            ],
-                        },
-                        span: SourceSpan {
-                            offset: SourceOffset(
-                                397,
-                            ),
-                            length: 8,
-                        },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        413,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                        ],
                     },
-                ],
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            406,
+                        ),
+                        length: 16,
+                    },
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
                     390,
                 ),
-                length: 16,
+                length: 33,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "falseValue",
+                type_dec: None,
+                value: Expression {
+                    kind: FunctionInvocation {
+                        function_name: "bigger",
+                        expressions: [
+                            Expression {
+                                kind: Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        447,
+                                    ),
+                                    length: 1,
+                                },
+                            },
+                        ],
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            440,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    423,
+                ),
+                length: 27,
+            },
+        },
+        Expression {
+            kind: Var(
+                "falseValue",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    450,
+                ),
+                length: 10,
             },
         },
     ],

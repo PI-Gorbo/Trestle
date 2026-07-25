@@ -148,7 +148,39 @@ TypeCheckedProgram {
                                 Int,
                             ),
                         },
-                        else_branch: None,
+                        else_branch: Some(
+                            TypeCheckedExpression {
+                                kind: Block(
+                                    [
+                                        TypeCheckedExpression {
+                                            kind: Literal(
+                                                Int(
+                                                    20,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    246,
+                                                ),
+                                                length: 2,
+                                            },
+                                            ty: Literal(
+                                                Int,
+                                            ),
+                                        },
+                                    ],
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        236,
+                                    ),
+                                    length: 18,
+                                },
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                        ),
                     },
                     span: SourceSpan {
                         offset: SourceOffset(

@@ -3,5 +3,5 @@ source: crates/trestle/tests/corpus.rs
 expression: value
 ---
 String(
-    "Bigger",
+    "Smaller",
 )

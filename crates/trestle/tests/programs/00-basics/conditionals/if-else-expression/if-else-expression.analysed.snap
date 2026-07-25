@@ -116,7 +116,24 @@ TypeCheckedProgram {
                                             Int,
                                         ),
                                     },
-                                    else_branch: None,
+                                    else_branch: Some(
+                                        TypeCheckedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    0,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    303,
+                                                ),
+                                                length: 1,
+                                            },
+                                            ty: Literal(
+                                                Int,
+                                            ),
+                                        },
+                                    ),
                                 },
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -238,7 +255,24 @@ TypeCheckedProgram {
                                             String,
                                         ),
                                     },
-                                    else_branch: None,
+                                    else_branch: Some(
+                                        TypeCheckedExpression {
+                                            kind: Literal(
+                                                String(
+                                                    "Smaller",
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    379,
+                                                ),
+                                                length: 9,
+                                            },
+                                            ty: Literal(
+                                                String,
+                                            ),
+                                        },
+                                    ),
                                 },
                                 span: SourceSpan {
                                     offset: SourceOffset(
@@ -279,66 +313,144 @@ TypeCheckedProgram {
             ty: Unit,
         },
         TypeCheckedExpression {
-            kind: FunctionInvocation(
-                BindingId(
-                    3,
+            kind: Let {
+                binding: BindingId(
+                    4,
                 ),
-                [
-                    TypeCheckedExpression {
-                        kind: FunctionInvocation(
-                            BindingId(
-                                1,
-                            ),
-                            [
-                                TypeCheckedExpression {
-                                    kind: Unary(
-                                        Neg,
+                value: TypeCheckedExpression {
+                    kind: FunctionInvocation(
+                        BindingId(
+                            3,
+                        ),
+                        [
+                            TypeCheckedExpression {
+                                kind: FunctionInvocation(
+                                    BindingId(
+                                        1,
+                                    ),
+                                    [
                                         TypeCheckedExpression {
-                                            kind: Literal(
-                                                Int(
-                                                    10,
-                                                ),
+                                            kind: Unary(
+                                                Neg,
+                                                TypeCheckedExpression {
+                                                    kind: Literal(
+                                                        Int(
+                                                            10,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            418,
+                                                        ),
+                                                        length: 2,
+                                                    },
+                                                    ty: Literal(
+                                                        Int,
+                                                    ),
+                                                },
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    402,
+                                                    417,
                                                 ),
-                                                length: 2,
+                                                length: 3,
                                             },
                                             ty: Literal(
                                                 Int,
                                             ),
                                         },
+                                    ],
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        413,
                                     ),
-                                    span: SourceSpan {
-                                        offset: SourceOffset(
-                                            401,
-                                        ),
-                                        length: 3,
-                                    },
-                                    ty: Literal(
-                                        Int,
-                                    ),
+                                    length: 8,
                                 },
-                            ],
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                        ],
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            406,
                         ),
-                        span: SourceSpan {
-                            offset: SourceOffset(
-                                397,
-                            ),
-                            length: 8,
-                        },
-                        ty: Literal(
-                            Int,
-                        ),
+                        length: 16,
                     },
-                ],
-            ),
+                    ty: Literal(
+                        String,
+                    ),
+                },
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     390,
                 ),
-                length: 16,
+                length: 33,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    5,
+                ),
+                value: TypeCheckedExpression {
+                    kind: FunctionInvocation(
+                        BindingId(
+                            3,
+                        ),
+                        [
+                            TypeCheckedExpression {
+                                kind: Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        447,
+                                    ),
+                                    length: 1,
+                                },
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                        ],
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            440,
+                        ),
+                        length: 9,
+                    },
+                    ty: Literal(
+                        String,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    423,
+                ),
+                length: 27,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: Var(
+                BindingId(
+                    5,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    450,
+                ),
+                length: 10,
             },
             ty: Literal(
                 String,
@@ -406,6 +518,30 @@ TypeCheckedProgram {
                     305,
                 ),
                 length: 85,
+            },
+        },
+        TypeCheckedBinding {
+            name: "valueTrue",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    390,
+                ),
+                length: 33,
+            },
+        },
+        TypeCheckedBinding {
+            name: "falseValue",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    423,
+                ),
+                length: 27,
             },
         },
     ],

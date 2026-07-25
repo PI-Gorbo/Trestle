@@ -116,7 +116,9 @@ pub(super) fn infer_type_of_expression(
                     };
 
                     let Some(input) = input else {
-                        return Err(TypeCheckError::PipeIntoArgumentlessFunction { span: rhs.span });
+                        return Err(TypeCheckError::PipeIntoArgumentlessFunction {
+                            span: rhs.span,
+                        });
                     };
 
                     unify(unification_map, &lhs.ty, &input, span)?;
@@ -288,7 +290,7 @@ pub(super) fn infer_type_of_expression(
                         ExpressionKind::If {
                             condition: Box::new(typed_condition),
                             then_branch: Box::new(true_condition),
-                            else_branch: None,
+                            else_branch: Some(Box::new(false_condition)),
                         },
                         true_condition_type,
                     )
