@@ -3,7 +3,7 @@
 //!
 //! The pass is split into cohesive submodules:
 //! - [`typed_ast`] — the output IR (types + typed tree).
-//! - [`unification`] — the union-find over type variables and the core [`unify`](unification::unify).
+//! - [`unification`] — the union-find over type variables and the core `UnificationMap::unify`.
 //! - [`inference`] — the bottom-up walk that synthesises a type per node.
 //! - [`binding_table`] — the per-binding type table and its finalisation.
 //! - [`substitution`] — the final pass that resolves every solved variable in the tree.

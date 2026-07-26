@@ -14,7 +14,7 @@ use super::error::TypeCheckError;
 use super::typed_ast::{
     ExpressionKind, Lambda, Literal, Param, Type, TypeCheckedExpression, TypeCheckedLiteral,
 };
-use super::unification::{UnificationMap, unify};
+use super::unification::UnificationMap;
 
 pub(super) fn infer_type_of_expression(
     untyped_expression: ResolvedExpression,
@@ -121,7 +121,7 @@ pub(super) fn infer_type_of_expression(
                         });
                     };
 
-                    unify(unification_map, &lhs.ty, &input, span)?;
+                    unification_map.unify(&lhs.ty, &input, span)?;
 
                     (
                         ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
@@ -139,7 +139,7 @@ pub(super) fn infer_type_of_expression(
                 UnaryOp::Neg => Type::Literal(Literal::Int),
                 UnaryOp::Not => Type::Literal(Literal::Bool),
             };
-            unify(unification_map, &operand.ty, &ty, operand.span)?;
+            unification_map.unify(&operand.ty, &ty, operand.span)?;
             (ExpressionKind::Unary(op, Box::new(operand)), ty)
         }
 
@@ -168,7 +168,7 @@ pub(super) fn infer_type_of_expression(
             // Infer the body under the (now parameter-extended) environment.
             let body = infer_type_of_expression(*body, env, unification_map, bindings)?;
             let return_type = resolve_type_dec(unification_map, &return_type, span)?;
-            unify(unification_map, &body.ty, &return_type, span)?;
+            unification_map.unify(&body.ty, &return_type, span)?;
             let lambda_return_type = body.ty.clone();
 
             (
@@ -226,7 +226,7 @@ pub(super) fn infer_type_of_expression(
             env.set(binding, bound_ty.clone());
             // The value's type must unify with the binding's; for an annotated `let` a differing
             // value type is a `TypeMismatch` (expected = annotation, found = value).
-            unify(unification_map, &value.ty, &bound_ty, span)?;
+            unification_map.unify(&value.ty, &bound_ty, span)?;
 
             (
                 ExpressionKind::Let {
@@ -255,12 +255,7 @@ pub(super) fn infer_type_of_expression(
             let typed_condition =
                 infer_type_of_expression(*condition, env, unification_map, bindings)?;
             // Unify the typed_condition value with boolean.
-            unify(
-                unification_map,
-                &typed_condition.ty,
-                &Type::Literal(Literal::Bool),
-                span,
-            )?;
+            unification_map.unify(&typed_condition.ty, &Type::Literal(Literal::Bool), span)?;
 
             let true_condition =
                 infer_type_of_expression(*true_condition, env, unification_map, bindings)?;
@@ -279,12 +274,7 @@ pub(super) fn infer_type_of_expression(
                     let false_condition =
                         infer_type_of_expression(*false_condition, env, unification_map, bindings)?;
 
-                    unify(
-                        unification_map,
-                        &false_condition.ty,
-                        &true_condition.ty,
-                        span,
-                    )?;
+                    unification_map.unify(&false_condition.ty, &true_condition.ty, span)?;
 
                     (
                         ExpressionKind::If {
@@ -311,8 +301,8 @@ fn unify_binary_op(
     rhs_type: Type,
     return_type: Type,
 ) -> Result<(ExpressionKind, Type), TypeCheckError> {
-    unify(unification_map, &lhs.ty, &lhs_type, lhs.span)?;
-    unify(unification_map, &rhs.ty, &rhs_type, rhs.span)?;
+    unification_map.unify(&lhs.ty, &lhs_type, lhs.span)?;
+    unification_map.unify(&rhs.ty, &rhs_type, rhs.span)?;
 
     Ok((
         ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
@@ -369,7 +359,7 @@ fn apply_arguments(
     match unification_map.representative(fn_type) {
         // Peel one arrow: the argument must unify with the parameter.
         Type::Fn(Some(param_type), return_type) => {
-            unify(unification_map, &param_type, &arg.ty, span)?;
+            unification_map.unify(&param_type, &arg.ty, span)?;
             apply_arguments(unification_map, &return_type, &arguments[1..], span)
         }
 
@@ -381,7 +371,7 @@ fn apply_arguments(
         callee @ Type::Var(_) => {
             let result = Type::Var(unification_map.mint_new_type_var());
             let fn_shape = Type::Fn(Some(Box::new(arg.ty.clone())), Box::new(result.clone()));
-            unify(unification_map, &callee, &fn_shape, span)?;
+            unification_map.unify(&callee, &fn_shape, span)?;
             apply_arguments(unification_map, &result, &arguments[1..], span)
         }
 
