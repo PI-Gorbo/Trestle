@@ -1,0 +1,258 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+TypeCheckedProgram {
+    expressions: [
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    2,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        0,
+                                    ),
+                                    ty: Literal(
+                                        Bool,
+                                    ),
+                                },
+                            ),
+                            body: TypeCheckedExpression {
+                                kind: Lambda(
+                                    Lambda {
+                                        parameter: Some(
+                                            Param {
+                                                binding: BindingId(
+                                                    1,
+                                                ),
+                                                ty: Literal(
+                                                    Int,
+                                                ),
+                                            },
+                                        ),
+                                        body: TypeCheckedExpression {
+                                            kind: If {
+                                                condition: TypeCheckedExpression {
+                                                    kind: Var(
+                                                        BindingId(
+                                                            0,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            31,
+                                                        ),
+                                                        length: 1,
+                                                    },
+                                                    ty: Literal(
+                                                        Bool,
+                                                    ),
+                                                },
+                                                then_branch: TypeCheckedExpression {
+                                                    kind: Var(
+                                                        BindingId(
+                                                            1,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            34,
+                                                        ),
+                                                        length: 1,
+                                                    },
+                                                    ty: Literal(
+                                                        Int,
+                                                    ),
+                                                },
+                                                else_branch: Some(
+                                                    TypeCheckedExpression {
+                                                        kind: Var(
+                                                            BindingId(
+                                                                1,
+                                                            ),
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                41,
+                                                            ),
+                                                            length: 1,
+                                                        },
+                                                        ty: Literal(
+                                                            Int,
+                                                        ),
+                                                    },
+                                                ),
+                                            },
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    27,
+                                                ),
+                                                length: 17,
+                                            },
+                                            ty: Literal(
+                                                Int,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        11,
+                                    ),
+                                    length: 33,
+                                },
+                                ty: Fn(
+                                    Some(
+                                        Literal(
+                                            Int,
+                                        ),
+                                    ),
+                                    Literal(
+                                        Int,
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            11,
+                        ),
+                        length: 33,
+                    },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                Bool,
+                            ),
+                        ),
+                        Fn(
+                            Some(
+                                Literal(
+                                    Int,
+                                ),
+                            ),
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 44,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: FunctionInvocation(
+                BindingId(
+                    2,
+                ),
+                [
+                    TypeCheckedExpression {
+                        kind: Literal(
+                            Bool(
+                                true,
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                49,
+                            ),
+                            length: 4,
+                        },
+                        ty: Literal(
+                            Bool,
+                        ),
+                    },
+                    TypeCheckedExpression {
+                        kind: Literal(
+                            Int(
+                                1,
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                55,
+                            ),
+                            length: 1,
+                        },
+                        ty: Literal(
+                            Int,
+                        ),
+                    },
+                ],
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    44,
+                ),
+                length: 13,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
+    ],
+    bindings: [
+        TypeCheckedBinding {
+            name: "b",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    11,
+                ),
+                length: 33,
+            },
+        },
+        TypeCheckedBinding {
+            name: "x",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    11,
+                ),
+                length: 33,
+            },
+        },
+        TypeCheckedBinding {
+            name: "pick",
+            ty: Fn(
+                Some(
+                    Literal(
+                        Bool,
+                    ),
+                ),
+                Fn(
+                    Some(
+                        Literal(
+                            Int,
+                        ),
+                    ),
+                    Literal(
+                        Int,
+                    ),
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 44,
+            },
+        },
+    ],
+}

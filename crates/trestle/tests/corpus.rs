@@ -396,15 +396,11 @@ trsl_test!(
     "00-basics/conditionals/if-else-expression/if-else-expression.trsl",
     [ast, analyse, eval]
 );
-// Regression: both branches are the same unannotated binding, so the branch types are the
-// *same* type variable. `union_vars` links that free root to itself (`map[r] = Reference(r)`)
-// and the next `find_root` recurses forever. Fails by stack overflow — which aborts the whole
-// test binary — so keep it ignored until `union_vars` early-returns on `first == second`.
+
 trsl_test!(
     basics_conditionals_branches_share_a_variable,
     "00-basics/conditionals/branches-share-a-variable/branches-share-a-variable.trsl",
-    [ast, analyse, eval],
-    ignore = "unify(v, v) links a root to itself — stack overflow in find_root"
+    [ast, analyse, eval]
 );
 
 // ── blocks ────────────────────────────────────────────────

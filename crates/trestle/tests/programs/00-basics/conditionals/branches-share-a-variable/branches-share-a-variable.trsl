@@ -1,15 +1,3 @@
-// Regression (unification): an `if`/`else` whose two branches are the *same* unannotated
-// binding unifies a type variable with itself.
-//
-// Both branches infer to the same variable, and linking a free root to itself writes
-// `map[r] = Reference(r)`. The next `find_root(r)` — reached here when the call site
-// unifies the argument against the parameter — then recurses until the stack overflows.
-//
-// NOTE: this fails by stack overflow, which aborts the whole test binary rather than
-// failing one test. That is why it is `ignore`d until the fix lands.
-//
-// Should analyse cleanly and evaluate to `1`.
-
 let pick = (b: Bool, x) => if (b) x else x
 
 pick(true, 1)
