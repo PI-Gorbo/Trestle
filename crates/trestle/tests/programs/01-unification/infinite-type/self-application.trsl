@@ -1,0 +1,11 @@
+// The occurs check, end to end.
+//
+// `x` is unannotated, so it takes a fresh type variable. Inferring the body `x(x)` hits the
+// `Var`-callee branch of `apply_arguments`, which constrains the callee to `Fn(arg, fresh)` —
+// and here the argument *is* the callee, so the constraint is `_0 := Fn(_0, _1)`: a type that
+// contains itself.
+//
+// `union_with_concrete_type` must reject the binding rather than write the cycle into the map,
+// where it would make `subsitute` recurse forever. Should fail analysis with `InfiniteType`.
+
+let selfApply = (x) => x(x)

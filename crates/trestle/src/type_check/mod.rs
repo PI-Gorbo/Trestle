@@ -68,6 +68,15 @@ pub fn type_check(
         },
     );
 
+    // Report inference's failures before finalising the binding table. An error raised inside a
+    // value expression (a lambda body, say) leaves its enclosing binding untyped, so
+    // `zip_bindings_with_types` would fail too — and its `UntypedBindingAfterTypeCheck` is an
+    // internal-consistency check, only meaningful once inference has *succeeded*. Zipping first
+    // would mask the diagnostic the user actually needs with a compiler-bug report.
+    if !final_state.errors.is_empty() {
+        return Err(final_state.errors);
+    }
+
     // Binding types are recorded during inference with their type variables intact (a `let`
     // without an annotation is bound to a fresh `Var`), so resolve them the same way the
     // expression tree is resolved below.
@@ -85,13 +94,10 @@ pub fn type_check(
         .iter_mut()
         .for_each(|expr| subsitute(&final_state.unification_map, expr));
 
-    match final_state.errors.is_empty() {
-        true => Ok(TypeCheckedProgram {
-            expressions: subsituted_expressions,
-            bindings: typed_bindings,
-        }),
-        false => Err(final_state.errors),
-    }
+    Ok(TypeCheckedProgram {
+        expressions: subsituted_expressions,
+        bindings: typed_bindings,
+    })
 }
 
 #[cfg(test)]

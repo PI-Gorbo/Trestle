@@ -483,6 +483,14 @@ trsl_test!(
     [ast, analyse, eval],
     ignore = "concrete union-find roots are compared with PartialEq, not unified"
 );
+// Self-application `x(x)` constrains x's variable to a function type containing itself. The
+// occurs check has to reject it; the `error` stage pins the `InfiniteType` diagnostic, and the
+// test terminating at all is the point — the cycle would make `subsitute` non-terminating.
+trsl_test!(
+    unification_infinite_type_self_application,
+    "01-unification/infinite-type/self-application.trsl",
+    [ast, error]
+);
 
 // ══ 02 control flow ═══════════════════════════════════════
 trsl_test!(

@@ -421,6 +421,74 @@ mod tests {
         );
     }
 
+    /// The occurs check: solving `v0 := Fn(v0, Unit)` would make `v0`'s own solution contain `v0`,
+    /// so substitution could never terminate. `union_with_concrete_type` has to reject the binding
+    /// instead of writing the cycle into the map.
+    #[test]
+    fn binding_a_variable_into_a_type_that_contains_it_is_an_infinite_type() {
+        let mut unification_map = UnificationMap::new();
+        let v0 = Type::Var(unification_map.mint_new_type_var());
+        let span = SourceSpan::from((0, 0));
+
+        let recursive = Type::Fn(Some(Box::new(v0.clone())), Box::new(Type::Unit));
+        let err = unification_map
+            .unify(&recursive, &v0, span)
+            .expect_err("binding a variable into a type containing it is an infinite type");
+
+        match err {
+            TypeCheckError::InfiniteType {
+                var,
+                ty,
+                span: err_span,
+            } => {
+                assert_eq!(Type::Var(var), v0, "the variable that would swallow itself");
+                assert_eq!(ty, recursive, "the reported type keeps its real shape");
+                assert_eq!(err_span, span, "the caller's span survives");
+            }
+            other => panic!("expected an infinite type error, got {other:?}"),
+        }
+
+        // Nothing was written, so `v0` is still free — and reaching this line at all proves
+        // `subsitute` terminates, which is what the cycle would have broken.
+        assert_eq!(unification_map.subsitute(&v0), v0);
+    }
+
+    /// The variable inside the type need not be the one being bound — it only has to be *unioned*
+    /// with it. That is what the `find_root` call inside `root_occurs_in_type` is for: a naive
+    /// syntactic occurs check compares ids and misses this entirely.
+    #[test]
+    fn the_occurs_check_sees_through_an_equivalence_class() {
+        let mut unification_map = UnificationMap::new();
+        let v0 = Type::Var(unification_map.mint_new_type_var());
+        let v1 = Type::Var(unification_map.mint_new_type_var());
+        let span = SourceSpan::from((0, 0));
+
+        // v0 and v1 are now the same variable, though they still have distinct ids.
+        unification_map
+            .unify(&v0, &v1, span)
+            .expect("unioning two free variables succeeds");
+
+        let recursive = Type::Fn(Some(Box::new(v0.clone())), Box::new(Type::Unit));
+        let err = unification_map
+            .unify(&recursive, &v1, span)
+            .expect_err("v1 := Fn(v0, Unit) is a cycle because v0 and v1 share a root");
+
+        match err {
+            TypeCheckError::InfiniteType { var, .. } => assert_eq!(
+                Type::Var(var),
+                unification_map.subsitute(&v1),
+                "the error names the class's canonical root"
+            ),
+            other => panic!("expected an infinite type error, got {other:?}"),
+        }
+
+        // Both are still free, and substituting either terminates.
+        assert_eq!(
+            unification_map.subsitute(&v0),
+            unification_map.subsitute(&v1)
+        );
+    }
+
     #[test]
     fn unifying_a_variable_with_itself_is_a_no_op() {
         let mut unification_map = UnificationMap::new();
