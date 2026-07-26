@@ -68,9 +68,9 @@ impl UnificationMap {
         }
     }
 
-    /// Follow a type variable to its current representative: the concrete type it's been unified
-    /// with, or a canonical `Var(root)` if still free. Non-variables pass through. Shallow — it
-    /// does not descend into `Fn` children (application peels/unifies those one level at a time).
+    // Given a type, return its root / most canonical representation.
+    // If its a concrete type, then we don't need to find anything. It is its most canonical representation.
+    // If it is a type variable, then we follow the unification map to its representation.
     pub(super) fn representative(&self, ty: &Type) -> Type {
         match ty {
             Type::Var(id) => match self.find_root(*id) {
@@ -121,12 +121,32 @@ impl UnificationMap {
 
         match root_node {
             RootUnionNode::Concrete(root_node_concrete_type) => {
-                match *concrete_type == *root_node_concrete_type {
-                    true => Ok(()),
-                    false => Err(UnifyError::TypeMismatch(TypeMismatch {
-                        expected: root_node_concrete_type.clone(),
-                        found: concrete_type.clone(),
-                    })),
+                match (
+                    self.representative(concrete_type),
+                    self.representative(root_node_concrete_type),
+                ) {
+                    // (Type::Var(a), Type::Var(b))          => union_vars(a, b),
+                    // (Type::Var(a), t) | (t, Type::Var(a)) => bind_var(a, &t),   // occurs check inside
+                    // (Type::Literal(a), Type::Literal(b))  => match a == b { .. },
+                    // (Type::Fn(p1, r1), Type::Fn(p2, r2))  => ..recurse..,
+                    // (Type::Record(r1), Type::Record(r2))  => unify_rows(map, &r1, &r2, span),
+                    // (found, expected)                     => create_type_mismatch_error(..),
+                    (Type::Unit, Type::Unit) => todo!(),
+                    (Type::Unit, Type::Literal(literal)) => todo!(),
+                    (Type::Unit, Type::Var(type_var_id)) => todo!(),
+                    (Type::Unit, Type::Fn(_, _)) => todo!(),
+                    (Type::Literal(literal), Type::Unit) => todo!(),
+                    (Type::Literal(literal), Type::Literal(literal)) => todo!(),
+                    (Type::Literal(literal), Type::Var(type_var_id)) => todo!(),
+                    (Type::Literal(literal), Type::Fn(_, _)) => todo!(),
+                    (Type::Var(type_var_id), Type::Unit) => todo!(),
+                    (Type::Var(type_var_id), Type::Literal(literal)) => todo!(),
+                    (Type::Var(type_var_id), Type::Var(type_var_id)) => todo!(),
+                    (Type::Var(type_var_id), Type::Fn(_, _)) => todo!(),
+                    (Type::Fn(_, _), Type::Unit) => todo!(),
+                    (Type::Fn(_, _), Type::Literal(literal)) => todo!(),
+                    (Type::Fn(_, _), Type::Var(type_var_id)) => todo!(),
+                    (Type::Fn(_, _), Type::Fn(_, _)) => todo!(),
                 }
             }
             RootUnionNode::FreeTypeVariable => {
@@ -202,69 +222,80 @@ impl UnificationMap {
             },
         }
     }
-}
 
-/// Reconcile two types, solving type variables and returning `()` on success or a
-/// [`TypeCheckError`] at `span`. Descends into `Fn` children and delegates variable-vs-concrete /
-/// variable-vs-variable cases to the union-find on [`UnificationMap`].
-pub(super) fn unify(
-    unification_map: &mut UnificationMap,
-    found: &Type,
-    expected: &Type,
-    span: SourceSpan,
-) -> Result<(), TypeCheckError> {
-    match (expected, found) {
-        (Type::Var(expected_type_var_id), Type::Var(found_type_var_id)) => unification_map
-            .union_vars(*expected_type_var_id, *found_type_var_id)
-            .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
-        (Type::Unit, Type::Unit) => Ok(()),
-        (Type::Literal(first_literal), Type::Literal(second_literal)) => {
-            match first_literal == second_literal {
+    /// Reconcile two types, solving type variables and returning `()` on success or a
+    /// [`TypeCheckError`] at `span`. Descends into `Fn` children and delegates variable-vs-concrete /
+    /// variable-vs-variable cases to the union-find on [`UnificationMap`].
+    pub(super) fn unify(
+        &mut self,
+        found: &Type,
+        expected: &Type,
+        span: SourceSpan,
+    ) -> Result<(), TypeCheckError> {
+        match (self.representative(expected), self.representative(found)) {
+            // (Type::Var(expected_type_var_id), Type::Var(found_type_var_id)) => unification_map
+            //     .union_vars(*expected_type_var_id, *found_type_var_id)
+            //     .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
+            // (Type::Unit, Type::Unit) => Ok(()),
+            // (Type::Literal(first_literal), Type::Literal(second_literal)) => {
+            //     match first_literal == second_literal {
+            //         true => Ok(()),
+            //         false => create_type_mismatch_error(found, expected, span),
+            //     }
+            // }
+            // (Type::Fn(param1, result1), Type::Fn(param2, result2)) => {
+            //     let parma_unification = match (param1, param2) {
+            //         (None, Some(_)) | (Some(_), None) => {
+            //             Err(TypeCheckError::FunctionParameterMismatch {
+            //                 expected: expected.clone(),
+            //                 found: found.clone(),
+            //                 span,
+            //             })
+            //         }
+
+            //         (None, None) => Ok(()),
+            //         (Some(param1), Some(param2)) => unify(unification_map, param1, param2, span),
+            //     };
+
+            //     parma_unification?;
+            //     unify(unification_map, result1, result2, span)
+            // }
+
+            // (Type::Literal(_), Type::Var(type_var_id)) => unification_map
+            //     .union_with_concrete_type(*type_var_id, expected)
+            //     .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
+            // (Type::Var(type_var_id), Type::Literal(_)) => unification_map
+            //     .union_with_concrete_type(*type_var_id, found)
+            //     .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
+            // (Type::Var(type_var_id), Type::Fn(_, _)) => unification_map
+            //     .union_with_concrete_type(*type_var_id, found)
+            //     .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
+            // (Type::Var(type_var_id), Type::Unit) => unification_map
+            //     .union_with_concrete_type(*type_var_id, found)
+            //     .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
+            // (Type::Fn(_, _), Type::Var(type_var_id)) => unification_map
+            //     .union_with_concrete_type(*type_var_id, expected)
+            //     .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
+
+            // (Type::Literal(_), Type::Unit) => create_type_mismatch_error(found, expected, span),
+            // (Type::Literal(_), Type::Fn(_, _)) => create_type_mismatch_error(found, expected, span),
+            // (Type::Fn(_, _), Type::Unit) => create_type_mismatch_error(found, expected, span),
+            // (Type::Fn(_, _), Type::Literal(_)) => create_type_mismatch_error(found, expected, span),
+            // (Type::Unit, Type::Literal(_)) => create_type_mismatch_error(found, expected, span),
+            // (Type::Unit, Type::Var(_)) => create_type_mismatch_error(found, expected, span),
+            // (Type::Unit, Type::Fn(_, _)) => create_type_mismatch_error(found, expected, span),
+            (Type::Var(a), t) | (t, Type::Var(a)) => bind_var(a, &t), // occurs check inside
+
+            (Type::Unit, Type::Unit) => Ok(()),
+            (Type::Literal(literal_a), Type::Literal(literal_b)) => match literal_a == literal_b {
                 true => Ok(()),
                 false => create_type_mismatch_error(found, expected, span),
-            }
+            },
+            (Type::Fn(p1, b1), Type::Fn(p2, b2)) => todo!(),
+            (Type::Var(var1), Type::Var(var2)) => todo!(),
+
+            (expected, found) => create_type_mismatch_error(&found, &expected, span),
         }
-        (Type::Fn(param1, result1), Type::Fn(param2, result2)) => {
-            let parma_unification = match (param1, param2) {
-                (None, Some(_)) | (Some(_), None) => {
-                    Err(TypeCheckError::FunctionParameterMismatch {
-                        expected: expected.clone(),
-                        found: found.clone(),
-                        span,
-                    })
-                }
-
-                (None, None) => Ok(()),
-                (Some(param1), Some(param2)) => unify(unification_map, param1, param2, span),
-            };
-
-            parma_unification?;
-            unify(unification_map, result1, result2, span)
-        }
-
-        (Type::Literal(_), Type::Var(type_var_id)) => unification_map
-            .union_with_concrete_type(*type_var_id, expected)
-            .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
-        (Type::Var(type_var_id), Type::Literal(_)) => unification_map
-            .union_with_concrete_type(*type_var_id, found)
-            .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
-        (Type::Var(type_var_id), Type::Fn(_, _)) => unification_map
-            .union_with_concrete_type(*type_var_id, found)
-            .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
-        (Type::Var(type_var_id), Type::Unit) => unification_map
-            .union_with_concrete_type(*type_var_id, found)
-            .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
-        (Type::Fn(_, _), Type::Var(type_var_id)) => unification_map
-            .union_with_concrete_type(*type_var_id, expected)
-            .map_err(|union_err| unify_error_to_type_check_error(union_err, span)),
-
-        (Type::Literal(_), Type::Unit) => create_type_mismatch_error(found, expected, span),
-        (Type::Literal(_), Type::Fn(_, _)) => create_type_mismatch_error(found, expected, span),
-        (Type::Fn(_, _), Type::Unit) => create_type_mismatch_error(found, expected, span),
-        (Type::Fn(_, _), Type::Literal(_)) => create_type_mismatch_error(found, expected, span),
-        (Type::Unit, Type::Literal(_)) => create_type_mismatch_error(found, expected, span),
-        (Type::Unit, Type::Var(_)) => create_type_mismatch_error(found, expected, span),
-        (Type::Unit, Type::Fn(_, _)) => create_type_mismatch_error(found, expected, span),
     }
 }
 
@@ -323,5 +354,63 @@ mod tests {
             err,
             TypeCheckError::FunctionParameterMismatch { .. }
         ));
+    }
+
+    /// Regression: once a variable's root is `Concrete`, `union_with_concrete_type` compares the
+    /// two concrete types with `PartialEq` instead of unifying them structurally. So a root holding
+    /// a *partially known* `Fn(v1, Int)` is reported as mismatching `Fn(Int, Int)` rather than
+    /// solving `v1 := Int`. Records make this constant — they are the first type that routinely
+    /// holds variables *and* sits behind one — so `unify` must resolve both sides to their
+    /// representatives before dispatching.
+    #[test]
+    #[ignore = "concrete union-find roots are compared with PartialEq, not unified"]
+    fn a_solved_variable_unifies_structurally_with_a_compatible_function() {
+        let mut unification_map = UnificationMap::new();
+        let v0 = Type::Var(unification_map.mint_new_type_var());
+        let v1 = Type::Var(unification_map.mint_new_type_var());
+        let span = SourceSpan::from((0, 0));
+
+        // v0 := Fn(v1, Int) — a function whose parameter type is still unknown.
+        let partially_known = Type::Fn(
+            Some(Box::new(v1.clone())),
+            Box::new(Type::Literal(Literal::Int)),
+        );
+        unify(&mut unification_map, &partially_known, &v0, span)
+            .expect("binding a fresh variable to a concrete type succeeds");
+
+        // Unifying that against a fully concrete `Fn(Int, Int)` must descend and solve v1.
+        let fully_known = Type::Fn(
+            Some(Box::new(Type::Literal(Literal::Int))),
+            Box::new(Type::Literal(Literal::Int)),
+        );
+        unify(&mut unification_map, &fully_known, &v0, span)
+            .expect("a solved variable unifies structurally with a compatible function");
+
+        assert_eq!(
+            unification_map.subsitute(&v1),
+            Type::Literal(Literal::Int),
+            "the partially known parameter should have been solved to Int"
+        );
+    }
+
+    /// Regression: unifying a free variable with *itself* makes `union_vars` write
+    /// `map[r] = Reference(r)`, so the next `find_root(r)` recurses forever. Reachable from source
+    /// via an `if`/`else` whose two branches are the same unannotated binding. The fix is an
+    /// early return in `union_vars` when both ids resolve to the same root.
+    ///
+    /// NOTE: this fails by stack overflow, which aborts the entire test binary rather than failing
+    /// one test — run it on its own (`cargo test -p trestle unifying_a_variable_with_itself
+    /// -- --ignored`) until the fix lands.
+    #[test]
+    #[ignore = "unify(v, v) links a root to itself — stack overflow in find_root"]
+    fn unifying_a_variable_with_itself_is_a_no_op() {
+        let mut unification_map = UnificationMap::new();
+        let v = Type::Var(unification_map.mint_new_type_var());
+
+        unify(&mut unification_map, &v, &v, SourceSpan::from((0, 0)))
+            .expect("unifying a variable with itself succeeds");
+
+        // Reaching this line at all is the test; the variable should still be free.
+        assert_eq!(unification_map.subsitute(&v), v);
     }
 }

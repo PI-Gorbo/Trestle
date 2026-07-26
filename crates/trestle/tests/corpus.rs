@@ -396,6 +396,16 @@ trsl_test!(
     "00-basics/conditionals/if-else-expression/if-else-expression.trsl",
     [ast, analyse, eval]
 );
+// Regression: both branches are the same unannotated binding, so the branch types are the
+// *same* type variable. `union_vars` links that free root to itself (`map[r] = Reference(r)`)
+// and the next `find_root` recurses forever. Fails by stack overflow — which aborts the whole
+// test binary — so keep it ignored until `union_vars` early-returns on `first == second`.
+trsl_test!(
+    basics_conditionals_branches_share_a_variable,
+    "00-basics/conditionals/branches-share-a-variable/branches-share-a-variable.trsl",
+    [ast, analyse, eval],
+    ignore = "unify(v, v) links a root to itself — stack overflow in find_root"
+);
 
 // ── blocks ────────────────────────────────────────────────
 trsl_test!(
@@ -466,6 +476,16 @@ trsl_test!(
     unification_int_lambda_parameter,
     "01-unification/lambda-parameters/int-lambda-parameter.trsl",
     [ast, analyse, eval]
+);
+// Regression: two type variables whose roots are *already* concrete are compared with
+// `PartialEq` rather than unified structurally, so a partially known `Fn(g, b)` fails to
+// unify with a known `Fn(Int, Int)`. Un-ignore once `unify` resolves both sides to their
+// representatives before dispatching.
+trsl_test!(
+    unification_partially_known_function,
+    "01-unification/partially-known-function/partially-known-function.trsl",
+    [ast, analyse, eval],
+    ignore = "concrete union-find roots are compared with PartialEq, not unified"
 );
 
 // ══ 02 control flow ═══════════════════════════════════════

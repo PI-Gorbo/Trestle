@@ -1,0 +1,15 @@
+// Regression (unification): a *partially known* function type must still unify.
+//
+// `let inc = …` binds `inc` to a type variable whose root is `Concrete(Fn(Int, Int))` —
+// bindings hold variables, not concrete types. Inferring `apply`'s body `f(x)` takes the
+// `Var`-callee branch and solves `f`'s variable to a partially known `Fn(g, b)`. At the
+// call site both sides are variables whose roots are already `Concrete`, so `union_vars`
+// compares them with `PartialEq` instead of unifying structurally: it reports a
+// `TypeMismatch` rather than solving `g := Int` and `b := Int`.
+//
+// Should analyse cleanly and evaluate to `2`.
+
+let inc = (n: Int) => n + 1
+let apply = (f, x) => f(x)
+
+apply(inc, 1)
