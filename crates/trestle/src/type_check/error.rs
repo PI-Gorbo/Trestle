@@ -4,7 +4,7 @@
 //! allows don't, due to the derive's span hygiene).
 #![allow(unused_assignments)]
 
-use super::typed_ast::Type;
+use super::typed_ast::{Type, TypeVarId};
 use miette::{Diagnostic, SourceSpan};
 use thiserror::Error;
 
@@ -58,6 +58,15 @@ pub enum TypeCheckError {
         expected: Type,
         found: Type,
         #[label("here")]
+        span: SourceSpan,
+    },
+
+    #[error("cannot construct an infinite type: `_{}` occurs in `{:?}`", .var.0, .ty)]
+    #[diagnostic(code(trestle::infinite_type))]
+    InfiniteType {
+        var: TypeVarId,
+        ty: Type,
+        #[label("this type would contain itself")]
         span: SourceSpan,
     },
 

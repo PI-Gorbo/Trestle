@@ -8,6 +8,8 @@
 
 use miette::SourceSpan;
 
+use crate::type_check::unification::RootUnionNode::Concrete;
+
 use super::error::TypeCheckError;
 use super::typed_ast::{Type, TypeVarId};
 
@@ -37,11 +39,18 @@ struct TypeMismatch {
 }
 
 #[derive(Debug)]
+struct InfiniteType {
+    var: TypeVarId,
+    ty: Type,
+}
+
+#[derive(Debug)]
 enum UnifyError {
     FunctionParameterNotProvided(TypeMismatch),
     FunctionParameterNotNeeded(TypeMismatch),
     TypeMismatch(TypeMismatch),
     FreeTypeVariableNotFoundError(FreeTypeVariableNotFoundError),
+    InfiniteType(InfiniteType),
 }
 
 impl UnifyError {
@@ -71,6 +80,13 @@ impl UnifyError {
                     "type variable {} was referenced during unification but never minted",
                     err.type_variable_id.0
                 ),
+                span,
+            },
+            // The occurs check tripped: solving the variable would make its own type contain it.
+            // `ty` was already substituted where the error was raised, so it shows the real shape.
+            UnifyError::InfiniteType(infinite_type) => TypeCheckError::InfiniteType {
+                var: infinite_type.var,
+                ty: infinite_type.ty,
                 span,
             },
         }
@@ -213,6 +229,28 @@ impl UnificationMap {
         }
     }
 
+    // Does the equivalence class, where 'root' is the canonical example, exist anywhere inside of the declared_type?
+    // This check ensures that we don't make cycles in our type graph.
+    fn root_occurs_in_type(&self, root: TypeVarId, declared_type: &Type) -> bool {
+        match declared_type {
+            Type::Unit | Type::Literal(_) => false,
+            Type::Var(type_var_id2) => match self.find_root(*type_var_id2) {
+                None => false,
+                Some((root2, RootUnionNode::FreeTypeVariable)) => root == root2, // If the root = the type var we have found, then we are comparing the root against itself, we have found a cycle!,
+                Some((root2, RootUnionNode::Concrete(declared_type))) => {
+                    root == root2 // If the root = the type var we have found, then we are comparing the root against itself, we have found a cycle!
+                    || self.root_occurs_in_type(root, declared_type) // Otherwise, we need to check that the root does not appear anywhere in the concrete type delcaration.
+                }
+            },
+            Type::Fn(param, body) => {
+                param
+                    .as_ref()
+                    .is_some_and(|p| self.root_occurs_in_type(root, p))
+                    || self.root_occurs_in_type(root, body)
+            }
+        }
+    }
+
     fn union_with_concrete_type(
         &mut self,
         variable: TypeVarId,
@@ -237,12 +275,20 @@ impl UnificationMap {
             // The variable is already solved — reconcile the two concrete types structurally.
             Some(root_concrete_type) => self.unify_inner(concrete_type, &root_concrete_type),
             // Still free — bind it.
-            None => self
-                .set(
+            None => {
+                if self.root_occurs_in_type(root_id, concrete_type) {
+                    return Err(UnifyError::InfiniteType(InfiniteType {
+                        var: root_id,
+                        // Safe: the cycle isn't in the map yet, and it makes the message show the real shape.
+                        ty: self.subsitute(concrete_type),
+                    }));
+                }
+                self.set(
                     root_id,
                     UnionNode::RootUnionNode(RootUnionNode::Concrete(concrete_type.clone())),
                 )
-                .map_err(UnifyError::FreeTypeVariableNotFoundError),
+                .map_err(UnifyError::FreeTypeVariableNotFoundError)
+            }
         }
     }
 
