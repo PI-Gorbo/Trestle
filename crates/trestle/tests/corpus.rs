@@ -473,15 +473,11 @@ trsl_test!(
     "01-unification/lambda-parameters/int-lambda-parameter.trsl",
     [ast, analyse, eval]
 );
-// Regression: two type variables whose roots are *already* concrete are compared with
-// `PartialEq` rather than unified structurally, so a partially known `Fn(g, b)` fails to
-// unify with a known `Fn(Int, Int)`. Un-ignore once `unify` resolves both sides to their
-// representatives before dispatching.
+
 trsl_test!(
     unification_partially_known_function,
     "01-unification/partially-known-function/partially-known-function.trsl",
-    [ast, analyse, eval],
-    ignore = "concrete union-find roots are compared with PartialEq, not unified"
+    [ast, analyse, eval]
 );
 // Self-application `x(x)` constrains x's variable to a function type containing itself. The
 // occurs check has to reject it; the `error` stage pins the `InfiniteType` diagnostic, and the

@@ -1,0 +1,8 @@
+type Point = { x: Int, y: Int, z: Int, label: String }
+
+type Point2 = { 
+        x: Int, 
+        y: Int, 
+        z: Int, 
+        label: String 
+    }
