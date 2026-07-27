@@ -1,0 +1,114 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Point",
+                type_expression: Record(
+                    {
+                        "label": RecordTypeEntry {
+                            key: "label",
+                            value: Named(
+                                "String",
+                            ),
+                        },
+                        "x": RecordTypeEntry {
+                            key: "x",
+                            value: Named(
+                                "Int",
+                            ),
+                        },
+                        "y": RecordTypeEntry {
+                            key: "y",
+                            value: Named(
+                                "Int",
+                            ),
+                        },
+                        "z": RecordTypeEntry {
+                            key: "z",
+                            value: Named(
+                                "Int",
+                            ),
+                        },
+                    },
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 54,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Point2",
+                type_expression: Record(
+                    {
+                        "label": RecordTypeEntry {
+                            key: "label",
+                            value: Named(
+                                "String",
+                            ),
+                        },
+                        "x": RecordTypeEntry {
+                            key: "x",
+                            value: Named(
+                                "Int",
+                            ),
+                        },
+                        "y": RecordTypeEntry {
+                            key: "y",
+                            value: Named(
+                                "Int",
+                            ),
+                        },
+                        "z": RecordTypeEntry {
+                            key: "z",
+                            value: Named(
+                                "Int",
+                            ),
+                        },
+                    },
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    56,
+                ),
+                length: 96,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "EmptyRecordNoSpace",
+                type_expression: Record(
+                    {},
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    154,
+                ),
+                length: 28,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "EmptyRecordWithSpace",
+                type_expression: Record(
+                    {},
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    183,
+                ),
+                length: 31,
+            },
+        },
+    ],
+}

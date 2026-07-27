@@ -77,10 +77,13 @@ if_expression                       = { "if" ~ "(" ~ expr ~ ")" ~ expr ~ ("else"
 type_declaration_expression                     = { "type" ~ identifier ~ "=" ~ type_expression }
 
 
-expr = { list_of_expressions | let_expression | lambda_expression | if_expression | binary_expression }
+expr = { type_declaration_expression | let_expression | list_of_expressions | lambda_expression | if_expression | binary_expression }
 
 // type expressions.
-comma_separated_list_of_type_expressions = { identifier_with_type_declaration ~ ("," ~ identifier_with_type_declaration)* }
+// Silent (`_`): the list itself produces no pair, so its
+// `identifier_with_type_declaration` children splice straight into
+// `record_type_expression` and the builder just iterates the fields.
+comma_separated_list_of_type_expressions = _{ identifier_with_type_declaration ~ ("," ~ identifier_with_type_declaration)* }
 record_type_expression = { "{" ~ comma_separated_list_of_type_expressions? ~ "}" }
 type_identifier = { identifier }
 type_expression         = { record_type_expression | type_identifier }

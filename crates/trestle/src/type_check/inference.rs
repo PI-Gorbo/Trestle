@@ -7,7 +7,7 @@ use miette::SourceSpan;
 use crate::binding_resolution::{
     ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
 };
-use crate::parse::ast::{BinaryOp, TypeDeclaration, UnaryOp};
+use crate::parse::ast::{BinaryOp, TypeExpression, UnaryOp};
 
 use super::binding_table::{BindingLookup, BindingToTypeMap};
 use super::error::TypeCheckError;
@@ -385,12 +385,17 @@ fn apply_arguments(
 /// (`"Int"`/`"Bool"`/`"String"` → [`Literal`]; unknown → an error).
 fn resolve_type_dec(
     unification_map: &mut UnificationMap,
-    dec: &Option<TypeDeclaration>,
+    dec: &Option<TypeExpression>,
     span: SourceSpan,
 ) -> Result<Type, TypeCheckError> {
     match dec {
         Some(dec) => {
-            let TypeDeclaration::Named(name) = dec;
+            let TypeExpression::Named(name) = dec else {
+                Err(TypeCheckError::InternalError {
+                    message: String::from("Expected type Erro"),
+                    span,
+                })?
+            };
             match name.as_str() {
                 "Int" => Ok(Type::Literal(Literal::Int)),
                 "Bool" => Ok(Type::Literal(Literal::Bool)),

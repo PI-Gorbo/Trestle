@@ -8,8 +8,6 @@
 
 use miette::SourceSpan;
 
-use crate::type_check::unification::RootUnionNode::Concrete;
-
 use super::error::TypeCheckError;
 use super::typed_ast::{Type, TypeVarId};
 

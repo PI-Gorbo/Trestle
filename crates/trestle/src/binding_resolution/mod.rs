@@ -347,6 +347,10 @@ fn resolve_subexpr(
                 },
             }
         }
+        ExpressionKind::TypeDeclaration {
+            identifier,
+            type_expression,
+        } => todo!(),
     };
 
     Ok(ResolvedExpression { kind, span })
@@ -446,6 +450,9 @@ mod tests {
         // block closes must be an unbound name, not a leak of the block's scope.
         let errors = resolve_src("let outer = { let inner = 1  inner }\ninner")
             .expect_err("`inner` must not escape its block");
-        assert!(matches!(errors[0], BindingResolutionError::UnboundName { .. }));
+        assert!(matches!(
+            errors[0],
+            BindingResolutionError::UnboundName { .. }
+        ));
     }
 }

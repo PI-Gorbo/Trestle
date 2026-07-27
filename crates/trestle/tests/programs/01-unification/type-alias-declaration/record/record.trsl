@@ -6,3 +6,6 @@ type Point2 = {
         z: Int, 
         label: String 
     }
+
+type EmptyRecordNoSpace = {}
+type EmptyRecordWithSpace = { }

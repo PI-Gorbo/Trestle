@@ -488,6 +488,12 @@ trsl_test!(
     [ast, error]
 );
 
+trsl_test!(
+    unification_type_alias_declaration_record,
+    "01-unification/type-alias-declaration/record/record.trsl",
+    [ast, analyse, eval]
+);
+
 // ══ 02 control flow ═══════════════════════════════════════
 trsl_test!(
     control_match_expression,

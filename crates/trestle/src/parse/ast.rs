@@ -5,6 +5,8 @@
 //! `build_program` and `build_expression` submodules (declared in the parent
 //! `parse` module).
 
+use std::collections::BTreeMap;
+
 use miette::SourceSpan;
 use pest::{Span, iterators::Pair};
 
@@ -85,7 +87,7 @@ pub enum ExpressionKind {
     },
     Let {
         name: String,
-        type_dec: Option<TypeDeclaration>,
+        type_dec: Option<TypeExpression>,
         value: Box<Expression>,
     },
     Block(Vec<Expression>),
@@ -94,23 +96,37 @@ pub enum ExpressionKind {
         true_pathway: Box<Expression>,
         false_pathway: Option<Box<Expression>>,
     },
+    TypeDeclaration {
+        identifier: String,
+        type_expression: TypeExpression,
+    },
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum TypeDeclaration {
-    Named(String), // "Int", "String" — grows into Generic/Record/Fn in later tiers
+#[derive(Eq, PartialEq, Clone, Debug)]
+pub struct RecordTypeEntry {
+    pub key: String,
+    pub value: TypeExpression,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TypeExpression {
+    Named(String),
+    /// Field order is not significant to a record type, so fields are keyed by
+    /// name. A `BTreeMap` (not a `HashMap`) keeps the `Debug` rendering in a
+    /// stable, name-sorted order — the corpus snapshots depend on it.
+    Record(BTreeMap<String, RecordTypeEntry>),
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Param {
     pub name: String,
-    pub type_dec: Option<TypeDeclaration>,
+    pub type_dec: Option<TypeExpression>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct Lambda {
     pub parameter: Option<Param>,
-    pub return_type: Option<TypeDeclaration>,
+    pub return_type: Option<TypeExpression>,
     pub body: Box<Expression>,
 }
 

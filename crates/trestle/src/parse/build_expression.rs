@@ -6,6 +6,7 @@
 //! sequence to it. Every builder returns a fully source-spanned [`Expression`];
 //! synthesized `Binary` nodes span both operands via [`merge_spans`].
 
+use std::collections::BTreeMap;
 use std::sync::LazyLock;
 
 use pest::pratt_parser::{Assoc, Op, PrattParser};
@@ -16,8 +17,8 @@ use crate::parse::ast::{BinaryOp, Literal, UnaryOp};
 use super::{BuildError, Rule};
 
 use super::ast::{
-    Expression, ExpressionKind, Lambda, Param, TypeDeclaration, get_bindings, merge_spans,
-    source_span_from_pest_span,
+    Expression, ExpressionKind, Lambda, Param, RecordTypeEntry, TypeExpression, get_bindings,
+    merge_spans, source_span_from_pest_span,
 };
 
 /// The operator-precedence table — the single, explicit statement of Trestle's
@@ -55,6 +56,7 @@ fn spanned(span: Span, kind: ExpressionKind) -> Expression {
 pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let expr_binding = get_bindings(pair, "expression to have bindings");
     match expr_binding.as_rule() {
+        Rule::type_declaration_expression => build_type_declaration(expr_binding),
         Rule::list_of_expressions => build_list_of_expressions(expr_binding),
         Rule::let_expression => build_let(expr_binding),
         Rule::lambda_expression => build_lambda(expr_binding),
@@ -65,6 +67,73 @@ pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             span: source_span_from_pest_span(expr_binding.as_span()),
         }),
     }
+}
+
+/// Build a `TypeDeclaration` from a `Rule::type_declaration_expression` pair. The
+/// grammar's `type` and `=` are bare string literals, so `into_inner()` yields
+/// exactly the two children, in order: the alias name and the type it stands for.
+fn build_type_declaration(expr_binding: Pair<Rule>) -> Result<Expression, BuildError> {
+    let span = expr_binding.as_span();
+    let mut inner = expr_binding.into_inner();
+
+    let identifier = inner
+        .next()
+        .expect("type_declaration_expression has an identifier")
+        .as_str()
+        .to_string();
+    let type_expression = build_type_expression(
+        inner
+            .next()
+            .expect("type_declaration_expression has a type expression"),
+    )?;
+
+    Ok(spanned(
+        span,
+        ExpressionKind::TypeDeclaration {
+            identifier,
+            type_expression,
+        },
+    ))
+}
+
+/// Dispatch on which alternative a `Rule::type_expression` matched. Like `expr`,
+/// the rule is a wrapper around exactly one child, so unwrap it first.
+fn build_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {
+    let inner = get_bindings(pair, "type expression to have an inner type");
+    match inner.as_rule() {
+        Rule::record_type_expression => build_record_type_expression(inner),
+        Rule::type_identifier => Ok(build_type_identifier_expression(inner)),
+        rule => Err(BuildError::UnexpectedRule {
+            rule,
+            span: source_span_from_pest_span(inner.as_span()),
+        }),
+    }
+}
+
+/// Build a `Record` from a `Rule::record_type_expression` pair.
+///
+/// `comma_separated_list_of_type_expressions` is a *silent* rule, so it emits no
+/// pair of its own: `into_inner()` yields the fields directly, one
+/// `identifier_with_type_declaration` each (and none at all for `{}`).
+fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {
+    let mut fields = BTreeMap::new();
+
+    for field in pair.into_inner() {
+        let span = source_span_from_pest_span(field.as_span());
+        let (key, value) = build_required_binding_target(field)?;
+
+        let entry = RecordTypeEntry {
+            key: key.clone(),
+            value,
+        };
+        // Keyed by name, so a repeated field would silently overwrite the first —
+        // reject it instead, with the caret on the redeclaration.
+        if fields.insert(key.clone(), entry).is_some() {
+            return Err(BuildError::DuplicateRecordField { name: key, span });
+        }
+    }
+
+    Ok(TypeExpression::Record(fields))
 }
 
 /// Build a `Block` from a `Rule::list_of_expressions` pair: a brace-wrapped sequence
@@ -175,43 +244,65 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     ))
 }
 
-/// Parse an `identifier_with_optional_type_declaration` (`identifier ~
-/// (type_declaration)?`) into its binding name and optional type annotation.
-/// Shared by `let` bindings (annotation optional) and `build_param` (annotation
-/// required — the caller enforces it). The grammar guarantees the identifier.
-fn build_binding_target(pair: Pair<Rule>) -> (String, Option<TypeDeclaration>) {
+/// Parse an `identifier` followed by an optional `type_declaration` into its
+/// binding name and type annotation. This is the builder for the positions where
+/// the annotation is genuinely optional — `let` bindings and lambda params, both
+/// spelled `identifier_with_optional_type_declaration`. Positions that *require*
+/// the annotation go through [`build_required_binding_target`] instead. The
+/// grammar guarantees the identifier.
+fn build_binding_target(pair: Pair<Rule>) -> (String, Option<TypeExpression>) {
     pair.into_inner()
         .fold((String::new(), None), |(mut name, mut type_dec), p| {
             match p.as_rule() {
                 Rule::identifier => name = p.as_str().to_string(),
-                Rule::type_declaration => type_dec = Some(build_type(p)),
-                rule => unreachable!(
-                    "unexpected rule in identifier_with_optional_type_declaration: {:?}",
-                    rule
-                ),
+                Rule::type_declaration => type_dec = Some(build_type_identifier_expression(p)),
+                rule => unreachable!("unexpected rule in binding target: {:?}", rule),
             }
             (name, type_dec)
         })
 }
 
+/// [`build_binding_target`] for a grammar position where the type annotation is
+/// *mandatory* — `identifier_with_type_declaration` (`identifier ~
+/// type_declaration`), which today is only a record field.
+///
+/// Because the rule leaves the annotation no way to be absent, a missing one means
+/// the parse tree doesn't match the grammar rather than that the author forgot
+/// something. It surfaces as [`BuildError::Invariant`], not as an actionable
+/// diagnostic.
+fn build_required_binding_target(pair: Pair<Rule>) -> Result<(String, TypeExpression), BuildError> {
+    // Taken before `build_binding_target` consumes the pair.
+    let span = source_span_from_pest_span(pair.as_span());
+
+    let (name, type_dec) = build_binding_target(pair);
+    let Some(type_expression) = type_dec else {
+        return Err(BuildError::Invariant { span });
+    };
+
+    Ok((name, type_expression))
+}
+
 fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {
-    // The grammar accepts untyped params (so `=>` commits the lambda branch); a
-    // required type that's missing is rejected here, pointing the caret at the param.
+    // The grammar accepts untyped params so that `=>` commits the lambda branch.
+    // The annotation stays optional past this point too: an untyped param is not a
+    // parse error, it's a type left for inference to fill in.
     let (name, type_dec) = build_binding_target(pair);
 
     Ok(Param { name, type_dec })
 }
 
-fn build_type_opt(pair: Pair<Rule>) -> Option<TypeDeclaration> {
-    pair.into_inner().next().map(build_type)
+fn build_type_opt(pair: Pair<Rule>) -> Option<TypeExpression> {
+    pair.into_inner()
+        .next()
+        .map(build_type_identifier_expression)
 }
 
-fn build_type(pair: Pair<Rule>) -> TypeDeclaration {
+fn build_type_identifier_expression(pair: Pair<Rule>) -> TypeExpression {
     let ident = pair
         .into_inner()
         .next()
         .expect("type_declaration has an identifier");
-    TypeDeclaration::Named(ident.as_str().to_string())
+    TypeExpression::Named(ident.as_str().to_string())
 }
 
 /// Fold a `Rule::binary_expression` (`primary (op primary)*`) into a tree of
@@ -422,6 +513,19 @@ mod tests {
         assert!(
             rendered.contains("invalid escape sequence"),
             "expected an invalid-escape diagnostic, got:\n{rendered}"
+        );
+    }
+
+    /// Record fields are keyed by name, so a repeated field would silently
+    /// overwrite the first. It's rejected at build time instead.
+    #[test]
+    fn duplicate_record_field_reports_diagnostic() {
+        let report =
+            parse("type T = { x: Int, x: String }").expect_err("duplicate field must be rejected");
+        let rendered = format!("{report:?}");
+        assert!(
+            rendered.contains("more than once"),
+            "expected a duplicate-field diagnostic, got:\n{rendered}"
         );
     }
 

@@ -65,6 +65,14 @@ mod error {
             span: SourceSpan,
         },
 
+        #[error("record type declares field `{name}` more than once")]
+        #[diagnostic(code(trestle::duplicate_record_field))]
+        DuplicateRecordField {
+            name: String,
+            #[label("this field is already declared in this record")]
+            span: SourceSpan,
+        },
+
         #[error("internal invariant violated")]
         #[diagnostic(code(trestle::invariant))]
         Invariant { span: SourceSpan },

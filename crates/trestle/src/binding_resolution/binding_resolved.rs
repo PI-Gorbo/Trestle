@@ -11,7 +11,7 @@
 
 use miette::SourceSpan;
 
-use crate::parse::ast::{BinaryOp, TypeDeclaration, UnaryOp};
+use crate::parse::ast::{BinaryOp, TypeExpression, UnaryOp};
 
 /// Index of a binding site (a `let` or a lambda parameter). Assigned during binding resolution;
 /// indexes into [`BindingResolvedProgram::bindings`] and, after type checking, into
@@ -46,7 +46,7 @@ pub enum ResolvedExpressionKind {
     Let {
         binding: BindingId, // was name: String
         /// Raw annotation, still unresolved — type checking interprets it into a [`Type`](crate::type_check::typed_ast::Type).
-        type_dec: Option<TypeDeclaration>,
+        type_dec: Option<TypeExpression>,
         value: Box<ResolvedExpression>,
     },
     Block(Vec<ResolvedExpression>),
@@ -61,13 +61,13 @@ pub enum ResolvedExpressionKind {
 pub struct ResolvedParam {
     pub binding: BindingId,
     /// Raw annotation, still unresolved — type checking turns this into a [`Type`](crate::type_check::typed_ast::Type).
-    pub type_dec: Option<TypeDeclaration>,
+    pub type_dec: Option<TypeExpression>,
 }
 
 #[derive(Debug, PartialEq)]
 pub struct ResolvedLambda {
     pub parameter: Option<ResolvedParam>,
-    pub return_type: Option<TypeDeclaration>,
+    pub return_type: Option<TypeExpression>,
     pub body: Box<ResolvedExpression>,
 }
 
