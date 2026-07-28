@@ -14,15 +14,19 @@
 //! - An unknown name is a [`BindingResolutionError::UnboundName`]. Collect all of them into the
 //!   `Vec` rather than bailing on the first.
 
+mod binding_arena;
 pub mod binding_resolved;
 mod error;
+mod scope;
 
 use std::collections::HashMap;
-use std::rc::Rc;
 
 use miette::SourceSpan;
 
-use crate::parse::ast::{self, Expression, ExpressionKind, Literal, Param};
+use crate::{
+    binding_resolution::scope::{Scope, TypeBindingScope, VariableBindingScopeEntry},
+    parse::ast::{self, Expression, ExpressionKind, Literal, Param},
+};
 
 pub use binding_resolved::{
     BindingId, BindingResolvedProgram, ResolvedBinding, ResolvedExpression, ResolvedExpressionKind,
@@ -30,12 +34,14 @@ pub use binding_resolved::{
 };
 pub use error::BindingResolutionError;
 
+use binding_arena::BindingArena;
+
 /// Resolve every name in `program` to a [`BindingId`].
 pub fn resolve(
     program: ast::ParsedProgram,
 ) -> Result<BindingResolvedProgram, Vec<BindingResolutionError>> {
     let mut bindings_arena = BindingArena::new();
-    let mut scope = Scope::Empty;
+    let mut scope = Scope::new();
     let mut expressions = Vec::new();
     let mut errors = Vec::new();
 
@@ -82,66 +88,6 @@ pub fn resolve(
     }
 }
 
-/// The binding table under construction. A [`BindingId`] is exactly an index into this
-/// arena, so id-minting lives here to keep that invariant local.
-struct BindingArena(Vec<ResolvedBinding>);
-
-impl BindingArena {
-    fn new() -> BindingArena {
-        BindingArena(Vec::new())
-    }
-
-    /// The id the *next* pushed binding will receive.
-    fn mint_binding_id(&self) -> BindingId {
-        BindingId(self.0.len())
-    }
-
-    fn push(&mut self, binding: ResolvedBinding) {
-        self.0.push(binding);
-    }
-
-    /// Consume into the plain vec `BindingResolvedProgram` expects.
-    fn into_bindings(self) -> Vec<ResolvedBinding> {
-        self.0
-    }
-}
-
-// Linked list of Rc backed Scope Entries
-struct ScopeEntry {
-    name: String,
-    binding: BindingId,
-    parent: Scope,
-}
-
-#[derive(Clone)]
-enum Scope {
-    Empty,
-    Cons(Rc<ScopeEntry>),
-}
-
-impl Scope {
-    fn extend(&self, name: String, binding: BindingId) -> Scope {
-        // O(1): clones one Rc for the parent tail.
-        Scope::Cons(Rc::new(ScopeEntry {
-            name,
-            binding,
-            parent: self.clone(),
-        }))
-    }
-
-    fn lookup(&self, name: &str) -> Option<BindingId> {
-        let mut cur = self;
-        while let Scope::Cons(entry) = cur {
-            if entry.name == name {
-                return Some(entry.binding); // newest-first walk ⇒ shadowing for free
-            }
-            cur = &entry.parent;
-        }
-
-        None
-    }
-}
-
 /// Mint a fresh binding for `name`, record its name+span in the arena, and return the id together
 /// with a scope extended by it. The single place a `let` enters the binding table.
 fn bind_let(
@@ -153,7 +99,10 @@ fn bind_let(
     let binding = bindings_arena.mint_binding_id();
     // The name lives in two independent owners — the permanent arena record and the transient
     // scope entry — so one clone is unavoidable; move into the arena, clone into the scope.
-    let extended = scope.extend(name.clone(), binding);
+    let extended = scope.extend_variable(VariableBindingScopeEntry {
+        name: name.clone(),
+        binding,
+    });
     bindings_arena.push(ResolvedBinding { name, span });
     (binding, extended)
 }
@@ -365,8 +314,13 @@ fn resolve_parameter(
     bindings_arena: &mut BindingArena,
 ) -> (ResolvedParam, Scope) {
     let binding_id = bindings_arena.mint_binding_id();
+
     // Same two-owner situation as `bind_let`: clone the name into the scope, move it into the arena.
-    let updated_scope = scope.extend(param.name.clone(), binding_id);
+    let updated_scope = scope.extend_variable(VariableBindingScopeEntry {
+        name: param.name.clone(),
+        binding: binding_id,
+    });
+
     bindings_arena.push(ResolvedBinding {
         name: param.name,
         span,

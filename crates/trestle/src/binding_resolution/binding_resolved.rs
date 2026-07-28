@@ -13,6 +13,9 @@ use miette::SourceSpan;
 
 use crate::parse::ast::{BinaryOp, TypeExpression, UnaryOp};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct TypeBindingId(pub usize);
+
 /// Index of a binding site (a `let` or a lambda parameter). Assigned during binding resolution;
 /// indexes into [`BindingResolvedProgram::bindings`] and, after type checking, into
 /// [`TypeCheckedProgram::bindings`](crate::type_check::typed_ast::TypeCheckedProgram).
