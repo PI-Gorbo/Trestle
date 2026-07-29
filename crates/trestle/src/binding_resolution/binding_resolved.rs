@@ -9,12 +9,44 @@
 //! variant: the grammar parses `if`, but its lowering (an `ast::If`, and arms here + in type-check)
 //! is deferred.
 
+use std::collections::BTreeMap;
+
 use miette::SourceSpan;
 
-use crate::parse::ast::{BinaryOp, TypeExpression, UnaryOp};
+use crate::{
+    parse::ast::{BinaryOp, TypeExpression, UnaryOp},
+    type_check::typed_ast::TypeVarId,
+};
 
+/// Index of a type declaration site (`type X = …`). The type-namespace twin of [`BindingId`]: type
+/// names live in a namespace of their own, so `type Point = …` and `let Point = …` never collide.
+/// No table is indexed by it yet — the declaration arm that mints these does not exist.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TypeBindingId(pub usize);
+
+/// A name-resolved type annotation: the twin of
+/// [`ast::TypeExpression`](crate::parse::ast::TypeExpression), differing only in `Named`, whose
+/// `String` becomes a [`TypeBindingId`] — the same substitution `Var(String)` → `Var(BindingId)`
+/// makes on the value side. Still not a [`Type`](crate::type_check::typed_ast::Type): resolution
+/// says *which declaration* a type name refers to, never what it means.
+///
+/// Builtins (`Int`, `Bool`, `Float`, `String`, `Unit`) get no special variant. They resolve like
+/// any other alias once the empty scope pre-seeds type bindings for them, which keeps this pass
+/// free of type logic — it only ever knows *names*, and type checking maps the ids back to a
+/// [`Type`](crate::type_check::typed_ast::Type).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ResolvedTypeExpression {
+    Named(TypeBindingId), // was Named(String)
+    /// Field order is not significant to a record type, so fields are keyed by name. A `BTreeMap`
+    /// (not a `HashMap`) keeps the `Debug` rendering in a stable, name-sorted order — the corpus
+    /// snapshots depend on it.
+    Record(BTreeMap<String, ResolvedTypeExpression>),
+}
+
+// Nothing produces a `ResolvedTypeExpression` yet — that starts with `resolve_type_expression` and
+// the `TypeDeclaration` arm. Until those land (together with the type-check side that reads the
+// ids), the three annotation fields below — `Let::type_dec`, `ResolvedParam::type_dec` and
+// `ResolvedLambda::return_type` — keep holding the raw `ast::TypeExpression`.
 
 /// Index of a binding site (a `let` or a lambda parameter). Assigned during binding resolution;
 /// indexes into [`BindingResolvedProgram::bindings`] and, after type checking, into
@@ -58,6 +90,10 @@ pub enum ResolvedExpressionKind {
         true_condition: Box<ResolvedExpression>,
         false_condition: Option<Box<ResolvedExpression>>,
     },
+    TypeDeclaration {
+        identifier: TypeBindingId,
+        type_expression: ResolvedTypeExpression,
+    },
 }
 
 #[derive(Debug, PartialEq)]
@@ -87,4 +123,5 @@ pub struct ResolvedBinding {
 pub struct BindingResolvedProgram {
     pub expressions: Vec<ResolvedExpression>,
     pub bindings: Vec<ResolvedBinding>,
+    pub type_bindings: Vec<ResolvedBinding>,
 }

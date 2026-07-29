@@ -17,7 +17,7 @@ use crate::parse::ast::{BinaryOp, Literal, UnaryOp};
 use super::{BuildError, Rule};
 
 use super::ast::{
-    Expression, ExpressionKind, Lambda, Param, RecordTypeEntry, TypeExpression, get_bindings,
+    Expression, ExpressionKind, Lambda, Param, TypeExpression, get_bindings,
     merge_spans, source_span_from_pest_span,
 };
 
@@ -122,13 +122,9 @@ fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, Buil
         let span = source_span_from_pest_span(field.as_span());
         let (key, value) = build_required_binding_target(field)?;
 
-        let entry = RecordTypeEntry {
-            key: key.clone(),
-            value,
-        };
         // Keyed by name, so a repeated field would silently overwrite the first —
         // reject it instead, with the caret on the redeclaration.
-        if fields.insert(key.clone(), entry).is_some() {
+        if fields.insert(key.clone(), value).is_some() {
             return Err(BuildError::DuplicateRecordField { name: key, span });
         }
     }

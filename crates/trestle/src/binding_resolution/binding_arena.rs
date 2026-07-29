@@ -1,25 +1,52 @@
+use std::marker::PhantomData;
+
+use crate::binding_resolution::binding_resolved::TypeBindingId;
+
 use super::binding_resolved::{BindingId, ResolvedBinding};
 
-/// The binding table under construction. A [`BindingId`] is exactly an index into this
-/// arena, so id-minting lives here to keep that invariant local.
-pub(super) struct BindingArena(Vec<ResolvedBinding>);
+pub(super) trait ArenaId {
+    fn from_index(index: usize) -> Self;
+}
 
-impl BindingArena {
-    pub(super) fn new() -> BindingArena {
-        BindingArena(Vec::new())
-    }
-
-    /// The id the *next* pushed binding will receive.
-    pub(super) fn mint_binding_id(&self) -> BindingId {
-        BindingId(self.0.len())
-    }
-
-    pub(super) fn push(&mut self, binding: ResolvedBinding) {
-        self.0.push(binding);
-    }
-
-    /// Consume into the plain vec `BindingResolvedProgram` expects.
-    pub(super) fn into_bindings(self) -> Vec<ResolvedBinding> {
-        self.0
+impl ArenaId for BindingId {
+    fn from_index(index: usize) -> Self {
+        BindingId(index)
     }
 }
+
+impl ArenaId for TypeBindingId {
+    fn from_index(index: usize) -> Self {
+        TypeBindingId(index)
+    }
+}
+
+pub(super) struct GenericArena<TItem, TArenaId> {
+    entries: Vec<TItem>,
+
+    // INTERESTING???
+    marker: PhantomData<fn() -> TArenaId>,
+}
+
+impl<TItem, TAreanaId: ArenaId> GenericArena<TItem, TAreanaId> {
+    pub(super) fn new() -> GenericArena<TItem, TAreanaId> {
+        GenericArena {
+            entries: Vec::new(),
+            marker: PhantomData,
+        }
+    }
+
+    pub(super) fn extend(&mut self, item: TItem) -> TAreanaId {
+        let new_id = ArenaId::from_index(self.entries.len());
+
+        self.entries.push(item);
+
+        new_id
+    }
+
+    pub(super) fn into_vec(self) -> Vec<TItem> {
+        self.entries
+    }
+}
+
+pub(super) type VariableBindingArena = GenericArena<ResolvedBinding, BindingId>;
+pub(super) type TypeBindingArea = GenericArena<ResolvedBinding, TypeBindingId>;

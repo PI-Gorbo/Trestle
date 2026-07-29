@@ -102,19 +102,13 @@ pub enum ExpressionKind {
     },
 }
 
-#[derive(Eq, PartialEq, Clone, Debug)]
-pub struct RecordTypeEntry {
-    pub key: String,
-    pub value: TypeExpression,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TypeExpression {
     Named(String),
     /// Field order is not significant to a record type, so fields are keyed by
     /// name. A `BTreeMap` (not a `HashMap`) keeps the `Debug` rendering in a
     /// stable, name-sorted order — the corpus snapshots depend on it.
-    Record(BTreeMap<String, RecordTypeEntry>),
+    Record(BTreeMap<String, TypeExpression>),
 }
 
 #[derive(Debug, PartialEq)]

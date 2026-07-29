@@ -18,6 +18,16 @@ pub enum BindingResolutionError {
         span: SourceSpan,
     },
 
+    /// The type-namespace twin of [`BindingResolutionError::UnboundName`]. Separate because type
+    /// names resolve against their own scope — `type X = Foo` cannot see a `let Foo`.
+    #[error("`{name}` is not a defined type")]
+    #[diagnostic(code(trestle::unbound_type_name))]
+    UnboundTypeName {
+        name: String,
+        #[label("used here")]
+        span: SourceSpan,
+    },
+
     #[error("`{name}` is already declared in this scope")]
     #[diagnostic(code(trestle::duplicate_binding))]
     DuplicateBinding {
