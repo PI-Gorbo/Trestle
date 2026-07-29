@@ -4,10 +4,12 @@
 
 use miette::SourceSpan;
 
+use crate::binding_resolution::binding_resolved::ResolvedTypeExpression;
 use crate::binding_resolution::{
     ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
 };
 use crate::parse::ast::{BinaryOp, TypeExpression, UnaryOp};
+use crate::type_check::binding_table::TypeBindingToTypeMap;
 
 use super::binding_table::{BindingLookup, BindingToTypeMap};
 use super::error::TypeCheckError;
@@ -16,9 +18,29 @@ use super::typed_ast::{
 };
 use super::unification::UnificationMap;
 
+pub(super) struct InferenceCtx {
+    pub(super) variable_env: BindingToTypeMap,
+    #[allow(
+        dead_code,
+        reason = "no reader until the `TypeDeclaration` arm records into it"
+    )]
+    pub(super) type_env: TypeBindingToTypeMap,
+}
+
+impl InferenceCtx {
+    /// The two namespaces are sized independently: each is indexed by its own arena's ids
+    /// (`BindingId` for values, `TypeBindingId` for `type` declarations).
+    pub(super) fn new(binding_count: usize, type_binding_count: usize) -> InferenceCtx {
+        InferenceCtx {
+            variable_env: BindingToTypeMap::new(binding_count),
+            type_env: TypeBindingToTypeMap::new(type_binding_count),
+        }
+    }
+}
+
 pub(super) fn infer_type_of_expression(
     untyped_expression: ResolvedExpression,
-    env: &mut BindingToTypeMap,
+    env: &mut InferenceCtx,
     unification_map: &mut UnificationMap,
     bindings: &[ResolvedBinding],
 ) -> Result<TypeCheckedExpression, TypeCheckError> {
@@ -53,7 +75,7 @@ pub(super) fn infer_type_of_expression(
         ResolvedExpressionKind::Var(binding_id) => {
             // The binding's type was recorded when its `let`/lambda-param was analysed.
             // If none is known at the use site, the binding needs an annotation.
-            let ty = match env.get(binding_id) {
+            let ty = match env.variable_env.get(binding_id) {
                 Some(ty) => ty.clone(),
                 None => {
                     return Err(TypeCheckError::MissingAnnotation {
@@ -156,7 +178,8 @@ pub(super) fn infer_type_of_expression(
                 .map(|untyped_param| {
                     let type_from_type_dec =
                         resolve_type_dec(unification_map, &untyped_param.type_dec, span)?;
-                    env.set(untyped_param.binding, type_from_type_dec.clone());
+                    env.variable_env
+                        .set(untyped_param.binding, type_from_type_dec.clone());
                     Ok(Param {
                         binding: untyped_param.binding,
                         ty: type_from_type_dec,
@@ -189,7 +212,7 @@ pub(super) fn infer_type_of_expression(
 
             // We now need to check that we can apply the types of the arguments to the parameters of
             // the function. First, we resolve the type from the binding_id.
-            let Some(function_type) = env.get(binding_id) else {
+            let Some(function_type) = env.variable_env.get(binding_id) else {
                 return Err(TypeCheckError::MissingAnnotation {
                     name: bindings.lookup(binding_id).name.clone(),
                     span,
@@ -223,7 +246,7 @@ pub(super) fn infer_type_of_expression(
             // an `UntypedBindingAfterTypeCheck`.
             let bound_ty = resolve_type_dec(unification_map, &type_dec, span)?;
 
-            env.set(binding, bound_ty.clone());
+            env.variable_env.set(binding, bound_ty.clone());
             // The value's type must unify with the binding's; for an annotated `let` a differing
             // value type is a `TypeMismatch` (expected = annotation, found = value).
             unification_map.unify(&value.ty, &bound_ty, span)?;
@@ -287,9 +310,26 @@ pub(super) fn infer_type_of_expression(
                 }
             }
         }
+        // Next: interpret `type_expression` into a `Type` via `get_type_from_type_expression` and
+        // record it against `identifier` in `env.type_env`, so a later annotation naming this alias
+        // resolves through the type namespace. It also needs somewhere to land in the typed tree —
+        // `ExpressionKind` has no `TypeDeclaration` variant yet.
+        ResolvedExpressionKind::TypeDeclaration { .. } => {
+            todo!("type declarations are not yet type-checked")
+        }
     };
 
     Ok(TypeCheckedExpression { kind, span, ty })
+}
+
+#[allow(
+    dead_code,
+    reason = "no caller until the `TypeDeclaration` arm is implemented"
+)]
+fn get_type_from_type_expression(
+    _type_expression: ResolvedTypeExpression,
+) -> Result<Type, TypeCheckError> {
+    todo!()
 }
 
 fn unify_binary_op(

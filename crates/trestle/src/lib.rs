@@ -12,6 +12,8 @@ pub mod binding_resolution;
 pub mod type_check;
 // Phase 3 — tree-walk evaluation.
 pub mod evaluate;
+// The bindings every program starts with. Above the phases because both analysis passes read it.
+pub mod prelude;
 
 pub use parse::parse;
 

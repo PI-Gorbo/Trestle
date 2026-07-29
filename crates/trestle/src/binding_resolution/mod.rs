@@ -30,6 +30,7 @@ use crate::{
         scope::{Scope, TypeBindingScopeEntry, VariableBindingScopeEntry},
     },
     parse::ast::{self, Expression, ExpressionKind, Literal, Param},
+    prelude,
 };
 
 pub use binding_resolved::{
@@ -53,7 +54,23 @@ pub fn resolve(
         type_binding_arena: TypeBindingArea::new(),
         var_binding_arena: VariableBindingArena::new(),
     };
-    let mut scope = Scope::new();
+
+    // The prelude occupies `TypeBindingId(0..PRELUDE_TYPES.len())`: seeded before any user
+    // declaration, so the ids line up positionally with `prelude::PRELUDE_TYPES` — that index is
+    // how type checking recovers each builtin's `Type`, which this pass never sees. A user
+    // `type Int = …` needs no special case: it mints a fresh id and shadows the prelude entry
+    // through the ordinary scope chain.
+    let mut scope = prelude::type_names().fold(Scope::new(), |scope, name| {
+        let binding = resolve_context.type_binding_arena.extend(ResolvedBinding {
+            name: name.to_string(),
+            span: prelude::prelude_span(),
+        });
+
+        scope.extend_type(TypeBindingScopeEntry {
+            name: name.to_string(),
+            binding,
+        })
+    });
     let mut expressions = Vec::new();
     let mut errors = Vec::new();
 
@@ -322,14 +339,15 @@ fn resolve_type_expression(
         // introduces no bindings, so nothing threads from one field to the next. The keys carry
         // over untouched — only the value side gets name-resolved.
         ast::TypeExpression::Record(fields) => {
-            let resolved = fields
-                .into_iter()
-                .try_fold(BTreeMap::new(), |mut acc, (key, value)| {
-                    let (value, _) = resolve_type_expression(value, span, scope, ctx)?;
-                    acc.insert(key, value);
+            let resolved =
+                fields
+                    .into_iter()
+                    .try_fold(BTreeMap::new(), |mut acc, (key, value)| {
+                        let (value, _) = resolve_type_expression(value, span, scope, ctx)?;
+                        acc.insert(key, value);
 
-                    Ok(acc)
-                })?;
+                        Ok(acc)
+                    })?;
 
             Ok((ResolvedTypeExpression::Record(resolved), scope.clone()))
         }
@@ -367,6 +385,7 @@ fn resolve_parameter(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::binding_resolution::binding_resolved::TypeBindingId;
 
     fn resolve_src(src: &str) -> Result<BindingResolvedProgram, Vec<BindingResolutionError>> {
         let program = crate::parse::parse(src).expect("test source should parse");
@@ -428,15 +447,66 @@ mod tests {
 
     #[test]
     fn unknown_type_name_is_an_unbound_type_error() {
-        // The type namespace is empty until builtins are pre-seeded, so any name on the
-        // right of a `type` declaration is currently unbound — the point here is that it
-        // reports rather than panics, and reports as a *type* error.
+        // The type namespace holds the prelude and whatever the program declares, so a name that is
+        // neither is unbound — and reports as a *type* error, distinct from an unbound value.
         let errors =
             resolve_src("type Alias = Missing").expect_err("unknown type name is an error");
         assert!(matches!(
             errors[0],
             BindingResolutionError::UnboundTypeName { ref name, .. } if name == "Missing"
         ));
+    }
+
+    #[test]
+    fn a_builtin_resolves_to_its_prelude_binding() {
+        // The contract type checking depends on: the prelude is seeded first, so a builtin's
+        // `TypeBindingId` is its index in `prelude::PRELUDE_TYPES` — the index type checking uses
+        // to look the `Type` back up. `Int` is entry 0.
+        let resolved = resolve_src("type Alias = Int").expect("a builtin type name resolves");
+
+        let int_id = TypeBindingId(
+            prelude::type_names()
+                .position(|name| name == "Int")
+                .expect("`Int` is a prelude type"),
+        );
+        assert_eq!(resolved.type_bindings[int_id.0].name, "Int");
+
+        let ResolvedExpressionKind::TypeDeclaration {
+            type_expression, ..
+        } = &resolved.expressions[0].kind
+        else {
+            panic!("expected a type declaration");
+        };
+        assert_eq!(*type_expression, ResolvedTypeExpression::Named(int_id));
+    }
+
+    #[test]
+    fn a_user_declaration_shadows_a_prelude_type() {
+        // Redeclaring a builtin is legal and needs no special case: it mints a fresh id and wins
+        // the newest-first scope lookup, leaving the prelude's own binding untouched.
+        let resolved = resolve_src("type Int = Float\ntype Alias = Int")
+            .expect("shadowing a prelude type resolves");
+
+        let ResolvedExpressionKind::TypeDeclaration { identifier, .. } = &resolved.expressions[0].kind
+        else {
+            panic!("expected a type declaration");
+        };
+        let ResolvedExpressionKind::TypeDeclaration {
+            type_expression, ..
+        } = &resolved.expressions[1].kind
+        else {
+            panic!("expected a type declaration");
+        };
+
+        assert!(
+            identifier.0 >= prelude::PRELUDE_TYPES.len(),
+            "the shadowing declaration mints an id past the prelude's"
+        );
+        assert_eq!(
+            *type_expression,
+            ResolvedTypeExpression::Named(*identifier),
+            "`Int` on the right resolves to the user's declaration, not the prelude's"
+        );
     }
 
     #[test]

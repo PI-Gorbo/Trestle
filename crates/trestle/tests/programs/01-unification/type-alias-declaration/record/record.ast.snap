@@ -9,30 +9,18 @@ ParsedProgram {
                 identifier: "Point",
                 type_expression: Record(
                     {
-                        "label": RecordTypeEntry {
-                            key: "label",
-                            value: Named(
-                                "String",
-                            ),
-                        },
-                        "x": RecordTypeEntry {
-                            key: "x",
-                            value: Named(
-                                "Int",
-                            ),
-                        },
-                        "y": RecordTypeEntry {
-                            key: "y",
-                            value: Named(
-                                "Int",
-                            ),
-                        },
-                        "z": RecordTypeEntry {
-                            key: "z",
-                            value: Named(
-                                "Int",
-                            ),
-                        },
+                        "label": Named(
+                            "String",
+                        ),
+                        "x": Named(
+                            "Int",
+                        ),
+                        "y": Named(
+                            "Int",
+                        ),
+                        "z": Named(
+                            "Int",
+                        ),
                     },
                 ),
             },
@@ -48,30 +36,18 @@ ParsedProgram {
                 identifier: "Point2",
                 type_expression: Record(
                     {
-                        "label": RecordTypeEntry {
-                            key: "label",
-                            value: Named(
-                                "String",
-                            ),
-                        },
-                        "x": RecordTypeEntry {
-                            key: "x",
-                            value: Named(
-                                "Int",
-                            ),
-                        },
-                        "y": RecordTypeEntry {
-                            key: "y",
-                            value: Named(
-                                "Int",
-                            ),
-                        },
-                        "z": RecordTypeEntry {
-                            key: "z",
-                            value: Named(
-                                "Int",
-                            ),
-                        },
+                        "label": Named(
+                            "String",
+                        ),
+                        "x": Named(
+                            "Int",
+                        ),
+                        "y": Named(
+                            "Int",
+                        ),
+                        "z": Named(
+                            "Int",
+                        ),
                     },
                 ),
             },

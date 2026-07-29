@@ -1,30 +1,54 @@
 //! The per-binding type table built up during inference, and the step that freezes it into the
 //! final [`TypeCheckedBinding`] list.
 
+use std::marker::PhantomData;
+
+use crate::binding_resolution::binding_resolved::TypeBindingId;
 use crate::binding_resolution::{BindingId, ResolvedBinding};
 
 use super::error::TypeCheckError;
 use super::typed_ast::{Type, TypeCheckedBinding};
 
-pub(super) struct BindingToTypeMap {
-    types: Vec<Option<Type>>,
+trait Indexable {
+    fn get_index(self) -> usize;
 }
 
-impl BindingToTypeMap {
-    pub(super) fn new(binding_count: usize) -> BindingToTypeMap {
-        BindingToTypeMap {
+impl Indexable for BindingId {
+    fn get_index(self) -> usize {
+        self.0
+    }
+}
+
+impl Indexable for TypeBindingId {
+    fn get_index(self) -> usize {
+        self.0
+    }
+}
+
+pub(super) struct GenericTypeMap<TBindingId> {
+    types: Vec<Option<Type>>,
+    marker: PhantomData<fn() -> TBindingId>,
+}
+
+impl<TBindingId: Indexable> GenericTypeMap<TBindingId> {
+    pub(super) fn new(binding_count: usize) -> GenericTypeMap<TBindingId> {
+        GenericTypeMap {
             types: vec![None; binding_count],
+            marker: PhantomData,
         }
     }
 
-    pub(super) fn set(&mut self, id: BindingId, ty: Type) {
-        self.types[id.0] = Some(ty);
+    pub(super) fn set(&mut self, id: TBindingId, ty: Type) {
+        self.types[Indexable::get_index(id)] = Some(ty);
     }
 
-    pub(super) fn get(&self, id: BindingId) -> Option<&Type> {
-        self.types[id.0].as_ref()
+    pub(super) fn get(&self, id: TBindingId) -> Option<&Type> {
+        self.types[Indexable::get_index(id)].as_ref()
     }
 }
+
+pub(super) type BindingToTypeMap = GenericTypeMap<BindingId>;
+pub(super) type TypeBindingToTypeMap = GenericTypeMap<TypeBindingId>;
 
 pub(super) trait BindingLookup {
     fn lookup(&self, id: BindingId) -> &ResolvedBinding;

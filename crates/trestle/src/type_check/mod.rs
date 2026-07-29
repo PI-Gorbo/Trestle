@@ -21,14 +21,14 @@ pub use typed_ast::TypeCheckedProgram;
 
 use crate::binding_resolution::BindingResolvedProgram;
 
-use binding_table::{BindingToTypeMap, zip_bindings_with_types};
-use inference::infer_type_of_expression;
+use binding_table::zip_bindings_with_types;
+use inference::{InferenceCtx, infer_type_of_expression};
 use substitution::subsitute;
 use typed_ast::TypeCheckedExpression;
 use unification::UnificationMap;
 
 struct TypeCheckState {
-    binding_type_map: BindingToTypeMap,
+    inference_ctx: InferenceCtx,
     unification_map: UnificationMap,
     expressions: Vec<TypeCheckedExpression>,
     errors: Vec<TypeCheckError>,
@@ -41,6 +41,7 @@ pub fn type_check(
     let BindingResolvedProgram {
         expressions,
         bindings,
+        type_bindings,
     } = program;
 
     // Borrow `bindings` for id lookups during the walk; it's consumed afterwards (moving each
@@ -50,13 +51,13 @@ pub fn type_check(
         TypeCheckState {
             expressions: Vec::with_capacity(expression_count),
             errors: Vec::new(),
-            binding_type_map: BindingToTypeMap::new(bindings.len()),
+            inference_ctx: InferenceCtx::new(bindings.len(), type_bindings.len()),
             unification_map: UnificationMap::new(),
         },
         |mut state, untyped_expression| {
             match infer_type_of_expression(
                 untyped_expression,
-                &mut state.binding_type_map,
+                &mut state.inference_ctx,
                 &mut state.unification_map,
                 &bindings,
             ) {
@@ -80,7 +81,7 @@ pub fn type_check(
     // Binding types are recorded during inference with their type variables intact (a `let`
     // without an annotation is bound to a fresh `Var`), so resolve them the same way the
     // expression tree is resolved below.
-    let typed_bindings = zip_bindings_with_types(bindings, &final_state.binding_type_map)
+    let typed_bindings = zip_bindings_with_types(bindings, &final_state.inference_ctx.variable_env)
         .map_err(|err| vec![err])?
         .into_iter()
         .map(|mut binding| {

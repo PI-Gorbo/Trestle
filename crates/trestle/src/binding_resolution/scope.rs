@@ -103,7 +103,6 @@ impl Scope {
     }
 
     /// The type-namespace twin of [`Scope::extend_variable`].
-    #[allow(dead_code, reason = "no caller until the `TypeDeclaration` arm is resolved")]
     pub(super) fn extend_type(&self, entry: TypeBindingScopeEntry) -> Scope {
         Scope {
             type_scope: self.type_scope.extend(entry),
@@ -117,7 +116,8 @@ impl Scope {
         self.variable_scope.lookup(name)
     }
 
-    #[allow(dead_code, reason = "no caller until the `TypeDeclaration` arm is resolved")]
+    /// The type-namespace twin of [`Scope::lookup`] — what a name in *type* position resolves
+    /// against: a builtin seeded from the prelude, or a user `type` declaration.
     pub(super) fn lookup_type(&self, name: &str) -> Option<TypeBindingId> {
         self.type_scope.lookup(name)
     }
