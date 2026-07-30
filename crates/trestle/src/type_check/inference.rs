@@ -310,10 +310,7 @@ pub(super) fn infer_type_of_expression(
                 }
             }
         }
-        // Next: interpret `type_expression` into a `Type` via `get_type_from_type_expression` and
-        // record it against `identifier` in `env.type_env`, so a later annotation naming this alias
-        // resolves through the type namespace. It also needs somewhere to land in the typed tree —
-        // `ExpressionKind` has no `TypeDeclaration` variant yet.
+
         ResolvedExpressionKind::TypeDeclaration { .. } => {
             todo!("type declarations are not yet type-checked")
         }
