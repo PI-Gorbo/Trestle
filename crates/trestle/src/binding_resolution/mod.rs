@@ -26,7 +26,7 @@ use miette::SourceSpan;
 use crate::{
     binding_resolution::{
         binding_arena::TypeBindingArea,
-        binding_resolved::ResolvedTypeExpression,
+        binding_resolved::{ResolvedTypeExpression, ResolvedTypeExpressionKind},
         scope::{Scope, TypeBindingScopeEntry, VariableBindingScopeEntry},
     },
     parse::ast::{self, Expression, ExpressionKind, Literal, Param},
@@ -191,7 +191,7 @@ fn resolve_expression(
         ExpressionKind::Lambda(lambda) => {
             let (parameter, updated_scope) = match lambda.parameter {
                 Some(param) => {
-                    let (resolved_param, extended) = resolve_parameter(param, span, scope, ctx);
+                    let (resolved_param, extended) = resolve_parameter(param, span, scope, ctx)?;
                     (Some(resolved_param), extended)
                 }
                 None => (None, scope.clone()),
@@ -202,7 +202,11 @@ fn resolve_expression(
             ResolvedExpressionKind::Lambda(ResolvedLambda {
                 body: Box::new(body),
                 parameter,
-                return_type: lambda.return_type,
+                return_type: lambda
+                    .return_type
+                    .map(|type_expression| resolve_type_expression(type_expression, scope, ctx))
+                    .transpose()?
+                    .map(|(type_expr, _)| type_expr),
             })
         }
         ExpressionKind::FunctionInvocation {
@@ -297,7 +301,7 @@ fn resolve_expression(
         } => {
             // Register
             let (resolved_type_expression, scope) =
-                resolve_type_expression(type_expression, span, scope, ctx)?;
+                resolve_type_expression(type_expression, scope, ctx)?;
 
             let binding = ctx.type_binding_arena.extend(ResolvedBinding {
                 name: identifier.clone(),
@@ -323,33 +327,48 @@ fn resolve_expression(
 /// so an unbound type name can only be labelled at the declaration that mentions it.
 fn resolve_type_expression(
     type_expression: ast::TypeExpression,
-    span: SourceSpan,
     scope: &Scope,
     ctx: &mut ResolveContext,
 ) -> Result<(ResolvedTypeExpression, Scope), BindingResolutionError> {
-    match type_expression {
-        ast::TypeExpression::Named(name) => {
+    match type_expression.kind {
+        ast::TypeExpressionKind::Named(name) => {
             // Lookup the name in the scope.
             match scope.lookup_type(&name) {
-                Some(some_type) => Ok((ResolvedTypeExpression::Named(some_type), scope.clone())),
-                None => Err(BindingResolutionError::UnboundTypeName { name, span }),
+                Some(some_type) => Ok((
+                    ResolvedTypeExpression {
+                        kind: ResolvedTypeExpressionKind::Named(some_type),
+                        span: type_expression.span,
+                    },
+                    scope.clone(),
+                )),
+                None => Err(BindingResolutionError::UnboundTypeName {
+                    name,
+                    span: type_expression.span,
+                }),
             }
         }
         // Each field's type resolves independently against the *same* scope: a record type
         // introduces no bindings, so nothing threads from one field to the next. The keys carry
         // over untouched — only the value side gets name-resolved.
-        ast::TypeExpression::Record(fields) => {
+        ast::TypeExpressionKind::Record(fields) => {
             let resolved =
                 fields
                     .into_iter()
                     .try_fold(BTreeMap::new(), |mut acc, (key, value)| {
-                        let (value, _) = resolve_type_expression(value, span, scope, ctx)?;
+                        let (value, _) = resolve_type_expression(value, scope, ctx)?;
+
                         acc.insert(key, value);
 
                         Ok(acc)
                     })?;
 
-            Ok((ResolvedTypeExpression::Record(resolved), scope.clone()))
+            Ok((
+                ResolvedTypeExpression {
+                    kind: ResolvedTypeExpressionKind::Record(resolved),
+                    span: type_expression.span,
+                },
+                scope.clone(),
+            ))
         }
     }
 }
@@ -361,7 +380,7 @@ fn resolve_parameter(
     span: SourceSpan,
     scope: &Scope,
     ctx: &mut ResolveContext,
-) -> (ResolvedParam, Scope) {
+) -> Result<(ResolvedParam, Scope), BindingResolutionError> {
     let binding_id = ctx.var_binding_arena.extend(ResolvedBinding {
         name: param.name.clone(),
         span,
@@ -373,13 +392,17 @@ fn resolve_parameter(
         binding: binding_id,
     });
 
-    (
+    Ok((
         ResolvedParam {
             binding: binding_id,
-            type_dec: param.type_dec,
+            type_dec: param
+                .type_dec
+                .map(|type_expression| resolve_type_expression(type_expression, scope, ctx))
+                .transpose()?
+                .map(|(type_expr, _)| type_expr),
         },
         updated_scope,
-    )
+    ))
 }
 
 #[cfg(test)]
@@ -477,7 +500,10 @@ mod tests {
         else {
             panic!("expected a type declaration");
         };
-        assert_eq!(*type_expression, ResolvedTypeExpression::Named(int_id));
+        assert_eq!(
+            type_expression.kind,
+            ResolvedTypeExpressionKind::Named(int_id)
+        );
     }
 
     #[test]
@@ -487,7 +513,8 @@ mod tests {
         let resolved = resolve_src("type Int = Float\ntype Alias = Int")
             .expect("shadowing a prelude type resolves");
 
-        let ResolvedExpressionKind::TypeDeclaration { identifier, .. } = &resolved.expressions[0].kind
+        let ResolvedExpressionKind::TypeDeclaration { identifier, .. } =
+            &resolved.expressions[0].kind
         else {
             panic!("expected a type declaration");
         };
@@ -503,8 +530,8 @@ mod tests {
             "the shadowing declaration mints an id past the prelude's"
         );
         assert_eq!(
-            *type_expression,
-            ResolvedTypeExpression::Named(*identifier),
+            type_expression.kind,
+            ResolvedTypeExpressionKind::Named(*identifier),
             "`Int` on the right resolves to the user's declaration, not the prelude's"
         );
     }

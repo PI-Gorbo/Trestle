@@ -40,7 +40,7 @@ impl InferenceCtx {
 
 pub(super) fn infer_type_of_expression(
     untyped_expression: ResolvedExpression,
-    env: &mut InferenceCtx,
+    ctx: &mut InferenceCtx,
     unification_map: &mut UnificationMap,
     bindings: &[ResolvedBinding],
 ) -> Result<TypeCheckedExpression, TypeCheckError> {
@@ -75,7 +75,7 @@ pub(super) fn infer_type_of_expression(
         ResolvedExpressionKind::Var(binding_id) => {
             // The binding's type was recorded when its `let`/lambda-param was analysed.
             // If none is known at the use site, the binding needs an annotation.
-            let ty = match env.variable_env.get(binding_id) {
+            let ty = match ctx.variable_env.get(binding_id) {
                 Some(ty) => ty.clone(),
                 None => {
                     return Err(TypeCheckError::MissingAnnotation {
@@ -88,8 +88,8 @@ pub(super) fn infer_type_of_expression(
         }
 
         ResolvedExpressionKind::Binary(op, lhs, rhs) => {
-            let lhs = infer_type_of_expression(*lhs, env, unification_map, bindings)?;
-            let rhs = infer_type_of_expression(*rhs, env, unification_map, bindings)?;
+            let lhs = infer_type_of_expression(*lhs, ctx, unification_map, bindings)?;
+            let rhs = infer_type_of_expression(*rhs, ctx, unification_map, bindings)?;
             // The operator fixes both the operand type and the result type. Arithmetic is
             // `Int × Int → Int`; comparison is `Int × Int → Bool`; the boolean combinators are
             // `Bool × Bool → Bool`. Unify each operand against the required operand type.
@@ -154,7 +154,7 @@ pub(super) fn infer_type_of_expression(
         }
 
         ResolvedExpressionKind::Unary(op, operand) => {
-            let operand = infer_type_of_expression(*operand, env, unification_map, bindings)?;
+            let operand = infer_type_of_expression(*operand, ctx, unification_map, bindings)?;
             // `-` negates an `Int` (→ `Int`); `!` inverts a `Bool` (→ `Bool`). Operand and result
             // type coincide for both, so unify the operand against that one type.
             let ty = match op {
@@ -177,8 +177,8 @@ pub(super) fn infer_type_of_expression(
             let parameter: Option<Param> = parameter
                 .map(|untyped_param| {
                     let type_from_type_dec =
-                        resolve_type_dec(unification_map, &untyped_param.type_dec, span)?;
-                    env.variable_env
+                        resolve_type_dec(untyped_param.type_dec, unification_map, ctx)?;
+                    ctx.variable_env
                         .set(untyped_param.binding, type_from_type_dec.clone());
                     Ok(Param {
                         binding: untyped_param.binding,
@@ -189,8 +189,8 @@ pub(super) fn infer_type_of_expression(
             let param_type = parameter.as_ref().map(|p| Box::new(p.ty.clone()));
 
             // Infer the body under the (now parameter-extended) environment.
-            let body = infer_type_of_expression(*body, env, unification_map, bindings)?;
-            let return_type = resolve_type_dec(unification_map, &return_type, span)?;
+            let body = infer_type_of_expression(*body, ctx, unification_map, bindings)?;
+            let return_type = resolve_type_dec(return_type, unification_map , ctx)?;
             unification_map.unify(&body.ty, &return_type, span)?;
             let lambda_return_type = body.ty.clone();
 
@@ -207,12 +207,12 @@ pub(super) fn infer_type_of_expression(
         ResolvedExpressionKind::FunctionInvocation(binding_id, args) => {
             let analysed_args = args
                 .into_iter()
-                .map(|arg| infer_type_of_expression(arg, env, unification_map, bindings))
+                .map(|arg| infer_type_of_expression(arg, ctx, unification_map, bindings))
                 .collect::<Result<Vec<_>, _>>()?;
 
             // We now need to check that we can apply the types of the arguments to the parameters of
             // the function. First, we resolve the type from the binding_id.
-            let Some(function_type) = env.variable_env.get(binding_id) else {
+            let Some(function_type) = ctx.variable_env.get(binding_id) else {
                 return Err(TypeCheckError::MissingAnnotation {
                     name: bindings.lookup(binding_id).name.clone(),
                     span,
@@ -239,14 +239,14 @@ pub(super) fn infer_type_of_expression(
             type_dec,
             value,
         } => {
-            let value = infer_type_of_expression(*value, env, unification_map, bindings)?;
+            let value = infer_type_of_expression(*value, ctx, unification_map, bindings)?;
             // With an annotation the binding takes the annotated type; without one it takes the
             // value's inferred type. Record it *before* unifying so that a mismatch still leaves the
             // binding typed — otherwise `zip_bindings_with_types` would mask the `TypeMismatch` with
             // an `UntypedBindingAfterTypeCheck`.
-            let bound_ty = resolve_type_dec(unification_map, &type_dec, span)?;
+            let bound_ty = resolve_type_dec(type_dec, unification_map, ctx)?;
 
-            env.variable_env.set(binding, bound_ty.clone());
+            ctx.variable_env.set(binding, bound_ty.clone());
             // The value's type must unify with the binding's; for an annotated `let` a differing
             // value type is a `TypeMismatch` (expected = annotation, found = value).
             unification_map.unify(&value.ty, &bound_ty, span)?;
@@ -265,7 +265,7 @@ pub(super) fn infer_type_of_expression(
         ResolvedExpressionKind::Block(expressions) => {
             let analysed = expressions
                 .into_iter()
-                .map(|e| infer_type_of_expression(e, env, unification_map, bindings))
+                .map(|e| infer_type_of_expression(e, ctx, unification_map, bindings))
                 .collect::<Result<Vec<_>, _>>()?;
             let ty = analysed.last().map_or(Type::Unit, |e| e.ty.clone());
             (ExpressionKind::Block(analysed), ty)
@@ -276,12 +276,12 @@ pub(super) fn infer_type_of_expression(
             false_condition,
         } => {
             let typed_condition =
-                infer_type_of_expression(*condition, env, unification_map, bindings)?;
+                infer_type_of_expression(*condition, ctx, unification_map, bindings)?;
             // Unify the typed_condition value with boolean.
             unification_map.unify(&typed_condition.ty, &Type::Literal(Literal::Bool), span)?;
 
             let true_condition =
-                infer_type_of_expression(*true_condition, env, unification_map, bindings)?;
+                infer_type_of_expression(*true_condition, ctx, unification_map, bindings)?;
             let true_condition_type = true_condition.ty.clone();
 
             match false_condition {
@@ -295,7 +295,7 @@ pub(super) fn infer_type_of_expression(
                 ),
                 Some(false_condition) => {
                     let false_condition =
-                        infer_type_of_expression(*false_condition, env, unification_map, bindings)?;
+                        infer_type_of_expression(*false_condition, ctx, unification_map, bindings)?;
 
                     unification_map.unify(&false_condition.ty, &true_condition.ty, span)?;
 
@@ -311,22 +311,39 @@ pub(super) fn infer_type_of_expression(
             }
         }
 
-        ResolvedExpressionKind::TypeDeclaration { .. } => {
-            todo!("type declarations are not yet type-checked")
+        ResolvedExpressionKind::TypeDeclaration {
+            identifier,
+            type_expression,
+        } => {
+            let evaluated_type = get_type_from_type_expression(type_expression, ctx)?;
+
+            // Bind a type to the identifier in the context.
+            ctx.type_env.set(identifier, evaluated_type.clone());
+
+            (
+                ExpressionKind::TypeDeclaration {
+                    identifier,
+                    type_expression: evaluated_type.clone(),
+                },
+                evaluated_type,
+            )
         }
     };
 
     Ok(TypeCheckedExpression { kind, span, ty })
 }
 
-#[allow(
-    dead_code,
-    reason = "no caller until the `TypeDeclaration` arm is implemented"
-)]
 fn get_type_from_type_expression(
-    _type_expression: ResolvedTypeExpression,
+    type_expression: ResolvedTypeExpression,
+    ctx: &mut InferenceCtx,
 ) -> Result<Type, TypeCheckError> {
-    todo!()
+    match type_expression.kind {
+        ResolvedTypeExpressionKind::Named(type_binding_id) => match ctx.type_env.get(type_binding_id) {
+            None => Err(TypeCheckError::InternalError { message: (), span: type_expression. }),
+            Some(_) => todo!(),
+        },
+        ResolvedTypeExpressionKind::Record(btree_map) => todo!(),
+    }
 }
 
 fn unify_binary_op(
@@ -418,31 +435,18 @@ fn apply_arguments(
     }
 }
 
-/// Interpret a raw type annotation into a concrete [`Type`]
-/// (`"Int"`/`"Bool"`/`"String"` → [`Literal`]; unknown → an error).
+// /// Interpret a raw type annotation into a concrete [`Type`]
+// /// (`"Int"`/`"Bool"`/`"String"` → [`Literal`]; unknown → an error).
 fn resolve_type_dec(
+    dec: Option<ResolvedTypeExpression>,
     unification_map: &mut UnificationMap,
-    dec: &Option<TypeExpression>,
-    span: SourceSpan,
+    ctx: &mut InferenceCtx,
 ) -> Result<Type, TypeCheckError> {
     match dec {
         Some(dec) => {
-            let TypeExpression::Named(name) = dec else {
-                Err(TypeCheckError::InternalError {
-                    message: String::from("Expected type Erro"),
-                    span,
-                })?
-            };
-            match name.as_str() {
-                "Int" => Ok(Type::Literal(Literal::Int)),
-                "Bool" => Ok(Type::Literal(Literal::Bool)),
-                "Float" => Ok(Type::Literal(Literal::Float)),
-                "String" => Ok(Type::Literal(Literal::String)),
-                _ => Err(TypeCheckError::UnknownType {
-                    name: name.clone(),
-                    span,
-                }),
-            }
+            let evaluated_type = get_type_from_type_expression(dec, ctx)?;
+
+            Ok(evaluated_type)
         }
         None => Ok(Type::Var(unification_map.mint_new_type_var())),
     }

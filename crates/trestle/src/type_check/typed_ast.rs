@@ -7,9 +7,12 @@
 //! [`Expression`](TypeCheckedExpression) carries its [`Type`]. Names and types per binding live in
 //! the side [`TypeCheckedProgram::bindings`] table so the tree itself stays ids-only.
 
+use std::collections::BTreeMap;
+
 use miette::SourceSpan;
 
 use crate::binding_resolution::BindingId;
+use crate::binding_resolution::binding_resolved::TypeBindingId;
 use crate::parse::ast::{BinaryOp, UnaryOp};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -21,6 +24,7 @@ pub enum Type {
     Literal(Literal),
     Var(TypeVarId),
     Fn(Option<Box<Type>>, Box<Type>), // curried: one arg -> result
+    Record(BTreeMap<String, Box<Type>>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -80,12 +84,16 @@ pub enum ExpressionKind {
         value: Box<TypeCheckedExpression>,
     },
     Block(Vec<TypeCheckedExpression>),
+    TypeDeclaration {
+        identifier: TypeBindingId,
+        type_expression: Type,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Param {
     pub binding: BindingId,
-    pub ty: Type, // resolved; was Option<TypeDeclaration>
+    pub ty: Type,
 }
 
 #[derive(Debug, Clone, PartialEq)]

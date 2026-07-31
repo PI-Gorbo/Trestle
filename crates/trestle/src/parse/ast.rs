@@ -25,9 +25,18 @@ pub fn merge_spans(a: SourceSpan, b: SourceSpan) -> SourceSpan {
     (start, b.offset() + b.len() - start).into()
 }
 
-/// A source-spanned expression node: what the expression *is* (`kind`) plus
-/// where it came from (`span`). Every node in the tree carries its own span so
-/// diagnostics can point at any sub-expression.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TypeExpressionKind {
+    Named(String),
+    Record(BTreeMap<String, TypeExpression>),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TypeExpression {
+    pub kind: TypeExpressionKind,
+    pub span: SourceSpan,
+}
+
 #[derive(Debug, PartialEq)]
 pub struct Expression {
     pub kind: ExpressionKind,
@@ -100,15 +109,6 @@ pub enum ExpressionKind {
         identifier: String,
         type_expression: TypeExpression,
     },
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum TypeExpression {
-    Named(String),
-    /// Field order is not significant to a record type, so fields are keyed by
-    /// name. A `BTreeMap` (not a `HashMap`) keeps the `Debug` rendering in a
-    /// stable, name-sorted order — the corpus snapshots depend on it.
-    Record(BTreeMap<String, TypeExpression>),
 }
 
 #[derive(Debug, PartialEq)]

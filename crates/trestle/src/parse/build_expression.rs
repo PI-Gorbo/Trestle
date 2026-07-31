@@ -12,13 +12,13 @@ use std::sync::LazyLock;
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
 
-use crate::parse::ast::{BinaryOp, Literal, UnaryOp};
+use crate::parse::ast::{BinaryOp, Literal, TypeExpressionKind, UnaryOp};
 
 use super::{BuildError, Rule};
 
 use super::ast::{
-    Expression, ExpressionKind, Lambda, Param, TypeExpression, get_bindings,
-    merge_spans, source_span_from_pest_span,
+    Expression, ExpressionKind, Lambda, Param, TypeExpression, get_bindings, merge_spans,
+    source_span_from_pest_span,
 };
 
 /// The operator-precedence table — the single, explicit statement of Trestle's
@@ -117,7 +117,7 @@ fn build_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError>
 /// `identifier_with_type_declaration` each (and none at all for `{}`).
 fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {
     let mut fields = BTreeMap::new();
-
+    let span = pair.as_span().clone();
     for field in pair.into_inner() {
         let span = source_span_from_pest_span(field.as_span());
         let (key, value) = build_required_binding_target(field)?;
@@ -129,7 +129,10 @@ fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, Buil
         }
     }
 
-    Ok(TypeExpression::Record(fields))
+    Ok(TypeExpression {
+        kind: TypeExpressionKind::Record(fields),
+        span: source_span_from_pest_span(span),
+    })
 }
 
 /// Build a `Block` from a `Rule::list_of_expressions` pair: a brace-wrapped sequence
@@ -294,11 +297,16 @@ fn build_type_opt(pair: Pair<Rule>) -> Option<TypeExpression> {
 }
 
 fn build_type_identifier_expression(pair: Pair<Rule>) -> TypeExpression {
+    let span = pair.as_span().clone();
     let ident = pair
         .into_inner()
         .next()
         .expect("type_declaration has an identifier");
-    TypeExpression::Named(ident.as_str().to_string())
+
+    TypeExpression {
+        kind: TypeExpressionKind::Named(ident.as_str().to_string()),
+        span: source_span_from_pest_span(span),
+    }
 }
 
 /// Fold a `Rule::binary_expression` (`primary (op primary)*`) into a tree of
