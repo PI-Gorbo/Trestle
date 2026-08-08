@@ -119,6 +119,7 @@ impl UnificationMap {
                 param.as_ref().map(|param| Box::new(self.subsitute(param))),
                 Box::new(self.subsitute(result)),
             ),
+            Type::Record(btree_map) => todo!(),
         }
     }
 
@@ -246,6 +247,7 @@ impl UnificationMap {
                     .is_some_and(|p| self.root_occurs_in_type(root, p))
                     || self.root_occurs_in_type(root, body)
             }
+            Type::Record(btree_map) => todo!(),
         }
     }
 

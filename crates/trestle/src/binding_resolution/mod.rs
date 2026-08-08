@@ -236,20 +236,26 @@ fn resolve_expression(
 
             ResolvedExpressionKind::FunctionInvocation(binding, resolved_args)
         }
-        // The one kind that changes the sibling scope: mint a binding and hand the extended scope
-        // to whatever follows. The value resolves against the *incoming* scope, so a `let` can't
-        // see itself.
         ExpressionKind::Let {
             name,
             type_dec,
             value,
         } => {
-            let (value, _) = resolve_expression(*value, scope, ctx)?;
-            let (binding, extended) = bind_let(name, span, scope, ctx);
-            outgoing_scope = extended;
+            // `unzip` splits the `Option<(_, Scope)>` into its two halves so only the scope needs
+            // a fallback. Any name the annotation introduces (a future `{ name: T, ...rest }`) is
+            // scoped to the annotation and the value: `bind_let` below extends the *incoming*
+            // `scope`, so those names can't ride `outgoing_scope` out to later siblings.
+            let (optional_resolved_type_dec, annotation_scope) = type_dec
+                .map(|type_dec| resolve_type_expression(type_dec, scope, ctx))
+                .transpose()?
+                .unzip();
+            let updated_scope = annotation_scope.unwrap_or_else(|| scope.clone());
+            let (value, _) = resolve_expression(*value, &updated_scope, ctx)?;
+            let (binding, updated_scope) = bind_let(name, span, &updated_scope, ctx);
+            outgoing_scope = updated_scope;
             ResolvedExpressionKind::Let {
                 binding,
-                type_dec,
+                type_dec: optional_resolved_type_dec,
                 value: Box::new(value),
             }
         }
@@ -325,6 +331,13 @@ fn resolve_expression(
 
 /// `span` is the *enclosing* expression's span: an [`ast::TypeExpression`] carries none of its own,
 /// so an unbound type name can only be labelled at the declaration that mentions it.
+///
+/// The returned [`Scope`] is currently always the input unchanged — a type expression today only
+/// *looks names up*. It is not dead weight: the planned row syntax
+/// (`function rename(rec: { name: T, ...rest }): String`) introduces `T` and `rest` by occurrence
+/// inside the type expression, with no declaration-level binder list to hang them on, and those
+/// names have to reach the rest of the signature. Callers must keep that scope inside the
+/// declaration — see the `Let` arm of [`resolve_expression`].
 fn resolve_type_expression(
     type_expression: ast::TypeExpression,
     scope: &Scope,
@@ -347,27 +360,28 @@ fn resolve_type_expression(
                 }),
             }
         }
-        // Each field's type resolves independently against the *same* scope: a record type
-        // introduces no bindings, so nothing threads from one field to the next. The keys carry
-        // over untouched — only the value side gets name-resolved.
+        // Fields are threaded left to right rather than resolved against one fixed scope, so a
+        // name introduced by an earlier field is visible to a later one — `{ a: T, b: T }` must
+        // give both `T`s the same binding. Inert today (nothing introduces a name yet); load
+        // bearing once `...rest` does. The keys carry over untouched — only values get resolved.
         ast::TypeExpressionKind::Record(fields) => {
-            let resolved =
-                fields
-                    .into_iter()
-                    .try_fold(BTreeMap::new(), |mut acc, (key, value)| {
-                        let (value, _) = resolve_type_expression(value, scope, ctx)?;
+            let (resolved, scope) = fields.into_iter().try_fold(
+                (BTreeMap::new(), scope.clone()),
+                |(mut acc, scope), (key, value)| {
+                    let (value, scope) = resolve_type_expression(value, &scope, ctx)?;
 
-                        acc.insert(key, value);
+                    acc.insert(key, value);
 
-                        Ok(acc)
-                    })?;
+                    Ok((acc, scope))
+                },
+            )?;
 
             Ok((
                 ResolvedTypeExpression {
                     kind: ResolvedTypeExpressionKind::Record(resolved),
                     span: type_expression.span,
                 },
-                scope.clone(),
+                scope,
             ))
         }
     }
@@ -443,6 +457,22 @@ mod tests {
         assert_eq!(
             *body_binding, param.binding,
             "body `x` resolves to the param, not the outer `let x`"
+        );
+    }
+
+    #[test]
+    fn an_annotation_does_not_disturb_the_sibling_scope() {
+        // The `let`'s outgoing scope is built from the *incoming* one, not from the annotation's
+        // scope — so an annotation can't contribute bindings to later siblings. Inert while type
+        // expressions only look names up; the guard that matters once `{ name: T, ...rest }`
+        // introduces `T` by occurrence and `T` must not outlive the annotation.
+        let resolved = resolve_src("let a: Int = 1\na + 2").expect("should resolve");
+        assert_eq!(resolved.bindings.len(), 1);
+        assert_eq!(resolved.bindings[0].name, "a");
+        assert_eq!(
+            resolved.type_bindings.len(),
+            prelude::PRELUDE_TYPES.len(),
+            "an annotation mentioning a prelude type mints no new type binding"
         );
     }
 

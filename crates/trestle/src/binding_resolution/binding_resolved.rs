@@ -13,7 +13,7 @@ use std::collections::BTreeMap;
 
 use miette::SourceSpan;
 
-use crate::parse::ast::{BinaryOp, TypeExpression, UnaryOp};
+use crate::parse::ast::{BinaryOp, UnaryOp};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TypeBindingId(pub usize);

@@ -186,6 +186,10 @@ fn eval_expr(env: &Environment, expr: &TypeCheckedExpression) -> Result<Value, E
         ExpressionKind::Let { .. } => {
             unreachable!("let is threaded by eval_block, never reached as a sub-expression")
         }
+        ExpressionKind::TypeDeclaration {
+            identifier,
+            type_expression,
+        } => todo!(),
     }
 }
 

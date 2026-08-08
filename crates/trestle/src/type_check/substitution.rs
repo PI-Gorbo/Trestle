@@ -48,6 +48,10 @@ pub(super) fn subsitute(map: &UnificationMap, expr: &mut TypeCheckedExpression) 
                 subsitute(map, e);
             }
         }
+        ExpressionKind::TypeDeclaration {
+            identifier,
+            type_expression,
+        } => todo!(),
     }
 
     expr.ty = map.subsitute(&expr.ty);

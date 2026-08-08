@@ -4,11 +4,13 @@
 
 use miette::SourceSpan;
 
-use crate::binding_resolution::binding_resolved::ResolvedTypeExpression;
+use crate::binding_resolution::binding_resolved::{
+    ResolvedTypeExpression, ResolvedTypeExpressionKind,
+};
 use crate::binding_resolution::{
     ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
 };
-use crate::parse::ast::{BinaryOp, TypeExpression, UnaryOp};
+use crate::parse::ast::{BinaryOp, UnaryOp};
 use crate::type_check::binding_table::TypeBindingToTypeMap;
 
 use super::binding_table::{BindingLookup, BindingToTypeMap};
@@ -190,7 +192,7 @@ pub(super) fn infer_type_of_expression(
 
             // Infer the body under the (now parameter-extended) environment.
             let body = infer_type_of_expression(*body, ctx, unification_map, bindings)?;
-            let return_type = resolve_type_dec(return_type, unification_map , ctx)?;
+            let return_type = resolve_type_dec(return_type, unification_map, ctx)?;
             unification_map.unify(&body.ty, &return_type, span)?;
             let lambda_return_type = body.ty.clone();
 
@@ -338,11 +340,21 @@ fn get_type_from_type_expression(
     ctx: &mut InferenceCtx,
 ) -> Result<Type, TypeCheckError> {
     match type_expression.kind {
-        ResolvedTypeExpressionKind::Named(type_binding_id) => match ctx.type_env.get(type_binding_id) {
-            None => Err(TypeCheckError::InternalError { message: (), span: type_expression. }),
-            Some(_) => todo!(),
-        },
-        ResolvedTypeExpressionKind::Record(btree_map) => todo!(),
+        ResolvedTypeExpressionKind::Named(type_binding_id) => {
+            match ctx.type_env.get(type_binding_id) {
+                None => Err(TypeCheckError::InternalError {
+                    message: String::from("Could not find the type for the given type binding id"),
+                    span: type_expression.span,
+                }),
+                Some(referenced_type) => Ok(referenced_type.clone()),
+            }
+        }
+        ResolvedTypeExpressionKind::Record(btree_map) => Ok(Type::Record(
+            btree_map
+                .into_iter()
+                .map(|(key, value)| Ok((key, Box::new(get_type_from_type_expression(value, ctx)?))))
+                .collect::<Result<_, TypeCheckError>>()?,
+        )),
     }
 }
 
