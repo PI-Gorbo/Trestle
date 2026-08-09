@@ -11,9 +11,17 @@ ParsedProgram {
                         Param {
                             name: "x",
                             type_dec: Some(
-                                Named(
-                                    "Int",
-                                ),
+                                TypeExpression {
+                                    kind: Named(
+                                        "Int",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            137,
+                                        ),
+                                        length: 5,
+                                    },
+                                },
                             ),
                         },
                     ),

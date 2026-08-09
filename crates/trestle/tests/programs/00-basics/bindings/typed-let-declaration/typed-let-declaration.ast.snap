@@ -8,9 +8,17 @@ ParsedProgram {
             kind: Let {
                 name: "x",
                 type_dec: Some(
-                    Named(
-                        "Int",
-                    ),
+                    TypeExpression {
+                        kind: Named(
+                            "Int",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                5,
+                            ),
+                            length: 5,
+                        },
+                    },
                 ),
                 value: Expression {
                     kind: Literal(

@@ -15,7 +15,7 @@ TypeCheckedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            287,
+                            292,
                         ),
                         length: 1,
                     },
@@ -26,7 +26,7 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    286,
+                    291,
                 ),
                 length: 2,
             },

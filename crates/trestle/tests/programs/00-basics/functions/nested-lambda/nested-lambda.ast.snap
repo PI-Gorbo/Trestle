@@ -11,9 +11,17 @@ ParsedProgram {
                         Param {
                             name: "a",
                             type_dec: Some(
-                                Named(
-                                    "Int",
-                                ),
+                                TypeExpression {
+                                    kind: Named(
+                                        "Int",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            242,
+                                        ),
+                                        length: 5,
+                                    },
+                                },
                             ),
                         },
                     ),
@@ -25,9 +33,17 @@ ParsedProgram {
                                     Param {
                                         name: "b",
                                         type_dec: Some(
-                                            Named(
-                                                "Int",
-                                            ),
+                                            TypeExpression {
+                                                kind: Named(
+                                                    "Int",
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        254,
+                                                    ),
+                                                    length: 5,
+                                                },
+                                            },
                                         ),
                                     },
                                 ),
@@ -41,7 +57,7 @@ ParsedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    260,
+                                                    264,
                                                 ),
                                                 length: 1,
                                             },
@@ -52,7 +68,7 @@ ParsedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    264,
+                                                    268,
                                                 ),
                                                 length: 1,
                                             },
@@ -60,7 +76,7 @@ ParsedProgram {
                                     ),
                                     span: SourceSpan {
                                         offset: SourceOffset(
-                                            260,
+                                            264,
                                         ),
                                         length: 5,
                                     },
@@ -69,7 +85,7 @@ ParsedProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                248,
+                                252,
                             ),
                             length: 17,
                         },
@@ -78,7 +94,7 @@ ParsedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    236,
+                    240,
                 ),
                 length: 29,
             },

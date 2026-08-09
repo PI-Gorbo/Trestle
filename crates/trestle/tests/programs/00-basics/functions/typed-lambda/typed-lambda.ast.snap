@@ -11,9 +11,17 @@ ParsedProgram {
                         Param {
                             name: "a",
                             type_dec: Some(
-                                Named(
-                                    "Int",
-                                ),
+                                TypeExpression {
+                                    kind: Named(
+                                        "Int",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            289,
+                                        ),
+                                        length: 4,
+                                    },
+                                },
                             ),
                         },
                     ),
@@ -25,16 +33,32 @@ ParsedProgram {
                                     Param {
                                         name: "b",
                                         type_dec: Some(
-                                            Named(
-                                                "Int",
-                                            ),
+                                            TypeExpression {
+                                                kind: Named(
+                                                    "Int",
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        296,
+                                                    ),
+                                                    length: 4,
+                                                },
+                                            },
                                         ),
                                     },
                                 ),
                                 return_type: Some(
-                                    Named(
-                                        "Int",
-                                    ),
+                                    TypeExpression {
+                                        kind: Named(
+                                            "Int",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                301,
+                                            ),
+                                            length: 4,
+                                        },
+                                    },
                                 ),
                                 body: Expression {
                                     kind: Binary(

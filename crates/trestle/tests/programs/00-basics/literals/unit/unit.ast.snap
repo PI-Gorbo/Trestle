@@ -24,7 +24,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 17,
+                length: 18,
             },
         },
         Expression {
@@ -33,7 +33,7 @@ ParsedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    17,
+                    18,
                 ),
                 length: 5,
             },

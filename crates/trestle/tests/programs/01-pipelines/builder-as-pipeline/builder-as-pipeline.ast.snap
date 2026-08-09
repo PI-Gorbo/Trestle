@@ -15,9 +15,17 @@ ParsedProgram {
                                 Param {
                                     name: "host",
                                     type_dec: Some(
-                                        Named(
-                                            "String",
-                                        ),
+                                        TypeExpression {
+                                            kind: Named(
+                                                "String",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    242,
+                                                ),
+                                                length: 8,
+                                            },
+                                        },
                                     ),
                                 },
                             ),
@@ -29,9 +37,17 @@ ParsedProgram {
                                             Param {
                                                 name: "config",
                                                 type_dec: Some(
-                                                    Named(
-                                                        "String",
-                                                    ),
+                                                    TypeExpression {
+                                                        kind: Named(
+                                                            "String",
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                258,
+                                                            ),
+                                                            length: 8,
+                                                        },
+                                                    },
                                                 ),
                                             },
                                         ),
@@ -84,9 +100,17 @@ ParsedProgram {
                                 Param {
                                     name: "port",
                                     type_dec: Some(
-                                        Named(
-                                            "Int",
-                                        ),
+                                        TypeExpression {
+                                            kind: Named(
+                                                "Int",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    335,
+                                                ),
+                                                length: 5,
+                                            },
+                                        },
                                     ),
                                 },
                             ),
@@ -98,9 +122,17 @@ ParsedProgram {
                                             Param {
                                                 name: "config",
                                                 type_dec: Some(
-                                                    Named(
-                                                        "String",
-                                                    ),
+                                                    TypeExpression {
+                                                        kind: Named(
+                                                            "String",
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                348,
+                                                            ),
+                                                            length: 8,
+                                                        },
+                                                    },
                                                 ),
                                             },
                                         ),
@@ -153,9 +185,17 @@ ParsedProgram {
                                 Param {
                                     name: "config",
                                     type_dec: Some(
-                                        Named(
-                                            "String",
-                                        ),
+                                        TypeExpression {
+                                            kind: Named(
+                                                "String",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    390,
+                                                ),
+                                                length: 8,
+                                            },
+                                        },
                                     ),
                                 },
                             ),

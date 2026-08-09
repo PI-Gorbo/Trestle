@@ -35,7 +35,7 @@ TypeCheckedProgram {
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
-                                                        285,
+                                                        289,
                                                     ),
                                                     length: 1,
                                                 },
@@ -51,7 +51,7 @@ TypeCheckedProgram {
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
-                                                        289,
+                                                        293,
                                                     ),
                                                     length: 1,
                                                 },
@@ -62,7 +62,7 @@ TypeCheckedProgram {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                285,
+                                                289,
                                             ),
                                             length: 5,
                                         },
@@ -81,7 +81,7 @@ TypeCheckedProgram {
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
-                                                        292,
+                                                        296,
                                                     ),
                                                     length: 1,
                                                 },
@@ -97,7 +97,7 @@ TypeCheckedProgram {
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
-                                                        296,
+                                                        300,
                                                     ),
                                                     length: 1,
                                                 },
@@ -108,7 +108,7 @@ TypeCheckedProgram {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                292,
+                                                296,
                                             ),
                                             length: 5,
                                         },
@@ -125,7 +125,7 @@ TypeCheckedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    303,
+                                                    307,
                                                 ),
                                                 length: 1,
                                             },
@@ -137,9 +137,9 @@ TypeCheckedProgram {
                                 },
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        281,
+                                        285,
                                     ),
-                                    length: 24,
+                                    length: 25,
                                 },
                                 ty: Literal(
                                     Int,
@@ -149,9 +149,9 @@ TypeCheckedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            269,
+                            273,
                         ),
-                        length: 36,
+                        length: 37,
                     },
                     ty: Fn(
                         Some(
@@ -167,9 +167,9 @@ TypeCheckedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    259,
+                    263,
                 ),
-                length: 46,
+                length: 47,
             },
             ty: Unit,
         },
@@ -204,7 +204,7 @@ TypeCheckedProgram {
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
-                                                        338,
+                                                        344,
                                                     ),
                                                     length: 1,
                                                 },
@@ -220,7 +220,7 @@ TypeCheckedProgram {
                                                 ),
                                                 span: SourceSpan {
                                                     offset: SourceOffset(
-                                                        342,
+                                                        348,
                                                     ),
                                                     length: 1,
                                                 },
@@ -231,7 +231,7 @@ TypeCheckedProgram {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                338,
+                                                344,
                                             ),
                                             length: 5,
                                         },
@@ -247,7 +247,7 @@ TypeCheckedProgram {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                353,
+                                                360,
                                             ),
                                             length: 8,
                                         },
@@ -264,7 +264,7 @@ TypeCheckedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    379,
+                                                    388,
                                                 ),
                                                 length: 9,
                                             },
@@ -276,9 +276,9 @@ TypeCheckedProgram {
                                 },
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        334,
+                                        340,
                                     ),
-                                    length: 56,
+                                    length: 61,
                                 },
                                 ty: Literal(
                                     String,
@@ -288,9 +288,9 @@ TypeCheckedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            318,
+                            323,
                         ),
-                        length: 72,
+                        length: 78,
                     },
                     ty: Fn(
                         Some(
@@ -306,9 +306,9 @@ TypeCheckedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    305,
+                    310,
                 ),
-                length: 85,
+                length: 91,
             },
             ty: Unit,
         },
@@ -340,7 +340,7 @@ TypeCheckedProgram {
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            418,
+                                                            429,
                                                         ),
                                                         length: 2,
                                                     },
@@ -351,7 +351,7 @@ TypeCheckedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    417,
+                                                    428,
                                                 ),
                                                 length: 3,
                                             },
@@ -363,7 +363,7 @@ TypeCheckedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        413,
+                                        424,
                                     ),
                                     length: 8,
                                 },
@@ -375,7 +375,7 @@ TypeCheckedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            406,
+                            417,
                         ),
                         length: 16,
                     },
@@ -386,9 +386,9 @@ TypeCheckedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    390,
+                    401,
                 ),
-                length: 33,
+                length: 34,
             },
             ty: Unit,
         },
@@ -411,7 +411,7 @@ TypeCheckedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        447,
+                                        459,
                                     ),
                                     length: 1,
                                 },
@@ -423,7 +423,7 @@ TypeCheckedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            440,
+                            452,
                         ),
                         length: 9,
                     },
@@ -434,9 +434,9 @@ TypeCheckedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    423,
+                    435,
                 ),
-                length: 27,
+                length: 28,
             },
             ty: Unit,
         },
@@ -448,7 +448,7 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    450,
+                    463,
                 ),
                 length: 10,
             },
@@ -465,9 +465,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    269,
+                    273,
                 ),
-                length: 36,
+                length: 37,
             },
         },
         TypeCheckedBinding {
@@ -484,9 +484,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    259,
+                    263,
                 ),
-                length: 46,
+                length: 47,
             },
         },
         TypeCheckedBinding {
@@ -496,9 +496,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    318,
+                    323,
                 ),
-                length: 72,
+                length: 78,
             },
         },
         TypeCheckedBinding {
@@ -515,9 +515,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    305,
+                    310,
                 ),
-                length: 85,
+                length: 91,
             },
         },
         TypeCheckedBinding {
@@ -527,9 +527,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    390,
+                    401,
                 ),
-                length: 33,
+                length: 34,
             },
         },
         TypeCheckedBinding {
@@ -539,9 +539,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    423,
+                    435,
                 ),
-                length: 27,
+                length: 28,
             },
         },
     ],

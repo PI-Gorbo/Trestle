@@ -5,7 +5,7 @@
 use miette::SourceSpan;
 
 use crate::binding_resolution::binding_resolved::{
-    ResolvedTypeExpression, ResolvedTypeExpressionKind,
+    ResolvedTypeExpression, ResolvedTypeExpressionKind, TypeBindingId,
 };
 use crate::binding_resolution::{
     ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
@@ -19,13 +19,10 @@ use super::typed_ast::{
     ExpressionKind, Lambda, Literal, Param, Type, TypeCheckedExpression, TypeCheckedLiteral,
 };
 use super::unification::UnificationMap;
+use crate::prelude::PRELUDE_TYPES;
 
 pub(super) struct InferenceCtx {
     pub(super) variable_env: BindingToTypeMap,
-    #[allow(
-        dead_code,
-        reason = "no reader until the `TypeDeclaration` arm records into it"
-    )]
     pub(super) type_env: TypeBindingToTypeMap,
 }
 
@@ -33,11 +30,33 @@ impl InferenceCtx {
     /// The two namespaces are sized independently: each is indexed by its own arena's ids
     /// (`BindingId` for values, `TypeBindingId` for `type` declarations).
     pub(super) fn new(binding_count: usize, type_binding_count: usize) -> InferenceCtx {
+        let type_env = create_type_env_with_prelude_types(type_binding_count);
+
         InferenceCtx {
             variable_env: BindingToTypeMap::new(binding_count),
-            type_env: TypeBindingToTypeMap::new(type_binding_count),
+            type_env,
         }
     }
+}
+
+fn create_type_env_with_prelude_types(
+    type_binding_count: usize,
+) -> super::binding_table::GenericTypeMap<TypeBindingId> {
+    // When we create a new inference ctx, we must seed it with the basic types that already exist.
+    debug_assert!(
+        type_binding_count >= PRELUDE_TYPES.len(),
+        "resolve seeds the prelude before any user declaration"
+    );
+
+    // We expect the first N types from type_resolution to be the pre-seeded prelude types.
+    let type_env = PRELUDE_TYPES.iter().enumerate().fold(
+        TypeBindingToTypeMap::new(type_binding_count),
+        |mut env, (index, prelude_type)| {
+            env.set(TypeBindingId(index), prelude_type.ty.clone());
+            env
+        },
+    );
+    type_env
 }
 
 pub(super) fn infer_type_of_expression(

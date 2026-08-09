@@ -7,22 +7,62 @@ ParsedProgram {
         Expression {
             kind: TypeDeclaration {
                 identifier: "Point",
-                type_expression: Record(
-                    {
-                        "label": Named(
-                            "String",
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {
+                            "label": TypeExpression {
+                                kind: Named(
+                                    "String",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        44,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                            "x": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        16,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                            "y": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        24,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                            "z": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        32,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            13,
                         ),
-                        "x": Named(
-                            "Int",
-                        ),
-                        "y": Named(
-                            "Int",
-                        ),
-                        "z": Named(
-                            "Int",
-                        ),
+                        length: 41,
                     },
-                ),
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -34,40 +74,88 @@ ParsedProgram {
         Expression {
             kind: TypeDeclaration {
                 identifier: "Point2",
-                type_expression: Record(
-                    {
-                        "label": Named(
-                            "String",
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {
+                            "label": TypeExpression {
+                                kind: Named(
+                                    "String",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        143,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                            "x": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        85,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                            "y": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        103,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                            "z": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        121,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            72,
                         ),
-                        "x": Named(
-                            "Int",
-                        ),
-                        "y": Named(
-                            "Int",
-                        ),
-                        "z": Named(
-                            "Int",
-                        ),
+                        length: 87,
                     },
-                ),
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    56,
+                    58,
                 ),
-                length: 96,
+                length: 101,
             },
         },
         Expression {
             kind: TypeDeclaration {
                 identifier: "EmptyRecordNoSpace",
-                type_expression: Record(
-                    {},
-                ),
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {},
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            189,
+                        ),
+                        length: 2,
+                    },
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    154,
+                    163,
                 ),
                 length: 28,
             },
@@ -75,13 +163,21 @@ ParsedProgram {
         Expression {
             kind: TypeDeclaration {
                 identifier: "EmptyRecordWithSpace",
-                type_expression: Record(
-                    {},
-                ),
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {},
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            221,
+                        ),
+                        length: 3,
+                    },
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    183,
+                    193,
                 ),
                 length: 31,
             },
