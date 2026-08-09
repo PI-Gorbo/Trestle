@@ -493,7 +493,7 @@ TypeCheckedProgram {
         },
     ],
     bindings: [
-        TypeCheckedBinding {
+        TypedBinding {
             name: "host",
             ty: Literal(
                 String,
@@ -505,7 +505,7 @@ TypeCheckedProgram {
                 length: 78,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "config",
             ty: Literal(
                 String,
@@ -517,7 +517,7 @@ TypeCheckedProgram {
                 length: 78,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "withHost",
             ty: Fn(
                 Some(
@@ -543,7 +543,7 @@ TypeCheckedProgram {
                 length: 93,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "port",
             ty: Literal(
                 Int,
@@ -555,7 +555,7 @@ TypeCheckedProgram {
                 length: 38,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "config",
             ty: Literal(
                 String,
@@ -567,7 +567,7 @@ TypeCheckedProgram {
                 length: 38,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "withPort",
             ty: Fn(
                 Some(
@@ -593,7 +593,7 @@ TypeCheckedProgram {
                 length: 53,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "config",
             ty: Literal(
                 String,
@@ -605,7 +605,7 @@ TypeCheckedProgram {
                 length: 28,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "build",
             ty: Fn(
                 Some(
@@ -624,7 +624,7 @@ TypeCheckedProgram {
                 length: 43,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "emptyConfig",
             ty: Literal(
                 String,
@@ -636,7 +636,7 @@ TypeCheckedProgram {
                 length: 56,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "server",
             ty: Literal(
                 String,
@@ -646,6 +646,68 @@ TypeCheckedProgram {
                     467,
                 ),
                 length: 92,
+            },
+        },
+    ],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
             },
         },
     ],

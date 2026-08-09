@@ -1,0 +1,273 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+TypeCheckedProgram {
+    expressions: [
+        TypeCheckedExpression {
+            kind: TypeDeclaration {
+                identifier: TypeBindingId(
+                    5,
+                ),
+                type_expression: Record(
+                    {
+                        "label": Literal(
+                            String,
+                        ),
+                        "x": Literal(
+                            Int,
+                        ),
+                        "y": Literal(
+                            Int,
+                        ),
+                        "z": Literal(
+                            Int,
+                        ),
+                    },
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 54,
+            },
+            ty: Record(
+                {
+                    "label": Literal(
+                        String,
+                    ),
+                    "x": Literal(
+                        Int,
+                    ),
+                    "y": Literal(
+                        Int,
+                    ),
+                    "z": Literal(
+                        Int,
+                    ),
+                },
+            ),
+        },
+        TypeCheckedExpression {
+            kind: TypeDeclaration {
+                identifier: TypeBindingId(
+                    6,
+                ),
+                type_expression: Record(
+                    {
+                        "label": Literal(
+                            String,
+                        ),
+                        "x": Literal(
+                            Int,
+                        ),
+                        "y": Literal(
+                            Int,
+                        ),
+                        "z": Literal(
+                            Int,
+                        ),
+                    },
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    58,
+                ),
+                length: 101,
+            },
+            ty: Record(
+                {
+                    "label": Literal(
+                        String,
+                    ),
+                    "x": Literal(
+                        Int,
+                    ),
+                    "y": Literal(
+                        Int,
+                    ),
+                    "z": Literal(
+                        Int,
+                    ),
+                },
+            ),
+        },
+        TypeCheckedExpression {
+            kind: TypeDeclaration {
+                identifier: TypeBindingId(
+                    7,
+                ),
+                type_expression: Record(
+                    {},
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    163,
+                ),
+                length: 28,
+            },
+            ty: Record(
+                {},
+            ),
+        },
+        TypeCheckedExpression {
+            kind: TypeDeclaration {
+                identifier: TypeBindingId(
+                    8,
+                ),
+                type_expression: Record(
+                    {},
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    193,
+                ),
+                length: 31,
+            },
+            ty: Record(
+                {},
+            ),
+        },
+    ],
+    bindings: [],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Point",
+            ty: Record(
+                {
+                    "label": Literal(
+                        String,
+                    ),
+                    "x": Literal(
+                        Int,
+                    ),
+                    "y": Literal(
+                        Int,
+                    ),
+                    "z": Literal(
+                        Int,
+                    ),
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 54,
+            },
+        },
+        TypedBinding {
+            name: "Point2",
+            ty: Record(
+                {
+                    "label": Literal(
+                        String,
+                    ),
+                    "x": Literal(
+                        Int,
+                    ),
+                    "y": Literal(
+                        Int,
+                    ),
+                    "z": Literal(
+                        Int,
+                    ),
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    58,
+                ),
+                length: 101,
+            },
+        },
+        TypedBinding {
+            name: "EmptyRecordNoSpace",
+            ty: Record(
+                {},
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    163,
+                ),
+                length: 28,
+            },
+        },
+        TypedBinding {
+            name: "EmptyRecordWithSpace",
+            ty: Record(
+                {},
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    193,
+                ),
+                length: 31,
+            },
+        },
+    ],
+}

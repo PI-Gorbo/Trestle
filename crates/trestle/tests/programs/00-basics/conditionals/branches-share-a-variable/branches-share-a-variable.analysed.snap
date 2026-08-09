@@ -204,7 +204,7 @@ TypeCheckedProgram {
         },
     ],
     bindings: [
-        TypeCheckedBinding {
+        TypedBinding {
             name: "b",
             ty: Literal(
                 Bool,
@@ -216,7 +216,7 @@ TypeCheckedProgram {
                 length: 35,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "x",
             ty: Literal(
                 Int,
@@ -228,7 +228,7 @@ TypeCheckedProgram {
                 length: 35,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "pick",
             ty: Fn(
                 Some(
@@ -252,6 +252,68 @@ TypeCheckedProgram {
                     0,
                 ),
                 length: 46,
+            },
+        },
+    ],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
             },
         },
     ],

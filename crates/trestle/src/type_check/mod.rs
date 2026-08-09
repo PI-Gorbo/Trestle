@@ -21,9 +21,9 @@ pub use typed_ast::TypeCheckedProgram;
 
 use crate::binding_resolution::BindingResolvedProgram;
 
-use binding_table::zip_bindings_with_types;
+use binding_table::attach_types_to_bindings;
 use inference::{InferenceCtx, infer_type_of_expression};
-use substitution::subsitute;
+use substitution::subsitute_in_expr;
 use typed_ast::TypeCheckedExpression;
 use unification::UnificationMap;
 
@@ -71,7 +71,7 @@ pub fn type_check(
 
     // Report inference's failures before finalising the binding table. An error raised inside a
     // value expression (a lambda body, say) leaves its enclosing binding untyped, so
-    // `zip_bindings_with_types` would fail too — and its `UntypedBindingAfterTypeCheck` is an
+    // `resolve_bindings` would fail too — and its `UntypedBindingAfterTypeCheck` is an
     // internal-consistency check, only meaningful once inference has *succeeded*. Zipping first
     // would mask the diagnostic the user actually needs with a compiler-bug report.
     if !final_state.errors.is_empty() {
@@ -80,24 +80,30 @@ pub fn type_check(
 
     // Binding types are recorded during inference with their type variables intact (a `let`
     // without an annotation is bound to a fresh `Var`), so resolve them the same way the
-    // expression tree is resolved below.
-    let typed_bindings = zip_bindings_with_types(bindings, &final_state.inference_ctx.variable_env)
-        .map_err(|err| vec![err])?
-        .into_iter()
-        .map(|mut binding| {
-            binding.ty = final_state.unification_map.subsitute(&binding.ty);
-            binding
-        })
-        .collect::<Vec<_>>();
+    // expression tree is resolved below. Each namespace zips against its own env.
+    let variable_bindings_with_types = attach_types_to_bindings(
+        bindings,
+        &final_state.inference_ctx.variable_env,
+        &final_state.unification_map,
+    )
+    .map_err(|err| vec![err])?;
+
+    let type_bindings_with_types = attach_types_to_bindings(
+        type_bindings,
+        &final_state.inference_ctx.type_env,
+        &final_state.unification_map,
+    )
+    .map_err(|err| vec![err])?;
 
     let mut subsituted_expressions = final_state.expressions;
     subsituted_expressions
         .iter_mut()
-        .for_each(|expr| subsitute(&final_state.unification_map, expr));
+        .for_each(|expr| subsitute_in_expr(&final_state.unification_map, expr));
 
     Ok(TypeCheckedProgram {
         expressions: subsituted_expressions,
-        bindings: typed_bindings,
+        bindings: variable_bindings_with_types,
+        type_bindings: type_bindings_with_types,
     })
 }
 

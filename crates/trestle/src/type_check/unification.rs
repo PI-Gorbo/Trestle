@@ -6,6 +6,8 @@
 //! implementation detail that stays private — only [`UnificationMap`] and a handful of its
 //! methods leak to the rest of the pass.
 
+use std::clone;
+
 use miette::SourceSpan;
 
 use super::error::TypeCheckError;
@@ -119,7 +121,12 @@ impl UnificationMap {
                 param.as_ref().map(|param| Box::new(self.subsitute(param))),
                 Box::new(self.subsitute(result)),
             ),
-            Type::Record(btree_map) => todo!(),
+            Type::Record(btree_map) => Type::Record(
+                btree_map
+                    .iter()
+                    .map(|(name, field)| (name.clone(), Box::new(self.subsitute(field))))
+                    .collect(),
+            ),
         }
     }
 

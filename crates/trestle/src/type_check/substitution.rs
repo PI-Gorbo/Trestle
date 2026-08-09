@@ -4,7 +4,7 @@
 use super::typed_ast::{ExpressionKind, TypeCheckedExpression};
 use super::unification::UnificationMap;
 
-pub(super) fn subsitute(map: &UnificationMap, expr: &mut TypeCheckedExpression) {
+pub(super) fn subsitute_in_expr(map: &UnificationMap, expr: &mut TypeCheckedExpression) {
     // The tree shape is unchanged — only the `ty` fields get rewritten — so walk the boxed/vec
     // children by `&mut` (deref coercion turns `&mut Box<_>` into `&mut TypeCheckedExpression`)
     // and reuse every existing allocation.
@@ -12,46 +12,48 @@ pub(super) fn subsitute(map: &UnificationMap, expr: &mut TypeCheckedExpression) 
         ExpressionKind::Literal(_) => {}
         ExpressionKind::Var(_) => {}
         ExpressionKind::Binary(_, lhs, rhs) => {
-            subsitute(map, lhs);
-            subsitute(map, rhs);
+            subsitute_in_expr(map, lhs);
+            subsitute_in_expr(map, rhs);
         }
         ExpressionKind::Unary(_, operand) => {
-            subsitute(map, operand);
+            subsitute_in_expr(map, operand);
         }
         ExpressionKind::If {
             condition,
             then_branch,
             else_branch,
         } => {
-            subsitute(map, condition);
-            subsitute(map, then_branch);
+            subsitute_in_expr(map, condition);
+            subsitute_in_expr(map, then_branch);
             if let Some(else_branch) = else_branch {
-                subsitute(map, else_branch);
+                subsitute_in_expr(map, else_branch);
             }
         }
         ExpressionKind::Lambda(lambda) => {
             if let Some(param) = &mut lambda.parameter {
                 param.ty = map.subsitute(&param.ty);
             }
-            subsitute(map, &mut lambda.body);
+            subsitute_in_expr(map, &mut lambda.body);
         }
         ExpressionKind::FunctionInvocation(_, typed_expressions) => {
             for arg in typed_expressions {
-                subsitute(map, arg);
+                subsitute_in_expr(map, arg);
             }
         }
         ExpressionKind::Let { value, .. } => {
-            subsitute(map, value);
+            subsitute_in_expr(map, value);
         }
         ExpressionKind::Block(typed_expressions) => {
             for e in typed_expressions {
-                subsitute(map, e);
+                subsitute_in_expr(map, e);
             }
         }
         ExpressionKind::TypeDeclaration {
-            identifier,
+            identifier: _,
             type_expression,
-        } => todo!(),
+        } => {
+            *type_expression = map.subsitute(type_expression);
+        }
     }
 
     expr.ty = map.subsitute(&expr.ty);

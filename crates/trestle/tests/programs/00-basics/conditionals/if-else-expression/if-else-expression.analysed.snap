@@ -458,7 +458,7 @@ TypeCheckedProgram {
         },
     ],
     bindings: [
-        TypeCheckedBinding {
+        TypedBinding {
             name: "n",
             ty: Literal(
                 Int,
@@ -470,7 +470,7 @@ TypeCheckedProgram {
                 length: 37,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "abs",
             ty: Fn(
                 Some(
@@ -489,7 +489,7 @@ TypeCheckedProgram {
                 length: 47,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "n",
             ty: Literal(
                 Int,
@@ -501,7 +501,7 @@ TypeCheckedProgram {
                 length: 78,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "bigger",
             ty: Fn(
                 Some(
@@ -520,7 +520,7 @@ TypeCheckedProgram {
                 length: 91,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "valueTrue",
             ty: Literal(
                 String,
@@ -532,7 +532,7 @@ TypeCheckedProgram {
                 length: 34,
             },
         },
-        TypeCheckedBinding {
+        TypedBinding {
             name: "falseValue",
             ty: Literal(
                 String,
@@ -542,6 +542,68 @@ TypeCheckedProgram {
                     435,
                 ),
                 length: 28,
+            },
+        },
+    ],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
             },
         },
     ],

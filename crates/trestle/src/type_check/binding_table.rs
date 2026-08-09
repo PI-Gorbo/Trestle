@@ -7,21 +7,33 @@ use crate::binding_resolution::binding_resolved::TypeBindingId;
 use crate::binding_resolution::{BindingId, ResolvedBinding};
 
 use super::error::TypeCheckError;
-use super::typed_ast::{Type, TypeCheckedBinding};
+use super::typed_ast::{Type, TypedBinding};
+use super::unification::UnificationMap;
 
-trait Indexable {
+/// The id type that indexes a [`GenericTypeMap`] — one impl per namespace, so a map built for
+/// values can't be read with a type-binding id (or vice versa).
+pub(super) trait Indexable {
     fn get_index(self) -> usize;
+    fn new(val: usize) -> Self;
 }
 
 impl Indexable for BindingId {
     fn get_index(self) -> usize {
         self.0
     }
+
+    fn new(val: usize) -> Self {
+        BindingId(val)
+    }
 }
 
 impl Indexable for TypeBindingId {
     fn get_index(self) -> usize {
         self.0
+    }
+
+    fn new(val: usize) -> Self {
+        TypeBindingId(val)
     }
 }
 
@@ -60,25 +72,32 @@ impl BindingLookup for [ResolvedBinding] {
     }
 }
 
-/// Pair each binding with the type computed for it during the walk, **moving** its name across.
-/// A binding still untyped afterwards is an [`UntypedBindingAfterTypeCheck`] error. Consumes the
-/// binding table since it's the last reader of it.
+/// Pair each binding with the type computed for it during the walk (**moving** its name across),
+/// resolving every solved type variable through `unification_map` on the way — binding types are
+/// recorded during inference with their variables intact, so they need the same substitution the
+/// expression tree gets. A binding still untyped afterwards is an [`UntypedBindingAfterTypeCheck`]
+/// error. Consumes the binding list since it's the last reader of it.
+///
+/// Generic over the id type so both namespaces — [`BindingId`] values and [`TypeBindingId`] `type`
+/// declarations — share one implementation; the map's own parameter picks the right one at each
+/// call site.
 ///
 /// [`UntypedBindingAfterTypeCheck`]: TypeCheckError::UntypedBindingAfterTypeCheck
-pub(super) fn zip_bindings_with_types(
+pub(super) fn attach_types_to_bindings<TBindingId: Indexable>(
     bindings: Vec<ResolvedBinding>,
-    binding_type_map: &BindingToTypeMap,
-) -> Result<Vec<TypeCheckedBinding>, TypeCheckError> {
+    binding_type_map: &GenericTypeMap<TBindingId>,
+    unification_map: &UnificationMap,
+) -> Result<Vec<TypedBinding>, TypeCheckError> {
     assert_eq!(bindings.len(), binding_type_map.types.len());
 
     bindings
         .into_iter()
         .enumerate()
         .map(
-            |(index, binding)| match binding_type_map.get(BindingId(index)) {
-                Some(ty) => Ok(TypeCheckedBinding {
+            |(index, binding)| match binding_type_map.get(TBindingId::new(index)) {
+                Some(ty) => Ok(TypedBinding {
                     name: binding.name,
-                    ty: ty.clone(),
+                    ty: unification_map.subsitute(ty),
                     span: binding.span,
                 }),
                 None => Err(TypeCheckError::UntypedBindingAfterTypeCheck {

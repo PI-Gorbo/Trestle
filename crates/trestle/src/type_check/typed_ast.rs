@@ -11,8 +11,8 @@ use std::collections::BTreeMap;
 
 use miette::SourceSpan;
 
-use crate::binding_resolution::BindingId;
 use crate::binding_resolution::binding_resolved::TypeBindingId;
+use crate::binding_resolution::{BindingId, ResolvedBinding};
 use crate::parse::ast::{BinaryOp, UnaryOp};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -38,7 +38,7 @@ pub enum Literal {
 
 /// Name + resolved type + definition site for each [`BindingId`].
 #[derive(Debug, PartialEq)]
-pub struct TypeCheckedBinding {
+pub struct TypedBinding {
     pub name: String,
     pub ty: Type,
     pub span: SourceSpan,
@@ -107,5 +107,6 @@ pub struct Lambda {
 #[derive(Debug, PartialEq)]
 pub struct TypeCheckedProgram {
     pub expressions: Vec<TypeCheckedExpression>,
-    pub bindings: Vec<TypeCheckedBinding>,
+    pub bindings: Vec<TypedBinding>,
+    pub type_bindings: Vec<TypedBinding>,
 }
