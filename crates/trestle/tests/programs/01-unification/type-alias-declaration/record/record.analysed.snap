@@ -73,9 +73,9 @@ TypeCheckedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    58,
+                    56,
                 ),
-                length: 101,
+                length: 96,
             },
             ty: Record(
                 {
@@ -105,7 +105,7 @@ TypeCheckedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    163,
+                    154,
                 ),
                 length: 28,
             },
@@ -124,7 +124,7 @@ TypeCheckedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    193,
+                    183,
                 ),
                 length: 31,
             },
@@ -240,9 +240,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    58,
+                    56,
                 ),
-                length: 101,
+                length: 96,
             },
         },
         TypedBinding {
@@ -252,7 +252,7 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    163,
+                    154,
                 ),
                 length: 28,
             },
@@ -264,7 +264,7 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    193,
+                    183,
                 ),
                 length: 31,
             },

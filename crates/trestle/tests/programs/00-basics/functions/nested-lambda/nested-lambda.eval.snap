@@ -38,7 +38,7 @@ Closure {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        264,
+                                        260,
                                     ),
                                     length: 1,
                                 },
@@ -54,7 +54,7 @@ Closure {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        268,
+                                        264,
                                     ),
                                     length: 1,
                                 },
@@ -65,7 +65,7 @@ Closure {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                264,
+                                260,
                             ),
                             length: 5,
                         },
@@ -77,7 +77,7 @@ Closure {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    252,
+                    248,
                 ),
                 length: 17,
             },

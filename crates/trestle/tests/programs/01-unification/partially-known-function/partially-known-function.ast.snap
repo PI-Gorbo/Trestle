@@ -21,7 +21,7 @@ ParsedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    666,
+                                                    655,
                                                 ),
                                                 length: 5,
                                             },
@@ -39,7 +39,7 @@ ParsedProgram {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                676,
+                                                665,
                                             ),
                                             length: 1,
                                         },
@@ -52,7 +52,7 @@ ParsedProgram {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                680,
+                                                669,
                                             ),
                                             length: 1,
                                         },
@@ -60,7 +60,7 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        676,
+                                        665,
                                     ),
                                     length: 5,
                                 },
@@ -69,7 +69,7 @@ ParsedProgram {
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            664,
+                            653,
                         ),
                         length: 17,
                     },
@@ -77,7 +77,7 @@ ParsedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    654,
+                    643,
                 ),
                 length: 27,
             },
@@ -116,7 +116,7 @@ ParsedProgram {
                                                         ),
                                                         span: SourceSpan {
                                                             offset: SourceOffset(
-                                                                707,
+                                                                695,
                                                             ),
                                                             length: 1,
                                                         },
@@ -125,7 +125,7 @@ ParsedProgram {
                                             },
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    705,
+                                                    693,
                                                 ),
                                                 length: 4,
                                             },
@@ -134,26 +134,26 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        695,
+                                        683,
                                     ),
-                                    length: 18,
+                                    length: 16,
                                 },
                             },
                         },
                     ),
                     span: SourceSpan {
                         offset: SourceOffset(
-                            695,
+                            683,
                         ),
-                        length: 18,
+                        length: 16,
                     },
                 },
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    683,
+                    671,
                 ),
-                length: 30,
+                length: 28,
             },
         },
         Expression {
@@ -166,7 +166,7 @@ ParsedProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                719,
+                                705,
                             ),
                             length: 3,
                         },
@@ -179,7 +179,7 @@ ParsedProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                724,
+                                710,
                             ),
                             length: 1,
                         },
@@ -188,7 +188,7 @@ ParsedProgram {
             },
             span: SourceSpan {
                 offset: SourceOffset(
-                    713,
+                    699,
                 ),
                 length: 13,
             },
