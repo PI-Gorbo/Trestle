@@ -77,35 +77,31 @@ impl Environment {
 pub enum EvalError {}
 
 /// Evaluate a checked program: thread top-level `let`s through the environment and
-/// return the value of the last expression.
+/// return the value of the last expression (`Unit` for an empty program).
 pub fn evaluate(program: TypeCheckedProgram) -> Result<Value, EvalError> {
-    eval_block(&Environment::empty(), &program.expressions)
+    program
+        .expressions
+        .iter()
+        .try_fold((Environment::empty(), Value::Unit), |(mut env, _), expr| {
+            let value = eval_expr(&mut env, expr)?;
+
+            Ok((env, value))
+        })
+        .map(|(_, value)| value)
 }
 
-/// Run a sequence of expressions, threading each `let` binding into the environment for
-/// the ones that follow, and yield the value of the last expression (`Unit` if empty).
+/// `env` is in/out, mirroring the outgoing scope
+/// [`resolve_expression`](crate::binding_resolution) hands back: only a declaration arm
+/// (`Let`) writes to it, so the other arms recurse through the same `&mut` for free.
 ///
-/// Shared by the top-level program and the `Block` expression — a block is just a nested
-/// sub-program with its own scope.
-fn eval_block(env: &Environment, exprs: &[TypeCheckedExpression]) -> Result<Value, EvalError> {
-    let mut env = env.clone();
-    let mut result = Value::Unit;
-    for expr in exprs {
-        match &expr.kind {
-            // A `let` binds into the surrounding sequence rather than nesting a body: eval
-            // its value, extend the scope for later siblings, and evaluate to `Unit`.
-            ExpressionKind::Let { binding, value } => {
-                let bound = eval_expr(&env, value)?;
-                env = env.extend(*binding, bound);
-                result = Value::Unit;
-            }
-            _ => result = eval_expr(&env, expr)?,
-        }
-    }
-    Ok(result)
-}
-
-fn eval_expr(env: &Environment, expr: &TypeCheckedExpression) -> Result<Value, EvalError> {
+/// A `let` is an ordinary expression in the grammar, so it can appear anywhere — an `if`
+/// branch, a call argument — not only as a sequence element. A binding it makes in one of
+/// those positions rides out into `env`, which is harmless: the environment is keyed by
+/// [`BindingId`], and binding resolution discards a sub-expression's outgoing *scope*, so no
+/// later expression can name that id. The escapee is invisible to `lookup`, not merely
+/// unused. Only `Block` (and a lambda body, via `apply`) opens a real scope, and only those
+/// pay for a child environment.
+fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Value, EvalError> {
     match &expr.kind {
         ExpressionKind::Literal(literal) => Ok(match literal {
             TypeCheckedLiteral::Int(value) => Value::Int(*value as i64),
@@ -126,6 +122,14 @@ fn eval_expr(env: &Environment, expr: &TypeCheckedExpression) -> Result<Value, E
             let lhs = eval_expr(env, lhs)?;
             let rhs = eval_expr(env, rhs)?;
             eval_binary(*op, lhs, rhs)
+        }
+
+        // A `let` binds into the surrounding sequence rather than nesting a body: eval its
+        // value, extend the environment for whatever follows, and evaluate to `Unit`.
+        ExpressionKind::Let { binding, value } => {
+            let bound = eval_expr(env, value)?;
+            *env = env.extend(*binding, bound);
+            Ok(Value::Unit)
         }
 
         ExpressionKind::Unary(op, operand) => {
@@ -180,12 +184,18 @@ fn eval_expr(env: &Environment, expr: &TypeCheckedExpression) -> Result<Value, E
             Ok(callee)
         }
 
-        ExpressionKind::Block(exprs) => eval_block(env, exprs),
-
-        // `let` only appears as a sequence element; `eval_block` intercepts it there.
-        ExpressionKind::Let { .. } => {
-            unreachable!("let is threaded by eval_block, never reached as a sub-expression")
+        // The one arm that opens a scope of its own: a block's `let`s are threaded through a
+        // child environment, dropped at the closing brace so they don't outlive it. The clone
+        // is one `Rc` bump (see `Environment`), not a copy of the chain.
+        ExpressionKind::Block(exprs) => {
+            let mut inner = env.clone();
+            let mut result = Value::Unit;
+            for expr in exprs {
+                result = eval_expr(&mut inner, expr)?;
+            }
+            Ok(result)
         }
+
         ExpressionKind::TypeDeclaration {
             identifier,
             type_expression,
@@ -199,11 +209,11 @@ fn apply(closure: Value, arg: Value) -> Result<Value, EvalError> {
     let Value::Closure { lambda, env } = closure else {
         unreachable!("callee type-checks as a function");
     };
-    let env = match &lambda.parameter {
+    let mut env = match &lambda.parameter {
         Some(param) => env.extend(param.binding, arg),
         None => env,
     };
-    eval_expr(&env, &lambda.body)
+    eval_expr(&mut env, &lambda.body)
 }
 
 fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Result<Value, EvalError> {
