@@ -1,0 +1,9 @@
+// @skip: needs function type expressions in annotations (`(name: String) => Int`)
+// TARGET: a parameter annotated with a function type, satisfied by passing an
+// existing function by name.
+
+let length = (name: String) => 0
+
+let applyLength = (value: String, lengthFunc: (name: String) => Int) => lengthFunc(value)
+
+applyLength("Test", length)

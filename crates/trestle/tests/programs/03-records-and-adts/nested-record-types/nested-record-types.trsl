@@ -1,0 +1,14 @@
+// @skip: needs record type expressions in field position — a field's type is a bare
+// identifier today
+// TARGET: a type alias with a nested record field type, annotating a nested literal.
+
+type Inner = { key: String, value: String }
+
+type Nested = {
+    name: String,
+    value: { key: String, value: String }
+}
+
+let nestedValue: Nested = { name: "Sam", value: { key: "A key", value: "A value" } }
+
+nestedValue.value.value       // "A value"

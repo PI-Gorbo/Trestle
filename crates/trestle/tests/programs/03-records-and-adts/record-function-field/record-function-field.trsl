@@ -1,0 +1,18 @@
+// @skip: needs function type expressions in annotations (`(a: T) => U`) + field access
+// TARGET: a record field whose type is a function, invoked through `.` (Trestle has no
+// methods — this is a field read followed by a call).
+
+type NestedPropertyWithMethod = {
+  key: String,
+  function: (name: String) => Int
+}
+
+// stand-in for a real builtin — the prelude defines no values yet
+let len = (s: String) => 0
+
+let nestedThing: NestedPropertyWithMethod = {
+  key: "String",
+  function: (name) => len(name)
+}
+
+nestedThing.function(nestedThing.key)

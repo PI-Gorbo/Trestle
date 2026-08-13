@@ -1,0 +1,9 @@
+// @skip: needs postfix chaining that mixes field access and calls (`a.b().c`)
+// TARGET: read a function-valued field, invoke it, then read a field off its result.
+
+type Inner = { c: Int }
+type Outer = { b: () => Inner }
+
+let a: Outer = { b: () => { c: 7 } }
+
+a.b().c       // 7

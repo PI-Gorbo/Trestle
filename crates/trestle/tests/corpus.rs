@@ -383,6 +383,12 @@ trsl_test!(
     [ast, analyse, eval]
 );
 
+trsl_test!(
+    basics_functions_function_typed_parameter,
+    "00-basics/functions/function-typed-parameter/function-typed-parameter.trsl",
+    ignore = "needs function type expressions in annotations"
+);
+
 // ── conditionals ──────────────────────────────────────────
 // `if` is threaded end-to-end: it parses into the AST, resolves in
 // `binding_resolution`, and type-checks in `type_check`.
@@ -505,12 +511,32 @@ trsl_test!(
 trsl_test!(
     records_records,
     "03-records-and-adts/records/records.trsl",
-    ignore = "needs record types + literals"
+    [ast, analyse, eval]
 );
 trsl_test!(
     records_field_access,
     "03-records-and-adts/field-access/field-access.trsl",
-    ignore = "needs record field access via `.`"
+    [ast, analyse, eval]
+);
+trsl_test!(
+    records_nested_field_access,
+    "03-records-and-adts/nested-field-access/nested-field-access.trsl",
+    ignore = "needs chained field access (a.b.c)"
+);
+trsl_test!(
+    records_nested_record_types,
+    "03-records-and-adts/nested-record-types/nested-record-types.trsl",
+    ignore = "needs nested record type expressions in field position"
+);
+trsl_test!(
+    records_record_function_field,
+    "03-records-and-adts/record-function-field/record-function-field.trsl",
+    ignore = "needs function type expressions in annotations"
+);
+trsl_test!(
+    records_field_call_chain,
+    "03-records-and-adts/field-call-chain/field-call-chain.trsl",
+    ignore = "needs mixed postfix chaining (a.b().c)"
 );
 trsl_test!(
     records_algebraic_data_types,

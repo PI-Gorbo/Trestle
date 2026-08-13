@@ -17,7 +17,9 @@ omnibus program.
 - **functions** — lambdas and application: `lambda`, `typed-lambda`,
   `nested-lambda`, `function-invocation`, `currying`, `partial-application` all
   parse today. `zero-param-lambda` is blocked — the grammar's `lambda` rule
-  requires at least one parameter.
+  requires at least one parameter. `function-typed-parameter` is blocked on
+  function type expressions in annotations — it passes a named function to a
+  parameter declared `(name: String) => Int`.
 - **conditionals** — `if-expression` / `if-else-expression`, awaiting the `if`
   grammar (its `ExpressionKind::If` already exists in `checked.rs`).
 - **blocks** — `{ … }` as a brace-wrapped sub-program: a whitespace-separated list

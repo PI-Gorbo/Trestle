@@ -1,0 +1,8 @@
+// @skip: needs chained field access (`a.b.c`) — the parser drops postfixes today
+// TARGET: a record literal nested inside a record literal, read through a chain of `.`.
+
+let nestedValue = { name: "Sam", value: { key: "A key", value: "A value" } }
+
+let key = nestedValue.value.key       // "A key"
+
+key
