@@ -521,7 +521,7 @@ trsl_test!(
 trsl_test!(
     records_nested_field_access,
     "03-records-and-adts/nested-field-access/nested-field-access.trsl",
-    ignore = "needs chained field access (a.b.c)"
+    [ast]
 );
 trsl_test!(
     records_nested_record_types,

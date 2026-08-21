@@ -29,6 +29,13 @@ pub enum TypeCheckError {
         span: SourceSpan,
     },
 
+    #[error("this expression is not callable")]
+    #[diagnostic(code(trestle::expression_not_callable))]
+    ExpressionNotCallable {
+        #[label("expected a function here")]
+        span: SourceSpan,
+    },
+
     #[error("this function was applied to too many arguments")]
     #[diagnostic(code(trestle::too_many_arguments))]
     TooManyArguments {

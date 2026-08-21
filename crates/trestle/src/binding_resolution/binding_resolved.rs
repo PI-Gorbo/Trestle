@@ -56,7 +56,14 @@ pub enum ResolvedExpressionKind {
     Binary(BinaryOp, Box<ResolvedExpression>, Box<ResolvedExpression>),
     Unary(UnaryOp, Box<ResolvedExpression>),
     Lambda(ResolvedLambda),
-    FunctionInvocation(BindingId, Vec<ResolvedExpression>), // callee resolved; was String
+    FunctionInvocation {
+        function: Box<ResolvedExpression>,
+        arguments: Vec<ResolvedExpression>,
+    },
+    FieldAccess {
+        target: Box<ResolvedExpression>,
+        field_name: String,
+    },
     Let {
         binding: BindingId, // was name: String
         /// Raw annotation, still unresolved — type checking interprets it into a [`Type`](crate::type_check::typed_ast::Type).

@@ -6,15 +6,12 @@
 //! sequence to it. Every builder returns a fully source-spanned [`Expression`];
 //! synthesized `Binary` nodes span both operands via [`merge_spans`].
 
-use std::collections::BTreeMap;
-use std::sync::LazyLock;
-
+use super::{BuildError, Rule};
+use crate::parse::ast::{BinaryOp, Literal, TypeExpressionKind, UnaryOp};
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
-
-use crate::parse::ast::{BinaryOp, Literal, TypeExpressionKind, UnaryOp};
-
-use super::{BuildError, Rule};
+use std::collections::BTreeMap;
+use std::sync::LazyLock;
 
 use super::ast::{
     Expression, ExpressionKind, Lambda, Param, TypeExpression, get_bindings, merge_spans,
@@ -383,30 +380,27 @@ fn build_comma_separated_list_of_expressions(
 
 fn build_function_invocation(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
-    let inner = pair.into_inner();
-    let mut identifier = String::new();
-    let mut parameters = Vec::new();
+    let mut inner = pair.into_inner();
+    let expression = inner
+        .next()
+        .map(|p| build_expr(p))
+        .transpose()?
+        .map(Box::new)
+        .ok_or(BuildError::Invariant {
+            span: source_span_from_pest_span(span),
+        })?;
 
-    for p in inner {
-        match p.as_rule() {
-            Rule::identifier => identifier = p.as_str().to_string(),
-            Rule::comma_separated_list_of_expressions => {
-                parameters = build_comma_separated_list_of_expressions(p)?;
-            }
-            rule => {
-                return Err(BuildError::UnexpectedRule {
-                    rule,
-                    span: source_span_from_pest_span(p.as_span()),
-                });
-            }
-        }
-    }
+    let parameters = inner
+        .next()
+        .map(build_comma_separated_list_of_expressions)
+        .transpose()?
+        .unwrap_or(Vec::new());
 
     Ok(spanned(
         span,
         ExpressionKind::FunctionInvocation {
-            function_name: identifier,
-            expressions: parameters,
+            function: expression,
+            arguments: parameters,
         },
     ))
 }

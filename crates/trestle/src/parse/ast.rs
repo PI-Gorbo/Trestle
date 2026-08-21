@@ -91,8 +91,12 @@ pub enum ExpressionKind {
     Unary(UnaryOp, Box<Expression>),
     Lambda(Lambda),
     FunctionInvocation {
-        function_name: String,
-        expressions: Vec<Expression>,
+        function: Box<Expression>,
+        arguments: Vec<Expression>,
+    },
+    FieldAccess {
+        target: Box<Expression>,
+        identifier: String,
     },
     Let {
         name: String,

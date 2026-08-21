@@ -6,8 +6,6 @@
 //! implementation detail that stays private — only [`UnificationMap`] and a handful of its
 //! methods leak to the rest of the pass.
 
-use std::clone;
-
 use miette::SourceSpan;
 
 use super::error::TypeCheckError;

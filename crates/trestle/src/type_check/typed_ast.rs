@@ -11,8 +11,8 @@ use std::collections::BTreeMap;
 
 use miette::SourceSpan;
 
+use crate::binding_resolution::BindingId;
 use crate::binding_resolution::binding_resolved::TypeBindingId;
-use crate::binding_resolution::{BindingId, ResolvedBinding};
 use crate::parse::ast::{BinaryOp, UnaryOp};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

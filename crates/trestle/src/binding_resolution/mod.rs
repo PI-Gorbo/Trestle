@@ -210,31 +210,26 @@ fn resolve_expression(
             })
         }
         ExpressionKind::FunctionInvocation {
-            function_name,
-            expressions,
+            function,
+            arguments,
         } => {
-            let binding = match scope.lookup(&function_name) {
-                Some(binding) => binding,
-                None => {
-                    return Err(BindingResolutionError::UnboundName {
-                        name: function_name,
-                        span,
-                    });
-                }
-            };
+            let (resolved_function, scope) = resolve_expression(*function, scope, ctx)?;
 
-            let arg_count = expressions.len();
-            let resolved_args = expressions.into_iter().try_fold(
+            let arg_count = arguments.len();
+            let resolved_args = arguments.into_iter().try_fold(
                 Vec::with_capacity(arg_count),
                 |mut resolved_args, argument| {
-                    let (argument, _) = resolve_expression(argument, scope, ctx)?;
+                    let (argument, _) = resolve_expression(argument, &scope, ctx)?;
                     resolved_args.push(argument);
 
                     Ok(resolved_args)
                 },
             )?;
 
-            ResolvedExpressionKind::FunctionInvocation(binding, resolved_args)
+            ResolvedExpressionKind::FunctionInvocation {
+                function: Box::new(resolved_function),
+                arguments: resolved_args,
+            }
         }
         ExpressionKind::Let {
             name,
@@ -324,6 +319,7 @@ fn resolve_expression(
                 type_expression: resolved_type_expression,
             }
         }
+        ExpressionKind::FieldAccess { target, identifier } => todo!(),
     };
 
     Ok((ResolvedExpression { kind, span }, outgoing_scope))

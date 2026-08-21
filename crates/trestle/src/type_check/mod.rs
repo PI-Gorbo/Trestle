@@ -116,6 +116,7 @@ mod tests {
         let parsed = crate::parse::parse(src).expect("test source should parse");
         let resolved =
             crate::binding_resolution::resolve(parsed).expect("test source should resolve");
+
         type_check(resolved)
     }
 
@@ -130,8 +131,8 @@ mod tests {
     #[test]
     fn too_many_arguments_is_an_error() {
         // `f` takes one argument; applying two over-applies it.
-        let errors = analyse_src("let f = (a: Int) => a\nf(1, 2)")
-            .expect_err("over-application is an error");
-        assert!(matches!(errors[0], TypeCheckError::TooManyArguments { .. }));
+        let analysis = analyse_src("let f = (a: Int) => a\nf(1, 2)");
+        let error = analysis.expect_err("over-application is an error");
+        assert!(matches!(error[0], TypeCheckError::TooManyArguments { .. }));
     }
 }

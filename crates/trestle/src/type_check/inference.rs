@@ -4,6 +4,7 @@
 
 use miette::SourceSpan;
 
+use crate::binding_resolution::ResolvedExpressionKind::FunctionInvocation;
 use crate::binding_resolution::binding_resolved::{
     ResolvedTypeExpression, ResolvedTypeExpressionKind, TypeBindingId,
 };
@@ -225,19 +226,26 @@ pub(super) fn infer_type_of_expression(
             )
         }
 
-        ResolvedExpressionKind::FunctionInvocation(binding_id, args) => {
-            let analysed_args = args
+        ResolvedExpressionKind::FunctionInvocation {
+            function,
+            arguments,
+        } => {
+            let analysed_args = arguments
                 .into_iter()
                 .map(|arg| infer_type_of_expression(arg, ctx, unification_map, bindings))
                 .collect::<Result<Vec<_>, _>>()?;
 
-            // We now need to check that we can apply the types of the arguments to the parameters of
-            // the function. First, we resolve the type from the binding_id.
-            let Some(function_type) = ctx.variable_env.get(binding_id) else {
-                return Err(TypeCheckError::MissingAnnotation {
-                    name: bindings.lookup(binding_id).name.clone(),
-                    span,
-                });
+            // A function invocation is valid for a callable expression.
+            let typed_function =
+                infer_type_of_expression(*function, ctx, unification_map, bindings)?;
+
+            let function_type = match typed_function.kind {
+                ExpressionKind::Var(binding_id) => ctx
+                    .variable_env
+                    .get(binding_id)
+                    .ok_or(TypeCheckError::ExpressionNotCallable { span }),
+                ExpressionKind::Lambda(lambda) => todo!(),
+                kind => Err(TypeCheckError::ExpressionNotCallable { span }),
             };
 
             let output_type = get_type_after_applying_arguments(
@@ -250,7 +258,7 @@ pub(super) fn infer_type_of_expression(
             // Fold the args through the callee's curried `Fn(a, Fn(b, r))` type in `env`,
             // peeling one arrow (and checking one arg) per element; the leftover is the result.
             (
-                ExpressionKind::FunctionInvocation(binding_id, analysed_args),
+                ExpressionKind::FunctionInvocation(function, analysed_args),
                 output_type,
             )
         }
