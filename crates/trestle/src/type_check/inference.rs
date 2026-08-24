@@ -246,7 +246,7 @@ pub(super) fn infer_type_of_expression(
                     .ok_or(TypeCheckError::ExpressionNotCallable { span }),
                 ExpressionKind::Lambda(lambda) => todo!(),
                 kind => Err(TypeCheckError::ExpressionNotCallable { span }),
-            };
+            }?;
 
             let output_type = get_type_after_applying_arguments(
                 unification_map,
@@ -258,7 +258,10 @@ pub(super) fn infer_type_of_expression(
             // Fold the args through the callee's curried `Fn(a, Fn(b, r))` type in `env`,
             // peeling one arrow (and checking one arg) per element; the leftover is the result.
             (
-                ExpressionKind::FunctionInvocation(function, analysed_args),
+                ExpressionKind::FunctionInvocation {
+                    function: FunctionInvocation(function, analysed_args),
+                    arguments: todo!(),
+                },
                 output_type,
             )
         }
@@ -357,6 +360,11 @@ pub(super) fn infer_type_of_expression(
                 evaluated_type,
             )
         }
+        FunctionInvocation {
+            function,
+            arguments,
+        } => todo!(),
+        ResolvedExpressionKind::FieldAccess { target, field_name } => todo!(),
     };
 
     Ok(TypeCheckedExpression { kind, span, ty })

@@ -35,7 +35,10 @@ pub(super) fn subsitute_in_expr(map: &UnificationMap, expr: &mut TypeCheckedExpr
             }
             subsitute_in_expr(map, &mut lambda.body);
         }
-        ExpressionKind::FunctionInvocation(_, typed_expressions) => {
+        ExpressionKind::FunctionInvocation {
+            function,
+            arguments,
+        } => {
             for arg in typed_expressions {
                 subsitute_in_expr(map, arg);
             }

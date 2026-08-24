@@ -78,7 +78,10 @@ pub enum ExpressionKind {
         else_branch: Option<Box<TypeCheckedExpression>>,
     },
     Lambda(Lambda),
-    FunctionInvocation(BindingId, Vec<TypeCheckedExpression>), // callee resolved; was String
+    FunctionInvocation {
+        function: Box<TypeCheckedExpression>,
+        arguments: Vec<TypeCheckedExpression>,
+    },
     Let {
         binding: BindingId, // was name: String
         value: Box<TypeCheckedExpression>,

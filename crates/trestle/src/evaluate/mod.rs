@@ -163,7 +163,10 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
         // Fold the arguments through the callee one at a time (currying). Applying fewer
         // arguments than the function takes leaves an intermediate closure (partial
         // application).
-        ExpressionKind::FunctionInvocation(callee, args) => {
+        ExpressionKind::FunctionInvocation {
+            function,
+            arguments,
+        } => {
             let mut callee = env
                 .lookup(*callee)
                 .expect("resolved function is bound in the environment")

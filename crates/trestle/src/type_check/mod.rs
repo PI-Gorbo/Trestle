@@ -69,18 +69,10 @@ pub fn type_check(
         },
     );
 
-    // Report inference's failures before finalising the binding table. An error raised inside a
-    // value expression (a lambda body, say) leaves its enclosing binding untyped, so
-    // `resolve_bindings` would fail too — and its `UntypedBindingAfterTypeCheck` is an
-    // internal-consistency check, only meaningful once inference has *succeeded*. Zipping first
-    // would mask the diagnostic the user actually needs with a compiler-bug report.
     if !final_state.errors.is_empty() {
         return Err(final_state.errors);
     }
 
-    // Binding types are recorded during inference with their type variables intact (a `let`
-    // without an annotation is bound to a fresh `Var`), so resolve them the same way the
-    // expression tree is resolved below. Each namespace zips against its own env.
     let variable_bindings_with_types = attach_types_to_bindings(
         bindings,
         &final_state.inference_ctx.variable_env,
