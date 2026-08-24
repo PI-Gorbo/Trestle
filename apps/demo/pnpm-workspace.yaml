@@ -1,0 +1,6 @@
+# Not a workspace — this app is deliberately self-contained. The file exists only because
+# pnpm 10 moved `onlyBuiltDependencies` out of package.json and this is its documented home.
+onlyBuiltDependencies:
+  - esbuild
+  - unrs-resolver
+  - vue-demi

@@ -1,0 +1,34 @@
+[package]
+name = "trestle-wasm"
+version = "0.1.0"
+edition = "2024"
+description = "Browser-facing shim over the `trestle` compiler pipeline."
+
+# `cdylib` is what wasm-bindgen links; `rlib` keeps the crate usable from
+# `cargo test`/`cargo check` on the host target, so a broken shim is caught
+# without a wasm toolchain in the loop.
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+trestle = { path = "../trestle" }
+
+wasm-bindgen = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+console_error_panic_hook = "0.1"
+
+# Used directly rather than through `trestle::parse`: driving the pest parser and
+# `build_program` separately is what lets us keep the *structured* pest error
+# (which `trestle::parse` erases into an opaque `miette::Report` via
+# `IntoDiagnostic`, losing the span the editor needs). See `lib.rs::parse_source`.
+miette = "7.6"
+pest = "2.6"
+
+# Size over speed: the wasm ships over the wire to a browser, so bytes cost more than the
+# last few percent of parser throughput. This lives under `metadata.wasm-pack` rather than
+# `[profile.release]` because Cargo ignores profile sections in non-root workspace members —
+# putting it there would silently do nothing, and hoisting it to the root Cargo.toml would
+# impose it on the `trestle` crate too.
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Os"]

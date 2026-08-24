@@ -1,0 +1,10 @@
+node_modules
+.nuxt
+.output
+dist
+.data
+*.log
+
+# Built by `pnpm build:wasm` from `crates/trestle-wasm`. Regenerated, never committed —
+# see the repo README for the CI step that produces it.
+app/lib/trestle-wasm

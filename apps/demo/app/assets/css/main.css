@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/*
+ * Dark-only, terminal-flavoured palette — the same tokens as the blog, which is a shadcn
+ * dark theme (orange primary, teal secondary). All tokens live directly on :root: there is
+ * no .dark class, no @custom-variant dark, and no colour-mode module. A code playground is
+ * a dark-by-default tool; never add a light palette or a toggle.
+ *
+ * `components.json` sets `cssVariables: true`, so every shadcn-vue primitive resolves its
+ * colours through these names and themes correctly with no extra work.
+ */
+:root {
+  --background: oklch(0.1591 0 0);
+  --foreground: oklch(0.8576 0 0);
+  --card: oklch(0.1822 0 0);
+  --card-foreground: oklch(0.8576 0 0);
+  --popover: oklch(0.2 0 0);
+  --popover-foreground: oklch(0.8576 0 0);
+  --primary: oklch(0.7214 0.1337 49.9802);
+  --primary-foreground: oklch(0.1591 0 0);
+  --secondary: oklch(0.594 0.0443 196.0233);
+  --secondary-foreground: oklch(0.1591 0 0);
+  --muted: oklch(0.252 0 0);
+  --muted-foreground: oklch(0.6268 0 0);
+  --accent: oklch(0.3211 0 0);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.5783 0.2301 28.5639);
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.7229 0.172 149.58);
+  --success-foreground: oklch(0.1591 0 0);
+  --warning: oklch(0.7855 0.1445 63.5838);
+  --warning-foreground: oklch(0.1591 0 0);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.3 0 0);
+  --ring: oklch(0.594 0.0443 196.0233);
+
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html,
+  body,
+  #__nuxt {
+    @apply h-full;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
