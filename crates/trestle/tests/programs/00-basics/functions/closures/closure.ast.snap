@@ -98,8 +98,18 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "create_closure",
-                        expressions: [],
+                        function: Expression {
+                            kind: Var(
+                                "create_closure",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    87,
+                                ),
+                                length: 14,
+                            },
+                        },
+                        arguments: [],
                     },
                     span: SourceSpan {
                         offset: SourceOffset(
@@ -118,8 +128,18 @@ ParsedProgram {
         },
         Expression {
             kind: FunctionInvocation {
-                function_name: "closure",
-                expressions: [],
+                function: Expression {
+                    kind: Var(
+                        "closure",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            105,
+                        ),
+                        length: 7,
+                    },
+                },
+                arguments: [],
             },
             span: SourceSpan {
                 offset: SourceOffset(

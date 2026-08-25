@@ -129,12 +129,31 @@ TypeCheckedProgram {
                     2,
                 ),
                 value: TypeCheckedExpression {
-                    kind: FunctionInvocation(
-                        BindingId(
-                            1,
-                        ),
-                        [],
-                    ),
+                    kind: FunctionInvocation {
+                        function: TypeCheckedExpression {
+                            kind: Var(
+                                BindingId(
+                                    1,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    87,
+                                ),
+                                length: 14,
+                            },
+                            ty: Fn(
+                                None,
+                                Fn(
+                                    None,
+                                    Literal(
+                                        Int,
+                                    ),
+                                ),
+                            ),
+                        },
+                        arguments: [],
+                    },
                     span: SourceSpan {
                         offset: SourceOffset(
                             87,
@@ -158,12 +177,28 @@ TypeCheckedProgram {
             ty: Unit,
         },
         TypeCheckedExpression {
-            kind: FunctionInvocation(
-                BindingId(
-                    2,
-                ),
-                [],
-            ),
+            kind: FunctionInvocation {
+                function: TypeCheckedExpression {
+                    kind: Var(
+                        BindingId(
+                            2,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            105,
+                        ),
+                        length: 7,
+                    },
+                    ty: Fn(
+                        None,
+                        Literal(
+                            Int,
+                        ),
+                    ),
+                },
+                arguments: [],
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     105,

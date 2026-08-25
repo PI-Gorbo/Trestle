@@ -87,7 +87,7 @@ TypeCheckedProgram {
                                     offset: SourceOffset(
                                         271,
                                     ),
-                                    length: 26,
+                                    length: 25,
                                 },
                                 ty: Fn(
                                     Some(
@@ -106,7 +106,7 @@ TypeCheckedProgram {
                         offset: SourceOffset(
                             271,
                         ),
-                        length: 26,
+                        length: 25,
                     },
                     ty: Fn(
                         Some(
@@ -131,7 +131,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     261,
                 ),
-                length: 36,
+                length: 35,
             },
             ty: Unit,
         },
@@ -434,7 +434,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     332,
                 ),
-                length: 118,
+                length: 99,
             },
             ty: Unit,
         },
@@ -465,7 +465,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     271,
                 ),
-                length: 26,
+                length: 25,
             },
         },
         TypedBinding {
@@ -477,7 +477,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     271,
                 ),
-                length: 26,
+                length: 25,
             },
         },
         TypedBinding {
@@ -503,7 +503,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     261,
                 ),
-                length: 36,
+                length: 35,
             },
         },
         TypedBinding {
@@ -558,7 +558,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     332,
                 ),
-                length: 118,
+                length: 99,
             },
         },
     ],

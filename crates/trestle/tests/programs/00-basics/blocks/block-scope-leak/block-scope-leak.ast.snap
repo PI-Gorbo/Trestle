@@ -57,7 +57,7 @@ ParsedProgram {
                                     offset: SourceOffset(
                                         211,
                                     ),
-                                    length: 22,
+                                    length: 17,
                                 },
                             },
                             Expression {

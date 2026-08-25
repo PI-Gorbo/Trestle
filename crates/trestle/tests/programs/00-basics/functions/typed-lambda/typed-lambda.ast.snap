@@ -99,7 +99,7 @@ ParsedProgram {
                             offset: SourceOffset(
                                 287,
                             ),
-                            length: 28,
+                            length: 27,
                         },
                     },
                 },
@@ -108,7 +108,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     287,
                 ),
-                length: 28,
+                length: 27,
             },
         },
     ],

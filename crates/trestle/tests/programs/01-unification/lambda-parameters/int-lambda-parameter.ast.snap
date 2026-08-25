@@ -59,7 +59,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             11,
                         ),
-                        length: 14,
+                        length: 12,
                     },
                 },
             },
@@ -67,7 +67,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 25,
+                length: 23,
             },
         },
         Expression {

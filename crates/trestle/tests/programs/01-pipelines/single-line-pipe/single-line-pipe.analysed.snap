@@ -74,7 +74,7 @@ TypeCheckedProgram {
                         offset: SourceOffset(
                             157,
                         ),
-                        length: 18,
+                        length: 17,
                     },
                     ty: Fn(
                         Some(
@@ -92,7 +92,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 31,
+                length: 30,
             },
             ty: Unit,
         },
@@ -179,7 +179,7 @@ TypeCheckedProgram {
                                     offset: SourceOffset(
                                         185,
                                     ),
-                                    length: 27,
+                                    length: 25,
                                 },
                                 ty: Fn(
                                     Some(
@@ -198,7 +198,7 @@ TypeCheckedProgram {
                         offset: SourceOffset(
                             185,
                         ),
-                        length: 27,
+                        length: 25,
                     },
                     ty: Fn(
                         Some(
@@ -223,7 +223,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     175,
                 ),
-                length: 37,
+                length: 35,
             },
             ty: Unit,
         },
@@ -372,7 +372,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     212,
                 ),
-                length: 64,
+                length: 34,
             },
             ty: Unit,
         },
@@ -403,7 +403,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     157,
                 ),
-                length: 18,
+                length: 17,
             },
         },
         TypedBinding {
@@ -422,7 +422,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 31,
+                length: 30,
             },
         },
         TypedBinding {
@@ -434,7 +434,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     185,
                 ),
-                length: 27,
+                length: 25,
             },
         },
         TypedBinding {
@@ -446,7 +446,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     185,
                 ),
-                length: 27,
+                length: 25,
             },
         },
         TypedBinding {
@@ -472,7 +472,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     175,
                 ),
-                length: 37,
+                length: 35,
             },
         },
         TypedBinding {
@@ -484,7 +484,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     212,
                 ),
-                length: 64,
+                length: 34,
             },
         },
     ],
