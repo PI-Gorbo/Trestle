@@ -332,7 +332,14 @@ fn resolve_expression(
                 type_expression: resolved_type_expression,
             }
         }
-        ExpressionKind::FieldAccess { target, identifier } => todo!(),
+        ExpressionKind::FieldAccess { target, identifier } => {
+            let (target, _) = resolve_expression(*target, scope, ctx)?;
+
+            ResolvedExpressionKind::FieldAccess {
+                target: Box::new(target),
+                field_name: identifier,
+            }
+        }
     };
 
     Ok((ResolvedExpression { kind, span }, outgoing_scope))

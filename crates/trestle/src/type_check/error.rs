@@ -68,6 +68,15 @@ pub enum TypeCheckError {
         span: SourceSpan,
     },
 
+    #[error("record field mismatch: missing {missing:?}, unexpected {additional:?}")]
+    #[diagnostic(code(trestle::record_field_mismatch))]
+    RecordFieldMismatch {
+        missing: Vec<String>,
+        additional: Vec<String>,
+        #[label("here")]
+        span: SourceSpan,
+    },
+
     #[error("cannot construct an infinite type: `_{}` occurs in `{:?}`", .var.0, .ty)]
     #[diagnostic(code(trestle::infinite_type))]
     InfiniteType {

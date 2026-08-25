@@ -42,11 +42,22 @@ struct InfiniteType {
     ty: Type,
 }
 
+/// Two records whose *field sets* don't line up. Reported before any field type is unified, since
+/// a missing field has no counterpart to unify against.
+#[derive(Debug)]
+struct RecordFieldMismatch {
+    /// Expected, but absent from the record we found.
+    missing: Vec<String>,
+    /// Present in the record we found, but not expected.
+    additional: Vec<String>,
+}
+
 #[derive(Debug)]
 enum UnifyError {
     FunctionParameterNotProvided(TypeMismatch),
     FunctionParameterNotNeeded(TypeMismatch),
     TypeMismatch(TypeMismatch),
+    RecordFieldMismatch(RecordFieldMismatch),
     FreeTypeVariableNotFoundError(FreeTypeVariableNotFoundError),
     InfiniteType(InfiniteType),
 }
@@ -68,6 +79,12 @@ impl UnifyError {
             UnifyError::TypeMismatch(mismatch) => TypeCheckError::TypeMismatch {
                 expected: mismatch.expected,
                 found: mismatch.found,
+                span,
+            },
+
+            UnifyError::RecordFieldMismatch(mismatch) => TypeCheckError::RecordFieldMismatch {
+                missing: mismatch.missing,
+                additional: mismatch.additional,
                 span,
             },
 
@@ -185,6 +202,35 @@ impl UnificationMap {
 
                 param_unification?;
                 self.unify_inner(&found_body, &expected_body)
+            }
+
+            (Type::Record(expected_fields), Type::Record(found_fields)) => {
+                let missing: Vec<String> = expected_fields
+                    .keys()
+                    .filter(|name| !found_fields.contains_key(*name))
+                    .cloned()
+                    .collect();
+
+                let additional: Vec<String> = found_fields
+                    .keys()
+                    .filter(|name| !expected_fields.contains_key(*name))
+                    .cloned()
+                    .collect();
+
+                if !missing.is_empty() || !additional.is_empty() {
+                    return Err(UnifyError::RecordFieldMismatch(RecordFieldMismatch {
+                        missing,
+                        additional,
+                    }));
+                }
+
+                // Field sets are equal, so every expected key is present in `found_fields`.
+                for (name, expected_field) in &expected_fields {
+                    let found_field = &found_fields[name];
+                    self.unify_inner(found_field, expected_field)?;
+                }
+
+                Ok(())
             }
 
             (expected, found) => Err(UnifyError::TypeMismatch(TypeMismatch { expected, found })),
