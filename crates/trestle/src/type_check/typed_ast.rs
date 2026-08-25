@@ -59,6 +59,7 @@ pub enum TypeCheckedLiteral {
     Bool(bool),
     Float(f64),
     String(String),
+    Record(BTreeMap<String, TypeCheckedExpression>),
     Unit,
 }
 

@@ -2,6 +2,8 @@
 //! unifying operands, lambda bodies, `let` values, and call arguments against what their context
 //! requires.
 
+use std::collections::BTreeMap;
+
 use miette::SourceSpan;
 
 use crate::binding_resolution::ResolvedExpressionKind::FunctionInvocation;
@@ -94,8 +96,27 @@ pub(super) fn infer_type_of_expression(
             Type::Literal(Literal::Float),
         ),
 
-        ResolvedExpressionKind::Literal(ResolvedLiteral::Record(record)) => todo!(),
+        ResolvedExpressionKind::Literal(ResolvedLiteral::Record(record)) => {
+            let fields = record
+                .into_iter()
+                .map(|(key, value)| {
+                    let value = infer_type_of_expression(value, ctx, unification_map, bindings)?;
+                    Ok((key, value))
+                })
+                .collect::<Result<BTreeMap<_, _>, TypeCheckError>>()?;
 
+            let ty = Type::Record(
+                fields
+                    .iter()
+                    .map(|(key, field)| (key.clone(), Box::new(field.ty.clone())))
+                    .collect(),
+            );
+
+            (
+                ExpressionKind::Literal(TypeCheckedLiteral::Record(fields)),
+                ty,
+            )
+        }
         ResolvedExpressionKind::Var(binding_id) => {
             // The binding's type was recorded when its `let`/lambda-param was analysed.
             // If none is known at the use site, the binding needs an annotation.

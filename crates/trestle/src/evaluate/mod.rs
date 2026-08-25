@@ -5,6 +5,7 @@
 //! name, arithmetic on a non-`Int`) can't occur for a well-typed program — so
 //! [`EvalError`] is empty for now, kept only for later tiers (overflow, effects).
 
+use std::collections::BTreeMap;
 use std::rc::Rc;
 
 use crate::binding_resolution::BindingId;
@@ -20,10 +21,8 @@ pub enum Value {
     Bool(bool),
     Float(f64),
     String(String),
-    /// The value of a `let` (and of a program/block that ends in one).
+    Record(BTreeMap<String, Value>),
     Unit,
-    /// One-param closure (currying is desugared). Owns the lambda (via `Rc`, so cloning a
-    /// `Value` stays cheap) and captures the environment it was defined in.
     Closure {
         lambda: Rc<typed_ast::Lambda>,
         env: Environment,
@@ -110,6 +109,12 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
             // The string is stored verbatim (quotes included) — carry it through as-is.
             TypeCheckedLiteral::String(value) => Value::String(value.clone()),
             TypeCheckedLiteral::Unit => Value::Unit,
+            TypeCheckedLiteral::Record(fields) => Value::Record(
+                fields
+                    .iter()
+                    .map(|(name, field)| Ok((name.clone(), eval_expr(env, field)?)))
+                    .collect::<Result<BTreeMap<_, _>, EvalError>>()?,
+            ),
         }),
 
         // Name resolution guarantees the binding exists by the time we reach its use.
