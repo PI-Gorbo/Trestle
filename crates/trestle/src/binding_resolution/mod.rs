@@ -162,6 +162,19 @@ fn resolve_expression(
                 });
             }
         },
+        ExpressionKind::Literal(Literal::Record(map)) => {
+            let resolved_map =
+                map.into_iter()
+                    .try_fold(BTreeMap::new(), |mut state, (key, value)| {
+                        let (resolved_expression, _) = resolve_expression(value, scope, ctx)?;
+
+                        state.insert(key, resolved_expression);
+
+                        Ok(state)
+                    })?;
+
+            ResolvedExpressionKind::Literal(ResolvedLiteral::Record(resolved_map))
+        }
         ExpressionKind::Literal(Literal::Unit) => {
             ResolvedExpressionKind::Literal(ResolvedLiteral::Unit)
         }

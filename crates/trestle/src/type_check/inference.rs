@@ -94,6 +94,8 @@ pub(super) fn infer_type_of_expression(
             Type::Literal(Literal::Float),
         ),
 
+        ResolvedExpressionKind::Literal(ResolvedLiteral::Record(record)) => todo!(),
+
         ResolvedExpressionKind::Var(binding_id) => {
             // The binding's type was recorded when its `let`/lambda-param was analysed.
             // If none is known at the use site, the binding needs an annotation.

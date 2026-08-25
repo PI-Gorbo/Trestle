@@ -45,6 +45,7 @@ pub struct Expression {
 
 #[derive(Debug, PartialEq)]
 pub enum Literal {
+    Record(BTreeMap<String, Expression>),
     Int(usize),
     Bool(bool),
     Float(f64),

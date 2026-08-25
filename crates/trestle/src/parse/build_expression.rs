@@ -42,10 +42,11 @@ pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         Rule::lambda_expression => build_lambda(expr_binding),
         Rule::binary_expression => build_binary(expr_binding),
         Rule::if_expression => build_if_expression(expr_binding),
-        rule => Err(BuildError::UnexpectedRule {
+        rule => Err(BuildError::unexpected_rule(
             rule,
-            span: source_span_from_pest_span(expr_binding.as_span()),
-        }),
+            source_span_from_pest_span(expr_binding.as_span()),
+            "an expression",
+        )),
     }
 }
 
@@ -78,10 +79,11 @@ fn build_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError>
     match inner.as_rule() {
         Rule::record_type_expression => build_record_type_expression(inner),
         Rule::type_identifier => Ok(build_type_identifier_expression(inner)),
-        rule => Err(BuildError::UnexpectedRule {
+        rule => Err(BuildError::unexpected_rule(
             rule,
-            span: source_span_from_pest_span(inner.as_span()),
-        }),
+            source_span_from_pest_span(inner.as_span()),
+            "a type expression",
+        )),
     }
 }
 
@@ -116,20 +118,26 @@ fn build_list_of_expressions(pair: Pair<Rule>) -> Result<Expression, BuildError>
 fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
 
-    let (name, type_dec, value) = pair.into_inner().fold(
+    let (name, type_dec, value) = pair.into_inner().try_fold(
         (String::new(), None, None),
         |(mut name, mut type_dec, mut value), p| {
             match p.as_rule() {
                 Rule::let_kw => {}
                 Rule::identifier_with_optional_type_declaration => {
-                    (name, type_dec) = build_binding_target(p);
+                    (name, type_dec) = build_binding_target(p)?;
                 }
-                Rule::expr => value = Some(build_expr(p)),
-                rule => unreachable!("unexpected rule in let_binding: {:?}", rule),
+                Rule::expr => value = Some(build_expr(p)?),
+                rule => {
+                    return Err(BuildError::unexpected_rule(
+                        rule,
+                        source_span_from_pest_span(p.as_span()),
+                        "a let binding",
+                    ));
+                }
             }
-            (name, type_dec, value)
+            Ok((name, type_dec, value))
         },
-    );
+    )?;
 
     match value {
         Some(expr) => Ok(spanned(
@@ -137,7 +145,7 @@ fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             ExpressionKind::Let {
                 name,
                 type_dec,
-                value: Box::new(expr?),
+                value: Box::new(expr),
             },
         )),
         None => Err(BuildError::MissingLetBody {
@@ -158,10 +166,11 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             Rule::optional_type_declaration => return_type = build_type_opt(p),
             Rule::expr => body = Some(build_expr(p)),
             rule => {
-                return Err(BuildError::UnexpectedRule {
+                return Err(BuildError::unexpected_rule(
                     rule,
-                    span: source_span_from_pest_span(p.as_span()),
-                });
+                    source_span_from_pest_span(p.as_span()),
+                    "a lambda",
+                ));
             }
         }
     }
@@ -209,31 +218,37 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     ))
 }
 
-fn build_binding_target(pair: Pair<Rule>) -> (String, Option<TypeExpression>) {
+fn build_binding_target(pair: Pair<Rule>) -> Result<(String, Option<TypeExpression>), BuildError> {
     pair.into_inner()
-        .fold((String::new(), None), |(mut name, mut type_dec), p| {
+        .try_fold((String::new(), None), |(mut name, mut type_dec), p| {
             match p.as_rule() {
                 Rule::identifier => name = p.as_str().to_string(),
                 Rule::type_declaration => type_dec = Some(build_type_identifier_expression(p)),
-                rule => unreachable!("unexpected rule in binding target: {:?}", rule),
+                rule => {
+                    return Err(BuildError::unexpected_rule(
+                        rule,
+                        source_span_from_pest_span(p.as_span()),
+                        "a binding target",
+                    ));
+                }
             }
-            (name, type_dec)
+            Ok((name, type_dec))
         })
 }
 
 fn build_required_binding_target(pair: Pair<Rule>) -> Result<(String, TypeExpression), BuildError> {
     let span = source_span_from_pest_span(pair.as_span());
 
-    let (name, type_dec) = build_binding_target(pair);
+    let (name, type_dec) = build_binding_target(pair)?;
     let Some(type_expression) = type_dec else {
-        return Err(BuildError::Invariant { span });
+        return Err(BuildError::invariant(span, "a record field"));
     };
 
     Ok((name, type_expression))
 }
 
 fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {
-    let (name, type_dec) = build_binding_target(pair);
+    let (name, type_dec) = build_binding_target(pair)?;
     Ok(Param { name, type_dec })
 }
 
@@ -278,10 +293,11 @@ fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                 Rule::neq => BinaryOp::Neq,
                 Rule::pipe => BinaryOp::Pipe,
                 rule => {
-                    return Err(BuildError::UnexpectedRule {
+                    return Err(BuildError::unexpected_rule(
                         rule,
-                        span: source_span_from_pest_span(op.as_span()),
-                    });
+                        source_span_from_pest_span(op.as_span()),
+                        "an infix operator",
+                    ));
                 }
             };
             Ok(Expression {
@@ -296,10 +312,11 @@ fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                 Rule::negate => UnaryOp::Neg,
                 Rule::logical_not => UnaryOp::Not,
                 rule => {
-                    return Err(BuildError::UnexpectedRule {
+                    return Err(BuildError::unexpected_rule(
                         rule,
-                        span: source_span_from_pest_span(op.as_span()),
-                    });
+                        source_span_from_pest_span(op.as_span()),
+                        "a prefix operator",
+                    ));
                 }
             };
             Ok(Expression {
@@ -346,11 +363,42 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             )),
         )),
         Rule::unit => Ok(spanned(span, ExpressionKind::Literal(Literal::Unit))),
-        rule => Err(BuildError::UnexpectedRule {
+        Rule::record => build_record(child),
+        rule => Err(BuildError::unexpected_rule(
             rule,
-            span: source_span_from_pest_span(span),
-        }),
+            source_span_from_pest_span(span),
+            "a literal",
+        )),
     }
+}
+
+fn build_record(pair: Pair<Rule>) -> Result<Expression, BuildError> {
+    let span = pair.as_span();
+    let mut inner = pair.into_inner();
+
+    // `record` flattens to identifier, expr, identifier, expr, … — walk it two at a time.
+    let mut fields = std::iter::from_fn(|| Some((inner.next()?, inner.next()?)));
+
+    let record_values = fields.try_fold(BTreeMap::new(), |mut state, (identifier, expr)| {
+        let field_span = source_span_from_pest_span(identifier.as_span());
+        let identifier = identifier.as_str().to_string();
+        let expr = build_expr(expr)?;
+
+        // Keyed by name, so a repeat would silently overwrite the first.
+        if state.insert(identifier.clone(), expr).is_some() {
+            return Err(BuildError::DuplicateRecordField {
+                name: identifier,
+                span: field_span,
+            });
+        }
+
+        Ok(state)
+    })?;
+
+    Ok(spanned(
+        span,
+        ExpressionKind::Literal(Literal::Record(record_values)),
+    ))
 }
 
 fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
@@ -370,10 +418,11 @@ fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             ExpressionKind::Var(primary_base_pair.as_str().to_string()),
         )),
         Rule::expr => build_expr(primary_base_pair), // parenthesized expression
-        rule => Err(BuildError::UnexpectedRule {
+        rule => Err(BuildError::unexpected_rule(
             rule,
-            span: source_span_from_pest_span(primary_base_span),
-        }),
+            source_span_from_pest_span(primary_base_span),
+            "a primary base",
+        )),
     }?;
 
     // Fold the base expr with the zero or more postfix_pairs that come through.
@@ -382,27 +431,28 @@ fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         let primary_postfix_rule = _primary_postfix.as_rule();
         let primary_postfix_span = _primary_postfix.as_span();
         let Rule::primary_postfix = primary_postfix_rule else {
-            return Err(BuildError::UnexpectedRule {
-                rule: primary_postfix_rule,
-                span: source_span_from_pest_span(_primary_postfix.as_span()),
-            });
+            return Err(BuildError::unexpected_rule(
+                primary_postfix_rule,
+                source_span_from_pest_span(_primary_postfix.as_span()),
+                "a primary postfix",
+            ));
         };
 
-        let inner_pair =
-            _primary_postfix
-                .into_inner()
-                .next()
-                .ok_or_else(|| BuildError::Invariant {
-                    span: source_span_from_pest_span(primary_postfix_span),
-                })?;
+        let inner_pair = _primary_postfix.into_inner().next().ok_or_else(|| {
+            BuildError::invariant(
+                source_span_from_pest_span(primary_postfix_span),
+                "a primary postfix",
+            )
+        })?;
         let inner_pair_rule = inner_pair.as_rule();
         match inner_pair_rule {
             Rule::field_access => build_field_access(expr, inner_pair),
             Rule::call_arguments => build_call_arguments(expr, inner_pair),
-            rule => Err(BuildError::UnexpectedRule {
+            rule => Err(BuildError::unexpected_rule(
                 rule,
-                span: source_span_from_pest_span(inner_pair.as_span()),
-            }),
+                source_span_from_pest_span(inner_pair.as_span()),
+                "a primary postfix",
+            )),
         }
     })
 }
@@ -416,8 +466,11 @@ fn build_field_access(
         .into_inner()
         .next()
         .map(|v| v.as_str().to_string())
-        .ok_or_else(|| BuildError::Invariant {
-            span: source_span_from_pest_span(postfix_pair_span),
+        .ok_or_else(|| {
+            BuildError::invariant(
+                source_span_from_pest_span(postfix_pair_span),
+                "a field access",
+            )
         })?;
 
     // The postfix pair covers only `.name`; the synthesized node covers the target too.
@@ -440,11 +493,13 @@ fn build_call_arguments(
     //  a nullary call `f()` has none.
     let postfix_pair_span = postfix_pair.as_span();
     let arguments = match postfix_pair.into_inner().next() {
-        Some(list) => list.into_inner().try_fold(Vec::new(), |mut arguments, pair| {
-            let expr = build_expr(pair)?;
-            arguments.push(expr);
-            Ok(arguments)
-        })?,
+        Some(list) => list
+            .into_inner()
+            .try_fold(Vec::new(), |mut arguments, pair| {
+                let expr = build_expr(pair)?;
+                arguments.push(expr);
+                Ok(arguments)
+            })?,
         None => Vec::new(),
     };
 
@@ -511,6 +566,37 @@ mod tests {
     fn duplicate_record_field_reports_diagnostic() {
         let report =
             parse("type T = { x: Int, x: String }").expect_err("duplicate field must be rejected");
+        let rendered = format!("{report:?}");
+        assert!(
+            rendered.contains("more than once"),
+            "expected a duplicate-field diagnostic, got:\n{rendered}"
+        );
+    }
+
+    /// A record literal keeps every field, keyed by name, with each value built as
+    /// its own expression.
+    #[test]
+    fn record_literal_collects_all_fields() {
+        match only_expr_kind(r#"{ x: 1, y: "a" }"#) {
+            ExpressionKind::Literal(Literal::Record(fields)) => {
+                assert_eq!(fields.len(), 2, "expected two fields, got {fields:?}");
+                assert!(matches!(
+                    fields["x"].kind,
+                    ExpressionKind::Literal(Literal::Int(1))
+                ));
+                assert!(
+                    matches!(fields["y"].kind, ExpressionKind::Literal(Literal::String(ref s)) if s == "a")
+                );
+            }
+            other => panic!("expected record literal, got {other:?}"),
+        }
+    }
+
+    /// Like record *types*, a record literal is keyed by name — a repeated field
+    /// would silently overwrite the first, so it's rejected at build time.
+    #[test]
+    fn duplicate_record_literal_field_reports_diagnostic() {
+        let report = parse("{ x: 1, x: 2 }").expect_err("duplicate field must be rejected");
         let rendered = format!("{report:?}");
         assert!(
             rendered.contains("more than once"),

@@ -1,0 +1,195 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Point",
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {
+                            "x": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        16,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                            "y": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        24,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            13,
+                        ),
+                        length: 18,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 31,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "p",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Point",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                38,
+                            ),
+                            length: 7,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "x": Expression {
+                                    kind: Literal(
+                                        Int(
+                                            3,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            53,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                "y": Expression {
+                                    kind: Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            59,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            48,
+                        ),
+                        length: 14,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    33,
+                ),
+                length: 31,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "sum",
+                type_dec: None,
+                value: Expression {
+                    kind: Binary(
+                        Add,
+                        Expression {
+                            kind: FieldAccess {
+                                target: Expression {
+                                    kind: Var(
+                                        "p",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            74,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                identifier: "x",
+                            },
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    74,
+                                ),
+                                length: 3,
+                            },
+                        },
+                        Expression {
+                            kind: FieldAccess {
+                                target: Expression {
+                                    kind: Var(
+                                        "p",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            80,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                identifier: "y",
+                            },
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    80,
+                                ),
+                                length: 3,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            74,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    64,
+                ),
+                length: 19,
+            },
+        },
+        Expression {
+            kind: Var(
+                "sum",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    94,
+                ),
+                length: 3,
+            },
+        },
+    ],
+}

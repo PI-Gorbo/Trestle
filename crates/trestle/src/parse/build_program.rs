@@ -18,6 +18,7 @@ mod error {
 
     use super::Rule;
     use miette::{Diagnostic, SourceSpan};
+    use std::panic::Location;
     use thiserror::Error;
 
     /// A structural error hit while walking the parse tree into the AST.
@@ -27,10 +28,15 @@ mod error {
     /// attached later, at the `parse()` boundary, via `Report::with_source_code`.
     #[derive(Error, Diagnostic, Debug)]
     pub enum BuildError {
-        #[error("unexpected rule {rule:?}")]
-        #[diagnostic(code(trestle::unexpected_rule))]
+        #[error("unexpected rule {rule:?} while building {context}")]
+        #[diagnostic(
+            code(trestle::unexpected_rule),
+            help("internal trestle error, raised at {location}")
+        )]
         UnexpectedRule {
             rule: Rule,
+            context: &'static str,
+            location: &'static Location<'static>,
             #[label("unexpected here")]
             span: SourceSpan,
         },
@@ -73,9 +79,45 @@ mod error {
             span: SourceSpan,
         },
 
-        #[error("internal invariant violated")]
-        #[diagnostic(code(trestle::invariant))]
-        Invariant { span: SourceSpan },
+        #[error("internal invariant violated while building {context}")]
+        #[diagnostic(
+            code(trestle::invariant),
+            help("internal trestle error, raised at {location}")
+        )]
+        Invariant {
+            context: &'static str,
+            location: &'static Location<'static>,
+            #[label("here")]
+            span: SourceSpan,
+        },
+    }
+
+    impl BuildError {
+        /// Build an `UnexpectedRule`, capturing the *Rust* call site.
+        ///
+        /// The `span` alone only says where in the *Trestle* source the walker stalled;
+        /// what you actually need to fix a grammar/walker mismatch is the match arm that
+        /// needs a new case. `#[track_caller]` gets that for free — `Location::caller()`
+        /// resolves to the constructor call rather than to this function.
+        #[track_caller]
+        pub fn unexpected_rule(rule: Rule, span: SourceSpan, context: &'static str) -> Self {
+            Self::UnexpectedRule {
+                rule,
+                context,
+                location: Location::caller(),
+                span,
+            }
+        }
+
+        /// Build an `Invariant`, capturing the Rust call site — see [`Self::unexpected_rule`].
+        #[track_caller]
+        pub fn invariant(span: SourceSpan, context: &'static str) -> Self {
+            Self::Invariant {
+                context,
+                location: Location::caller(),
+                span,
+            }
+        }
     }
 }
 
@@ -94,10 +136,11 @@ pub fn build_program(pair: Pair<Rule>) -> Result<ParsedProgram, BuildError> {
                     Ok(statements)
                 }
                 Rule::EOI => Ok(statements),
-                rule => Err(BuildError::UnexpectedRule {
+                rule => Err(BuildError::unexpected_rule(
                     rule,
-                    span: source_span_from_pest_span(span),
-                }),
+                    source_span_from_pest_span(span),
+                    "a top-level statement",
+                )),
             }
         })?;
 
@@ -106,8 +149,69 @@ pub fn build_program(pair: Pair<Rule>) -> Result<ParsedProgram, BuildError> {
 
 #[cfg(test)]
 mod tests {
+    use super::{BuildError, Rule};
     use crate::parse::ast::{BinaryOp, Expression, ExpressionKind, Literal, UnaryOp};
     use crate::parse::parse;
+
+    /// `UnexpectedRule` and `Invariant` mean the walker and the grammar have drifted apart —
+    /// a Trestle bug, not a user error. Neither is reachable through `parse()` for any input
+    /// `pest` accepts, so they're covered by constructing them directly.
+    ///
+    /// This is the whole point of the `#[track_caller]` constructor: without it every one of
+    /// the dozen-odd sites renders an identical message and you can't tell which match arm
+    /// needs a new case.
+    #[test]
+    fn unexpected_rule_records_its_construction_site() {
+        let expected_line = line!() + 1;
+        let error = BuildError::unexpected_rule(Rule::EOI, (0, 1).into(), "a test");
+
+        match error {
+            BuildError::UnexpectedRule {
+                location, context, ..
+            } => {
+                assert_eq!(location.file(), file!());
+                assert_eq!(location.line(), expected_line);
+                assert_eq!(context, "a test");
+            }
+            other => panic!("expected an UnexpectedRule, got {other:?}"),
+        }
+    }
+
+    /// `Invariant` captures its call site the same way — it used to carry no context at all.
+    #[test]
+    fn invariant_records_its_construction_site() {
+        let expected_line = line!() + 1;
+        let error = BuildError::invariant((0, 1).into(), "a test");
+
+        match error {
+            BuildError::Invariant {
+                location, context, ..
+            } => {
+                assert_eq!(location.file(), file!());
+                assert_eq!(location.line(), expected_line);
+                assert_eq!(context, "a test");
+            }
+            other => panic!("expected an Invariant, got {other:?}"),
+        }
+    }
+
+    /// The location has to survive into what a human actually reads — miette's `help:` line,
+    /// which is also the field `trestle-wasm` forwards to the playground's editor markers.
+    #[test]
+    fn the_rendered_diagnostic_names_the_rust_call_site() {
+        let report =
+            miette::Report::new(BuildError::unexpected_rule(Rule::EOI, (0, 1).into(), "a test"));
+        let rendered = format!("{report:?}");
+
+        assert!(
+            rendered.contains("build_program.rs"),
+            "expected the Rust call site in the rendered diagnostic, got:\n{rendered}"
+        );
+        assert!(
+            rendered.contains("while building a test"),
+            "expected the walker context in the rendered diagnostic, got:\n{rendered}"
+        );
+    }
 
     /// One kind per top-level expression — the program-level view `build_program` produces.
     fn program_kinds(source: &str) -> Vec<ExpressionKind> {

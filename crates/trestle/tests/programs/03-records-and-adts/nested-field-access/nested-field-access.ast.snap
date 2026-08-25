@@ -1,0 +1,143 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "nestedValue",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "name": Expression {
+                                    kind: Literal(
+                                        String(
+                                            "Sam",
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            200,
+                                        ),
+                                        length: 5,
+                                    },
+                                },
+                                "value": Expression {
+                                    kind: Literal(
+                                        Record(
+                                            {
+                                                "key": Expression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "A key",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            221,
+                                                        ),
+                                                        length: 7,
+                                                    },
+                                                },
+                                                "value": Expression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "A value",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            237,
+                                                        ),
+                                                        length: 9,
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            214,
+                                        ),
+                                        length: 34,
+                                    },
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            192,
+                        ),
+                        length: 58,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    174,
+                ),
+                length: 78,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "key",
+                type_dec: None,
+                value: Expression {
+                    kind: FieldAccess {
+                        target: Expression {
+                            kind: FieldAccess {
+                                target: Expression {
+                                    kind: Var(
+                                        "nestedValue",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            262,
+                                        ),
+                                        length: 11,
+                                    },
+                                },
+                                identifier: "value",
+                            },
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    262,
+                                ),
+                                length: 17,
+                            },
+                        },
+                        identifier: "key",
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            262,
+                        ),
+                        length: 21,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    252,
+                ),
+                length: 50,
+            },
+        },
+        Expression {
+            kind: Var(
+                "key",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    302,
+                ),
+                length: 3,
+            },
+        },
+    ],
+}
