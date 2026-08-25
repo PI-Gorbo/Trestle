@@ -1,0 +1,11 @@
+// A record bound *without* an annotation. The binding takes a fresh type variable, so
+// unifying the literal against it runs the occurs check over a `Type::Record` — the arm
+// `root_occurs_in_type` has not implemented. Nothing here is cyclic: the check must walk
+// the field types and return `false`, then bind the variable to the record.
+//
+// The annotated programs (`records`, `field-access`) never reach this: `unify_inner`
+// dispatches them straight to the `Record`/`Record` arm.
+
+let p = { x: 3, y: 4 }
+
+p.x + p.y     // 7

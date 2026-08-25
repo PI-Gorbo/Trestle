@@ -1,12 +1,11 @@
-//! Evaluation: tree-walk a [`TypeCheckedProgram`] to a [`Value`].
-//!
-//! Because name resolution and type checking happen in
-//! [`analyse`](crate::analyse), the errors this stage used to risk (unbound
-//! name, arithmetic on a non-`Int`) can't occur for a well-typed program — so
-//! [`EvalError`] is empty for now, kept only for later tiers (overflow, effects).
+mod error;
+
+pub use error::EvalError;
 
 use std::collections::BTreeMap;
 use std::rc::Rc;
+
+use miette::SourceSpan;
 
 use crate::binding_resolution::BindingId;
 use crate::parse::ast::{BinaryOp, UnaryOp};
@@ -70,11 +69,6 @@ impl Environment {
     }
 }
 
-/// Runtime failures. Empty now — resolution/type errors are caught in `analyse`, so a
-/// well-typed program can't fault here yet. Kept for later tiers (overflow, effects).
-#[derive(Debug)]
-pub enum EvalError {}
-
 /// Evaluate a checked program: thread top-level `let`s through the environment and
 /// return the value of the last expression (`Unit` for an empty program).
 pub fn evaluate(program: TypeCheckedProgram) -> Result<Value, EvalError> {
@@ -120,13 +114,18 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
         // Name resolution guarantees the binding exists by the time we reach its use.
         ExpressionKind::Var(id) => Ok(env
             .lookup(*id)
-            .expect("resolved variable is bound in the environment")
+            .ok_or_else(|| {
+                EvalError::invariant_due_to_type_check(
+                    expr.span,
+                    "resolved variable is not bound in the environment",
+                )
+            })?
             .clone()),
 
         ExpressionKind::Binary(op, lhs, rhs) => {
             let lhs = eval_expr(env, lhs)?;
             let rhs = eval_expr(env, rhs)?;
-            eval_binary(*op, lhs, rhs)
+            eval_binary(*op, lhs, rhs, expr.span)
         }
 
         // A `let` binds into the surrounding sequence rather than nesting a body: eval its
@@ -138,8 +137,8 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
         }
 
         ExpressionKind::Unary(op, operand) => {
-            let operand = eval_expr(env, operand)?;
-            Ok(eval_unary(*op, operand))
+            let evaluated_operand = eval_expr(env, operand)?;
+            eval_unary(*op, evaluated_operand, operand.span)
         }
 
         ExpressionKind::If {
@@ -148,7 +147,10 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
             else_branch,
         } => {
             let Value::Bool(taken) = eval_expr(env, condition)? else {
-                unreachable!("if condition type-checks as Bool");
+                return Err(EvalError::invariant_due_to_type_check(
+                    condition.span,
+                    "if condition did not evaluate to a Bool",
+                ));
             };
             match (taken, else_branch) {
                 (true, _) => eval_expr(env, then_branch),
@@ -178,7 +180,7 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
             if arguments.is_empty() {
                 if let Value::Closure { lambda, .. } = &evaluated_funciton {
                     if lambda.parameter.is_none() {
-                        return Ok(apply(evaluated_funciton, None)?);
+                        return Ok(apply(evaluated_funciton, None, function.span)?);
                     }
                 }
             }
@@ -188,7 +190,11 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
                     .iter()
                     .try_fold(evaluated_funciton, |evaluated_funciton, arg| {
                         let evaluated_arg = eval_expr(env, arg)?;
-                        Ok(apply(evaluated_funciton, Some(evaluated_arg))?)
+                        Ok(apply(
+                            evaluated_funciton,
+                            Some(evaluated_arg),
+                            function.span,
+                        )?)
                     });
 
             applied_function_result
@@ -207,6 +213,25 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
             Ok(result)
         }
 
+        // Type checking guarantees the target is a record and that the field exists on it, so
+        // both misses below are upstream bugs rather than user errors.
+        ExpressionKind::FieldAccess { field_name, target } => {
+            let evaluated_target = eval_expr(env, target)?;
+            let Value::Record(record_inner) = evaluated_target else {
+                return Err(EvalError::invariant_due_to_type_check(
+                    target.span,
+                    "field access target did not evaluate to a record",
+                ));
+            };
+
+            record_inner.get(field_name).cloned().ok_or_else(|| {
+                EvalError::invariant_due_to_type_check(
+                    expr.span,
+                    "record is missing a type-checked field",
+                )
+            })
+        }
+
         ExpressionKind::TypeDeclaration {
             identifier: _,
             type_expression: _,
@@ -216,25 +241,40 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
 
 /// Apply one argument to a closure: bind the parameter in the closure's captured
 /// environment and evaluate its body.
-fn apply(closure: Value, arg: Option<Value>) -> Result<Value, EvalError> {
+///
+/// `span` points at the callee, and is only read to report a broken type-checker guarantee —
+/// `Value` carries no span of its own, so it has to come down from the call site.
+fn apply(closure: Value, arg: Option<Value>, span: SourceSpan) -> Result<Value, EvalError> {
     let Value::Closure { lambda, env } = closure else {
-        unreachable!("callee type-checks as a function");
+        return Err(EvalError::invariant_due_to_type_check(
+            span,
+            "callee did not evaluate to a closure",
+        ));
     };
     let mut env = match (arg, &lambda.parameter) {
         (Some(arg), Some(param)) => env.extend(param.binding, arg),
         (None, None) => env,
-        _ => unreachable!("function application type-checked as valid"),
+        _ => {
+            return Err(EvalError::invariant_due_to_type_check(
+                span,
+                "argument count does not match the closure's parameter",
+            ));
+        }
     };
 
     eval_expr(&mut env, &lambda.body)
 }
 
-fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Result<Value, EvalError> {
+/// `span` covers the whole operation — see [`apply`] for why it is threaded in.
+fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value, span: SourceSpan) -> Result<Value, EvalError> {
     match op {
         // Arithmetic: Int × Int → Int.
         BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => {
             let (Value::Int(l), Value::Int(r)) = (lhs, rhs) else {
-                unreachable!("arithmetic operands type-check as Int");
+                return Err(EvalError::invariant_due_to_type_check(
+                    span,
+                    "arithmetic operands did not evaluate to Ints",
+                ));
             };
 
             Ok(Value::Int(match op {
@@ -253,7 +293,10 @@ fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Result<Value, EvalError>
         | BinaryOp::Eq
         | BinaryOp::Neq => {
             let (Value::Int(l), Value::Int(r)) = (lhs, rhs) else {
-                unreachable!("comparison operands type-check as Int");
+                return Err(EvalError::invariant_due_to_type_check(
+                    span,
+                    "comparison operands did not evaluate to Ints",
+                ));
             };
 
             Ok(Value::Bool(match op {
@@ -269,7 +312,10 @@ fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Result<Value, EvalError>
         // Logical combinators: Bool × Bool → Bool.
         BinaryOp::And | BinaryOp::Or => {
             let (Value::Bool(l), Value::Bool(r)) = (lhs, rhs) else {
-                unreachable!("logical operands type-check as Bool");
+                return Err(EvalError::invariant_due_to_type_check(
+                    span,
+                    "logical operands did not evaluate to Bools",
+                ));
             };
 
             Ok(Value::Bool(match op {
@@ -279,25 +325,32 @@ fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Result<Value, EvalError>
             }))
         }
         BinaryOp::Pipe => {
-            let output = apply(rhs, Some(lhs))?;
+            let output = apply(rhs, Some(lhs), span)?;
             Ok(output)
         }
     }
 }
 
-fn eval_unary(op: UnaryOp, operand: Value) -> Value {
+/// `span` covers the operand — see [`apply`] for why it is threaded in.
+fn eval_unary(op: UnaryOp, operand: Value, span: SourceSpan) -> Result<Value, EvalError> {
     match op {
         UnaryOp::Neg => {
             let Value::Int(n) = operand else {
-                unreachable!("negation operand type-checks as Int");
+                return Err(EvalError::invariant_due_to_type_check(
+                    span,
+                    "negation operand did not evaluate to an Int",
+                ));
             };
-            Value::Int(-n)
+            Ok(Value::Int(-n))
         }
         UnaryOp::Not => {
             let Value::Bool(b) = operand else {
-                unreachable!("`!` operand type-checks as Bool");
+                return Err(EvalError::invariant_due_to_type_check(
+                    span,
+                    "`!` operand did not evaluate to a Bool",
+                ));
             };
-            Value::Bool(!b)
+            Ok(Value::Bool(!b))
         }
     }
 }

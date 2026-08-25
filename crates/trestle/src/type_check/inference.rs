@@ -6,7 +6,6 @@ use std::collections::BTreeMap;
 
 use miette::SourceSpan;
 
-use crate::binding_resolution::ResolvedExpressionKind::FunctionInvocation;
 use crate::binding_resolution::binding_resolved::{
     ResolvedTypeExpression, ResolvedTypeExpressionKind, TypeBindingId,
 };
@@ -374,12 +373,40 @@ pub(super) fn infer_type_of_expression(
                 evaluated_type,
             )
         }
-        FunctionInvocation {
-            function,
-            arguments,
-        } => todo!(),
+        ResolvedExpressionKind::FieldAccess { target, field_name } => {
+            let target = infer_type_of_expression(*target, ctx, unification_map, bindings)?;
 
-        ResolvedExpressionKind::FieldAccess { target, field_name } => todo!(),
+            // Field access is driven by the target's *type*, not its expression shape: in `p.x`
+            // the target is a `Var`, not a record literal. A let-bound record's binding type is a
+            // type variable, so resolve it to its representative before requiring a record.
+            let Type::Record(field_types) = unification_map.representative(&target.ty) else {
+                return Err(TypeCheckError::NotARecord {
+                    found: target.ty,
+                    span,
+                });
+            };
+
+            let field_type = field_types.get(&field_name).ok_or_else(|| {
+                TypeCheckError::RecordDoesNotHaveField {
+                    field_name: field_name.clone(),
+                    // `BTreeMap` keys come out sorted, so the suggestion list is deterministic.
+                    available: field_types.keys().cloned().collect(),
+                    span,
+                }
+            })?;
+
+            // `representative` is shallow: the field's own type may still be a variable, which the
+            // final substitution pass resolves.
+            let ty = (**field_type).clone();
+
+            (
+                ExpressionKind::FieldAccess {
+                    target: Box::new(target),
+                    field_name,
+                },
+                ty,
+            )
+        }
     };
 
     Ok(TypeCheckedExpression { kind, span, ty })

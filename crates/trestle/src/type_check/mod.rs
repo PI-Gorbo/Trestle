@@ -127,6 +127,32 @@ mod tests {
     }
 
     #[test]
+    fn accessing_an_absent_field_is_an_error() {
+        // `p` is a two-field record; `.z` names a field it does not have.
+        let errors =
+            analyse_src("type Point = { x: Int, y: Int }\nlet p: Point = { x: 1, y: 2 }\np.z")
+                .expect_err("a field the record lacks is a type error");
+        let TypeCheckError::RecordDoesNotHaveField {
+            field_name,
+            available,
+            ..
+        } = &errors[0]
+        else {
+            panic!("expected RecordDoesNotHaveField, got {:?}", errors[0]);
+        };
+        assert_eq!(field_name, "z");
+        assert_eq!(available, &["x".to_string(), "y".to_string()]);
+    }
+
+    #[test]
+    fn accessing_a_field_on_a_non_record_is_an_error() {
+        // An `Int` has no fields at all.
+        let errors = analyse_src("let n: Int = 1\nn.x")
+            .expect_err("field access on a non-record is a type error");
+        assert!(matches!(errors[0], TypeCheckError::NotARecord { .. }));
+    }
+
+    #[test]
     fn too_many_arguments_is_an_error() {
         // `f` takes one argument; applying two over-applies it.
         const SRC: &str = "let f = (a: Int) => a\nf(1, 2)";

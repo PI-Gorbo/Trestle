@@ -26,8 +26,14 @@
 use miette::{Diagnostic, NamedSource, Report};
 use trestle::AnalysisError;
 
-/// Render a phase-tagged analysis failure as miette's fancy diagnostics, with the program source
-/// attached so each error shows its snippet + caret.
+/// Render one failure as miette's fancy diagnostic, with the program source attached so the
+/// error shows its snippet + caret.
+fn render_error<E: Diagnostic + Send + Sync + 'static>(path: &str, src: &str, error: E) -> String {
+    let report = Report::new(error).with_source_code(NamedSource::new(path, src.to_string()));
+    format!("{report:?}")
+}
+
+/// Render a phase-tagged analysis failure, one [`render_error`] per error in the batch.
 fn render_analysis_error(path: &str, src: &str, error: AnalysisError) -> String {
     fn render_batch<E: Diagnostic + Send + Sync + 'static>(
         path: &str,
@@ -36,11 +42,7 @@ fn render_analysis_error(path: &str, src: &str, error: AnalysisError) -> String 
     ) -> String {
         errors
             .into_iter()
-            .map(|e| {
-                let report =
-                    Report::new(e).with_source_code(NamedSource::new(path, src.to_string()));
-                format!("{report:?}")
-            })
+            .map(|e| render_error(path, src, e))
             .collect::<Vec<_>>()
             .join("\n")
     }
@@ -115,8 +117,9 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                         render_analysis_error(path, src, e)
                     )
                 });
-                let value = trestle::evaluate::evaluate(analysed)
-                    .unwrap_or_else(|e| panic!("failed to eval `{path}`:\n{e:?}"));
+                let value = trestle::evaluate::evaluate(analysed).unwrap_or_else(|e| {
+                    panic!("failed to eval `{path}`:\n{}", render_error(path, src, e))
+                });
                 insta::assert_debug_snapshot!(format!("{stem}.eval"), value);
             }
             // Inverse of `Analyse`: the program is *meant* to be rejected, so a success is
@@ -494,6 +497,15 @@ trsl_test!(
     [ast, error]
 );
 
+// Same occurs check, but the cycle runs *through a record field*: `x({ inner: x })`
+// constrains `_0 := Fn(Record { inner: _0 }, _1)`. `root_occurs_in_type` has to descend
+// into a record's field types the way it already does into an `Fn`'s.
+trsl_test!(
+    unification_infinite_type_record_self_reference,
+    "01-unification/infinite-type/record-self-reference.trsl",
+    [ast, error]
+);
+
 trsl_test!(
     unification_type_alias_declaration_record,
     "01-unification/type-alias-declaration/record/record.trsl",
@@ -516,6 +528,14 @@ trsl_test!(
 trsl_test!(
     records_field_access,
     "03-records-and-adts/field-access/field-access.trsl",
+    [ast, analyse, eval]
+);
+// An *unannotated* record binding: the binding gets a fresh type variable, so the literal
+// is unified variable-against-record and the occurs check has to walk a `Type::Record`.
+// The annotated programs above never take that path.
+trsl_test!(
+    records_inferred_record_let,
+    "03-records-and-adts/inferred-record-let/inferred-record-let.trsl",
     [ast, analyse, eval]
 );
 trsl_test!(

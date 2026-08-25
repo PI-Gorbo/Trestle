@@ -298,7 +298,13 @@ impl UnificationMap {
                     .is_some_and(|p| self.root_occurs_in_type(root, p))
                     || self.root_occurs_in_type(root, body)
             }
-            Type::Record(btree_map) => todo!(),
+            Type::Record(btree_map) => {
+                btree_map
+                    .into_iter()
+                    .fold(false, |occurs, (_, record_key_type)| {
+                        occurs || self.root_occurs_in_type(root, record_key_type)
+                    })
+            }
         }
     }
 

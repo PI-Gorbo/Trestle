@@ -1,0 +1,37 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: errors
+---
+TypeCheck(
+    [
+        InfiniteType {
+            var: TypeVarId(
+                0,
+            ),
+            ty: Fn(
+                Some(
+                    Record(
+                        {
+                            "inner": Var(
+                                TypeVarId(
+                                    0,
+                                ),
+                            ),
+                        },
+                    ),
+                ),
+                Var(
+                    TypeVarId(
+                        1,
+                    ),
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    608,
+                ),
+                length: 15,
+            },
+        },
+    ],
+)

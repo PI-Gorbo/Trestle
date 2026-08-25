@@ -73,21 +73,25 @@ pub enum ExpressionKind {
         Box<TypeCheckedExpression>,
     ),
     Unary(UnaryOp, Box<TypeCheckedExpression>),
+    FunctionInvocation {
+        function: Box<TypeCheckedExpression>,
+        arguments: Vec<TypeCheckedExpression>,
+    },
     If {
         condition: Box<TypeCheckedExpression>,
         then_branch: Box<TypeCheckedExpression>,
         else_branch: Option<Box<TypeCheckedExpression>>,
     },
     Lambda(Lambda),
-    FunctionInvocation {
-        function: Box<TypeCheckedExpression>,
-        arguments: Vec<TypeCheckedExpression>,
-    },
     Let {
         binding: BindingId, // was name: String
         value: Box<TypeCheckedExpression>,
     },
     Block(Vec<TypeCheckedExpression>),
+    FieldAccess {
+        target: Box<TypeCheckedExpression>,
+        field_name: String,
+    },
     TypeDeclaration {
         identifier: TypeBindingId,
         type_expression: Type,

@@ -1,0 +1,11 @@
+// The occurs check, cycling through a record field.
+//
+// `x` is unannotated, so it takes a fresh variable `_0`. The call `x(...)` hits the
+// `Var`-callee branch of `apply_arguments`, constraining `_0 := Fn(arg, _1)` — and the
+// argument is the record `{ inner: x }`, i.e. `Record { inner: _0 }`. So the constraint
+// is `_0 := Fn(Record { inner: _0 }, _1)`: a cycle that runs *through a record field*.
+//
+// `root_occurs_in_type` has to descend into the record's field types and report the
+// cycle, exactly as it already does for `Fn`. Should fail analysis with `InfiniteType`.
+
+let selfWrap = (x) => x({ inner: x })

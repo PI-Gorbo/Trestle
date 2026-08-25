@@ -77,6 +77,23 @@ pub enum TypeCheckError {
         span: SourceSpan,
     },
 
+    #[error("`{found:?}` is not a record, so it has no fields to access")]
+    #[diagnostic(code(trestle::not_a_record))]
+    NotARecord {
+        found: Type,
+        #[label("field accessed here")]
+        span: SourceSpan,
+    },
+
+    #[error("no field `{field_name}` on this record (available: {available:?})")]
+    #[diagnostic(code(trestle::record_does_not_have_field))]
+    RecordDoesNotHaveField {
+        field_name: String,
+        available: Vec<String>,
+        #[label("unknown field")]
+        span: SourceSpan,
+    },
+
     #[error("cannot construct an infinite type: `_{}` occurs in `{:?}`", .var.0, .ty)]
     #[diagnostic(code(trestle::infinite_type))]
     InfiniteType {

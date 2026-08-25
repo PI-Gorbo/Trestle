@@ -79,15 +79,8 @@ pub fn run(source: &str) -> Result<JsValue, JsValue> {
 
     let result = match trestle::evaluate::evaluate(program) {
         Ok(value) => dto::RunResult::ok(format_value(&value), value_type, bindings),
-        // `EvalError` is uninhabited today (a well-typed program cannot fault at runtime
-        // yet), so this arm is unreachable. It is wired up so that the first real variant —
-        // overflow, or an effect failure — surfaces in the UI without further work here.
-        Err(error) => dto::RunResult::failed(vec![diagnostics::synthetic(
-            Phase::Evaluate,
-            "trestle::evaluation_failed",
-            format!("{error:?}"),
-            index.label(None, 0, source.len().max(1)),
-        )]),
+
+        Err(error) => dto::RunResult::failed(vec![from_miette(&error, Phase::Evaluate, &index)]),
     };
 
     to_js(&result)

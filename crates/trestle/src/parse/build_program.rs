@@ -199,8 +199,11 @@ mod tests {
     /// which is also the field `trestle-wasm` forwards to the playground's editor markers.
     #[test]
     fn the_rendered_diagnostic_names_the_rust_call_site() {
-        let report =
-            miette::Report::new(BuildError::unexpected_rule(Rule::EOI, (0, 1).into(), "a test"));
+        let report = miette::Report::new(BuildError::unexpected_rule(
+            Rule::EOI,
+            (0, 1).into(),
+            "a test",
+        ));
         let rendered = format!("{report:?}");
 
         assert!(

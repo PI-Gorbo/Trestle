@@ -48,6 +48,9 @@ pub(super) fn subsitute_in_expr(map: &UnificationMap, expr: &mut TypeCheckedExpr
         ExpressionKind::Let { value, .. } => {
             subsitute_in_expr(map, value);
         }
+        ExpressionKind::FieldAccess { target, .. } => {
+            subsitute_in_expr(map, target);
+        }
         ExpressionKind::Block(typed_expressions) => {
             for e in typed_expressions {
                 subsitute_in_expr(map, e);
