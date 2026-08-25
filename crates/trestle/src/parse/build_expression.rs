@@ -1,5 +1,4 @@
 use super::{BuildError, Rule};
-use crate::parse::Rule::{comma_separated_list_of_type_expressions, primary_postfix};
 use crate::parse::ast::{BinaryOp, Literal, TypeExpressionKind, UnaryOp};
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
@@ -311,45 +310,6 @@ fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         .parse(pair.into_inner())
 }
 
-fn build_comma_separated_list_of_expressions(
-    pair: Pair<Rule>,
-) -> Result<Vec<Expression>, BuildError> {
-    let mut inner = pair.into_inner();
-    inner.try_fold(Vec::new(), |mut list, expression| {
-        let expression = build_expr(expression)?;
-        list.push(expression);
-
-        Ok(list)
-    })
-}
-
-fn build_function_invocation(pair: Pair<Rule>) -> Result<Expression, BuildError> {
-    let span = pair.as_span();
-    let mut inner = pair.into_inner();
-    let expression = inner
-        .next()
-        .map(|p| build_expr(p))
-        .transpose()?
-        .map(Box::new)
-        .ok_or(BuildError::Invariant {
-            span: source_span_from_pest_span(span),
-        })?;
-
-    let parameters = inner
-        .next()
-        .map(build_comma_separated_list_of_expressions)
-        .transpose()?
-        .unwrap_or(Vec::new());
-
-    Ok(spanned(
-        span,
-        ExpressionKind::FunctionInvocation {
-            function: expression,
-            arguments: parameters,
-        },
-    ))
-}
-
 fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let child = pair.into_inner().next().expect("literal has one child");
     let span = child.as_span();
@@ -396,8 +356,12 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let mut pairs = pair.into_inner();
 
-    // Pull the 'primary_base' off the stack of pairs.
-    let primary_base_pair = pairs.next().expect("primary has one child");
+    // Pull the 'primary_base' off the stack of pairs, then step through it to the
+    // literal / identifier / parenthesised expr it wraps.
+    let primary_base_pair = get_bindings(
+        pairs.next().expect("primary has one child"),
+        "primary to have a base",
+    );
     let primary_base_span = primary_base_pair.as_span();
     let primary_base_expr = match primary_base_pair.as_rule() {
         Rule::literal => build_literal(primary_base_pair),
@@ -472,22 +436,17 @@ fn build_call_arguments(
     target: Expression,
     postfix_pair: Pair<Rule>,
 ) -> Result<Expression, BuildError> {
-    //  call_arguments has one element, comma_separated_list_of_type_expressions
+    //  call_arguments has at most one element, comma_separated_list_of_expressions —
+    //  a nullary call `f()` has none.
     let postfix_pair_span = postfix_pair.as_span();
-    let inner_rule = postfix_pair
-        .into_inner()
-        .next()
-        .ok_or_else(|| BuildError::Invariant {
-            span: source_span_from_pest_span(postfix_pair_span),
-        })?;
-
-    let arguments = inner_rule
-        .into_inner()
-        .try_fold(Vec::new(), |mut arguments, pair| {
+    let arguments = match postfix_pair.into_inner().next() {
+        Some(list) => list.into_inner().try_fold(Vec::new(), |mut arguments, pair| {
             let expr = build_expr(pair)?;
             arguments.push(expr);
             Ok(arguments)
-        })?;
+        })?,
+        None => Vec::new(),
+    };
 
     // The postfix pair covers only `(args)`; the synthesized node covers the callee too.
     let span = merge_spans(target.span, source_span_from_pest_span(postfix_pair_span));

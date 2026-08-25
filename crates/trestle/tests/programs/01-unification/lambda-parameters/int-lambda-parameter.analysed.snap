@@ -74,7 +74,7 @@ TypeCheckedProgram {
                         offset: SourceOffset(
                             11,
                         ),
-                        length: 12,
+                        length: 14,
                     },
                     ty: Fn(
                         Some(
@@ -92,16 +92,36 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 23,
+                length: 25,
             },
             ty: Unit,
         },
         TypeCheckedExpression {
-            kind: FunctionInvocation(
-                BindingId(
-                    1,
-                ),
-                [
+            kind: FunctionInvocation {
+                function: TypeCheckedExpression {
+                    kind: Var(
+                        BindingId(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            25,
+                        ),
+                        length: 4,
+                    },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                        Literal(
+                            Int,
+                        ),
+                    ),
+                },
+                arguments: [
                     TypeCheckedExpression {
                         kind: Literal(
                             Int(
@@ -119,7 +139,7 @@ TypeCheckedProgram {
                         ),
                     },
                 ],
-            ),
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     25,
@@ -141,7 +161,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     11,
                 ),
-                length: 12,
+                length: 14,
             },
         },
         TypedBinding {
@@ -160,7 +180,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 23,
+                length: 25,
             },
         },
     ],

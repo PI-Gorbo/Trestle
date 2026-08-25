@@ -113,8 +113,18 @@ ParsedProgram {
         },
         Expression {
             kind: FunctionInvocation {
-                function_name: "pick",
-                expressions: [
+                function: Expression {
+                    kind: Var(
+                        "pick",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            44,
+                        ),
+                        length: 4,
+                    },
+                },
+                arguments: [
                     Expression {
                         kind: Literal(
                             Bool(

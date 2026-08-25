@@ -71,7 +71,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             157,
                         ),
-                        length: 17,
+                        length: 18,
                     },
                 },
             },
@@ -79,7 +79,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 30,
+                length: 31,
             },
         },
         Expression {
@@ -169,7 +169,7 @@ ParsedProgram {
                                     offset: SourceOffset(
                                         185,
                                     ),
-                                    length: 25,
+                                    length: 27,
                                 },
                             },
                         },
@@ -178,7 +178,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             185,
                         ),
-                        length: 25,
+                        length: 27,
                     },
                 },
             },
@@ -186,7 +186,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     175,
                 ),
-                length: 35,
+                length: 37,
             },
         },
         Expression {
@@ -214,8 +214,18 @@ ParsedProgram {
                                 },
                                 Expression {
                                     kind: FunctionInvocation {
-                                        function_name: "add",
-                                        expressions: [
+                                        function: Expression {
+                                            kind: Var(
+                                                "add",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    230,
+                                                ),
+                                                length: 3,
+                                            },
+                                        },
+                                        arguments: [
                                             Expression {
                                                 kind: Literal(
                                                     Int(
@@ -270,7 +280,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     212,
                 ),
-                length: 34,
+                length: 64,
             },
         },
         Expression {

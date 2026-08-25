@@ -153,11 +153,38 @@ TypeCheckedProgram {
             ty: Unit,
         },
         TypeCheckedExpression {
-            kind: FunctionInvocation(
-                BindingId(
-                    2,
-                ),
-                [
+            kind: FunctionInvocation {
+                function: TypeCheckedExpression {
+                    kind: Var(
+                        BindingId(
+                            2,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            44,
+                        ),
+                        length: 4,
+                    },
+                    ty: Fn(
+                        Some(
+                            Literal(
+                                Bool,
+                            ),
+                        ),
+                        Fn(
+                            Some(
+                                Literal(
+                                    Int,
+                                ),
+                            ),
+                            Literal(
+                                Int,
+                            ),
+                        ),
+                    ),
+                },
+                arguments: [
                     TypeCheckedExpression {
                         kind: Literal(
                             Bool(
@@ -191,7 +218,7 @@ TypeCheckedProgram {
                         ),
                     },
                 ],
-            ),
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     44,

@@ -21,7 +21,6 @@ mod dto;
 mod render;
 
 use pest::Parser as _;
-use serde::Serialize as _;
 use wasm_bindgen::prelude::*;
 
 use trestle::AnalysisError;

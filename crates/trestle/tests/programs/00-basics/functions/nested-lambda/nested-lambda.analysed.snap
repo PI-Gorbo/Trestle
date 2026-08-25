@@ -82,7 +82,7 @@ TypeCheckedProgram {
                             offset: SourceOffset(
                                 248,
                             ),
-                            length: 17,
+                            length: 18,
                         },
                         ty: Fn(
                             Some(
@@ -101,7 +101,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     236,
                 ),
-                length: 29,
+                length: 30,
             },
             ty: Fn(
                 Some(
@@ -132,7 +132,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     236,
                 ),
-                length: 29,
+                length: 30,
             },
         },
         TypedBinding {
@@ -144,7 +144,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     248,
                 ),
-                length: 17,
+                length: 18,
             },
         },
     ],

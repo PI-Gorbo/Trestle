@@ -262,12 +262,32 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "bigger",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "bigger",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    406,
+                                ),
+                                length: 6,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: FunctionInvocation {
-                                    function_name: "abs",
-                                    expressions: [
+                                    function: Expression {
+                                        kind: Var(
+                                            "abs",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                413,
+                                            ),
+                                            length: 3,
+                                        },
+                                    },
+                                    arguments: [
                                         Expression {
                                             kind: Unary(
                                                 Neg,
@@ -324,8 +344,18 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "bigger",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "bigger",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    440,
+                                ),
+                                length: 6,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: Literal(
                                     Int(

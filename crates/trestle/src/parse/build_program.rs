@@ -213,7 +213,6 @@ mod tests {
 
     /// Zero-argument calls are real — `closure.trsl` invokes `create_closure()`.
     #[test]
-    #[ignore = "call_arguments requires at least one argument; `f()` does not parse"]
     fn a_zero_argument_call_builds_an_empty_invocation() {
         let (callee, arguments) = expect_call(only_kind("f()"));
         assert!(is_var(&callee, "f"));
@@ -221,6 +220,25 @@ mod tests {
             arguments.is_empty(),
             "expected no arguments, got {arguments:?}"
         );
+    }
+
+    #[test]
+    fn a_paren_after_whitespace_is_not_a_call() {
+        let program = parse("1\n\n() => 2").expect("source parses");
+        assert_eq!(
+            program.expressions.len(),
+            2,
+            "expected a literal and a lambda, got {:?}",
+            program.expressions
+        );
+        assert!(matches!(
+            program.expressions[0].kind,
+            ExpressionKind::Literal(Literal::Int(1))
+        ));
+        assert!(matches!(
+            program.expressions[1].kind,
+            ExpressionKind::Lambda(_)
+        ));
     }
 
     /// The other postfix: `.name` reads a field off whatever precedes it.

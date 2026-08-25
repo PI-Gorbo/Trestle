@@ -91,7 +91,7 @@ ParsedProgram {
                                     offset: SourceOffset(
                                         271,
                                     ),
-                                    length: 25,
+                                    length: 26,
                                 },
                             },
                         },
@@ -100,7 +100,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             271,
                         ),
-                        length: 25,
+                        length: 26,
                     },
                 },
             },
@@ -108,7 +108,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     261,
                 ),
-                length: 35,
+                length: 36,
             },
         },
         Expression {
@@ -193,8 +193,18 @@ ParsedProgram {
                                         },
                                         Expression {
                                             kind: FunctionInvocation {
-                                                function_name: "add",
-                                                expressions: [
+                                                function: Expression {
+                                                    kind: Var(
+                                                        "add",
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            356,
+                                                        ),
+                                                        length: 3,
+                                                    },
+                                                },
+                                                arguments: [
                                                     Expression {
                                                         kind: Literal(
                                                             Int(
@@ -323,7 +333,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     332,
                 ),
-                length: 99,
+                length: 118,
             },
         },
         Expression {

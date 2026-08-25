@@ -27,12 +27,14 @@ record           = { "{" ~  ( identifier ~ ":" ~ expr ~ ("," ~ identifier ~ ":" 
 literal          =  { record | boolean | unit | string | float | int  }
 
 
-// Primary = most atomic element
-primary_base = _{ literal | identifier | "(" ~ expr ~ ")" }
-primary_postfix = { field_access | call_arguments }
+// Primary = most atomic element.
+// ! = Escape from parent 'no-whitespace' rule
+primary_base = !{ literal | identifier | "(" ~ expr ~ ")" }
+primary_postfix = !{ field_access | call_arguments }
 field_access = { "." ~ identifier }
-call_arguments = { "(" ~ comma_separated_list_of_expressions ~")"}
-primary = { primary_base ~ primary_postfix* }
+call_arguments = { "(" ~ comma_separated_list_of_expressions? ~")"}
+// $ = No whitespace beween sections.
+primary = ${ primary_base ~ primary_postfix* }
 
 binary_expression = { prefix_operator* ~ primary ~ (infix_operator ~ prefix_operator* ~ primary)* }
 
@@ -61,7 +63,6 @@ lambda_expression                   = {
     "(" ~ (identifier_with_optional_type_declaration ~ ("," ~ identifier_with_optional_type_declaration)*)? ~ ")" ~ optional_type_declaration ~ "=>" ~ expr
 }
 comma_separated_list_of_expressions = { expr ~ ("," ~ expr)* }
-function_invocation                 = { identifier ~ "(" ~ comma_separated_list_of_expressions? ~ ")" }
 let_expression                      = { let_kw ~ identifier_with_optional_type_declaration ~ "=" ~ expr }
 list_of_expressions                 = { "{" ~ expr+ ~ "}" }
 if_expression                       = { "if" ~ "(" ~ expr ~ ")" ~ expr ~ ("else" ~ expr)? }

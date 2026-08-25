@@ -329,11 +329,38 @@ TypeCheckedProgram {
                                             ),
                                         },
                                         TypeCheckedExpression {
-                                            kind: FunctionInvocation(
-                                                BindingId(
-                                                    2,
-                                                ),
-                                                [
+                                            kind: FunctionInvocation {
+                                                function: TypeCheckedExpression {
+                                                    kind: Var(
+                                                        BindingId(
+                                                            2,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            503,
+                                                        ),
+                                                        length: 8,
+                                                    },
+                                                    ty: Fn(
+                                                        Some(
+                                                            Literal(
+                                                                String,
+                                                            ),
+                                                        ),
+                                                        Fn(
+                                                            Some(
+                                                                Literal(
+                                                                    String,
+                                                                ),
+                                                            ),
+                                                            Literal(
+                                                                String,
+                                                            ),
+                                                        ),
+                                                    ),
+                                                },
+                                                arguments: [
                                                     TypeCheckedExpression {
                                                         kind: Literal(
                                                             String(
@@ -351,7 +378,7 @@ TypeCheckedProgram {
                                                         ),
                                                     },
                                                 ],
-                                            ),
+                                            },
                                             span: SourceSpan {
                                                 offset: SourceOffset(
                                                     503,
@@ -381,11 +408,38 @@ TypeCheckedProgram {
                                     ),
                                 },
                                 TypeCheckedExpression {
-                                    kind: FunctionInvocation(
-                                        BindingId(
-                                            5,
-                                        ),
-                                        [
+                                    kind: FunctionInvocation {
+                                        function: TypeCheckedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    5,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    532,
+                                                ),
+                                                length: 8,
+                                            },
+                                            ty: Fn(
+                                                Some(
+                                                    Literal(
+                                                        Int,
+                                                    ),
+                                                ),
+                                                Fn(
+                                                    Some(
+                                                        Literal(
+                                                            String,
+                                                        ),
+                                                    ),
+                                                    Literal(
+                                                        String,
+                                                    ),
+                                                ),
+                                            ),
+                                        },
+                                        arguments: [
                                             TypeCheckedExpression {
                                                 kind: Literal(
                                                     Int(
@@ -403,7 +457,7 @@ TypeCheckedProgram {
                                                 ),
                                             },
                                         ],
-                                    ),
+                                    },
                                     span: SourceSpan {
                                         offset: SourceOffset(
                                             532,
@@ -471,7 +525,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     467,
                 ),
-                length: 92,
+                length: 94,
             },
             ty: Unit,
         },
@@ -645,7 +699,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     467,
                 ),
-                length: 92,
+                length: 94,
             },
         },
     ],

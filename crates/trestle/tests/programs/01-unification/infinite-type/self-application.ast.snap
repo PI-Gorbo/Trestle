@@ -20,8 +20,18 @@ ParsedProgram {
                             return_type: None,
                             body: Expression {
                                 kind: FunctionInvocation {
-                                    function_name: "x",
-                                    expressions: [
+                                    function: Expression {
+                                        kind: Var(
+                                            "x",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                558,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    arguments: [
                                         Expression {
                                             kind: Var(
                                                 "x",

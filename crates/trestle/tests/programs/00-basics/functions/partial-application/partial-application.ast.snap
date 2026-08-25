@@ -91,7 +91,7 @@ ParsedProgram {
                                     offset: SourceOffset(
                                         163,
                                     ),
-                                    length: 25,
+                                    length: 26,
                                 },
                             },
                         },
@@ -100,7 +100,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             163,
                         ),
-                        length: 25,
+                        length: 26,
                     },
                 },
             },
@@ -108,7 +108,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     151,
                 ),
-                length: 37,
+                length: 38,
             },
         },
         Expression {
@@ -198,7 +198,7 @@ ParsedProgram {
                                     offset: SourceOffset(
                                         201,
                                     ),
-                                    length: 25,
+                                    length: 27,
                                 },
                             },
                         },
@@ -207,7 +207,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             201,
                         ),
-                        length: 25,
+                        length: 27,
                     },
                 },
             },
@@ -215,7 +215,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     189,
                 ),
-                length: 37,
+                length: 39,
             },
         },
         Expression {
@@ -224,8 +224,18 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "add",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "add",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    242,
+                                ),
+                                length: 3,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: Literal(
                                     Int(
@@ -262,8 +272,18 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "mul",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "mul",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    297,
+                                ),
+                                length: 3,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: Literal(
                                     Int(
@@ -300,12 +320,32 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "triple",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "triple",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    355,
+                                ),
+                                length: 6,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: FunctionInvocation {
-                                    function_name: "inc",
-                                    expressions: [
+                                    function: Expression {
+                                        kind: Var(
+                                            "inc",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                362,
+                                            ),
+                                            length: 3,
+                                        },
+                                    },
+                                    arguments: [
                                         Expression {
                                             kind: Literal(
                                                 Int(

@@ -59,7 +59,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             11,
                         ),
-                        length: 12,
+                        length: 14,
                     },
                 },
             },
@@ -67,13 +67,23 @@ ParsedProgram {
                 offset: SourceOffset(
                     0,
                 ),
-                length: 23,
+                length: 25,
             },
         },
         Expression {
             kind: FunctionInvocation {
-                function_name: "add3",
-                expressions: [
+                function: Expression {
+                    kind: Var(
+                        "add3",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            25,
+                        ),
+                        length: 4,
+                    },
+                },
+                arguments: [
                     Expression {
                         kind: Literal(
                             Int(

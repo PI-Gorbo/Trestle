@@ -71,7 +71,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             157,
                         ),
-                        length: 17,
+                        length: 18,
                     },
                 },
             },
@@ -79,13 +79,23 @@ ParsedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 30,
+                length: 31,
             },
         },
         Expression {
             kind: FunctionInvocation {
-                function_name: "double",
-                expressions: [
+                function: Expression {
+                    kind: Var(
+                        "double",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            175,
+                        ),
+                        length: 6,
+                    },
+                },
+                arguments: [
                     Expression {
                         kind: Literal(
                             Int(

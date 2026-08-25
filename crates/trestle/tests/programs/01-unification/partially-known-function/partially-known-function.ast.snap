@@ -71,7 +71,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             653,
                         ),
-                        length: 17,
+                        length: 18,
                     },
                 },
             },
@@ -79,7 +79,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     643,
                 ),
-                length: 27,
+                length: 28,
             },
         },
         Expression {
@@ -108,8 +108,18 @@ ParsedProgram {
                                         return_type: None,
                                         body: Expression {
                                             kind: FunctionInvocation {
-                                                function_name: "f",
-                                                expressions: [
+                                                function: Expression {
+                                                    kind: Var(
+                                                        "f",
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            693,
+                                                        ),
+                                                        length: 1,
+                                                    },
+                                                },
+                                                arguments: [
                                                     Expression {
                                                         kind: Var(
                                                             "x",
@@ -158,8 +168,18 @@ ParsedProgram {
         },
         Expression {
             kind: FunctionInvocation {
-                function_name: "apply",
-                expressions: [
+                function: Expression {
+                    kind: Var(
+                        "apply",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            699,
+                        ),
+                        length: 5,
+                    },
+                },
+                arguments: [
                     Expression {
                         kind: Var(
                             "inc",

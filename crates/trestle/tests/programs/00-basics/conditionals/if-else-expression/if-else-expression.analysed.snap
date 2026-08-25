@@ -318,17 +318,57 @@ TypeCheckedProgram {
                     4,
                 ),
                 value: TypeCheckedExpression {
-                    kind: FunctionInvocation(
-                        BindingId(
-                            3,
-                        ),
-                        [
-                            TypeCheckedExpression {
-                                kind: FunctionInvocation(
-                                    BindingId(
-                                        1,
+                    kind: FunctionInvocation {
+                        function: TypeCheckedExpression {
+                            kind: Var(
+                                BindingId(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    406,
+                                ),
+                                length: 6,
+                            },
+                            ty: Fn(
+                                Some(
+                                    Literal(
+                                        Int,
                                     ),
-                                    [
+                                ),
+                                Literal(
+                                    String,
+                                ),
+                            ),
+                        },
+                        arguments: [
+                            TypeCheckedExpression {
+                                kind: FunctionInvocation {
+                                    function: TypeCheckedExpression {
+                                        kind: Var(
+                                            BindingId(
+                                                1,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                413,
+                                            ),
+                                            length: 3,
+                                        },
+                                        ty: Fn(
+                                            Some(
+                                                Literal(
+                                                    Int,
+                                                ),
+                                            ),
+                                            Literal(
+                                                Int,
+                                            ),
+                                        ),
+                                    },
+                                    arguments: [
                                         TypeCheckedExpression {
                                             kind: Unary(
                                                 Neg,
@@ -360,7 +400,7 @@ TypeCheckedProgram {
                                             ),
                                         },
                                     ],
-                                ),
+                                },
                                 span: SourceSpan {
                                     offset: SourceOffset(
                                         413,
@@ -372,7 +412,7 @@ TypeCheckedProgram {
                                 ),
                             },
                         ],
-                    ),
+                    },
                     span: SourceSpan {
                         offset: SourceOffset(
                             406,
@@ -398,11 +438,31 @@ TypeCheckedProgram {
                     5,
                 ),
                 value: TypeCheckedExpression {
-                    kind: FunctionInvocation(
-                        BindingId(
-                            3,
-                        ),
-                        [
+                    kind: FunctionInvocation {
+                        function: TypeCheckedExpression {
+                            kind: Var(
+                                BindingId(
+                                    3,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    440,
+                                ),
+                                length: 6,
+                            },
+                            ty: Fn(
+                                Some(
+                                    Literal(
+                                        Int,
+                                    ),
+                                ),
+                                Literal(
+                                    String,
+                                ),
+                            ),
+                        },
+                        arguments: [
                             TypeCheckedExpression {
                                 kind: Literal(
                                     Int(
@@ -420,7 +480,7 @@ TypeCheckedProgram {
                                 ),
                             },
                         ],
-                    ),
+                    },
                     span: SourceSpan {
                         offset: SourceOffset(
                             440,

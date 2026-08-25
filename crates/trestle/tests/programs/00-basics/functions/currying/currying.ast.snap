@@ -91,7 +91,7 @@ ParsedProgram {
                                     offset: SourceOffset(
                                         155,
                                     ),
-                                    length: 25,
+                                    length: 27,
                                 },
                             },
                         },
@@ -100,7 +100,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             155,
                         ),
-                        length: 25,
+                        length: 27,
                     },
                 },
             },
@@ -108,7 +108,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     145,
                 ),
-                length: 35,
+                length: 37,
             },
         },
         Expression {
@@ -117,8 +117,18 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "add",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "add",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    194,
+                                ),
+                                length: 3,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: Literal(
                                     Int(
@@ -155,8 +165,18 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "add10",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "add10",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    261,
+                                ),
+                                length: 5,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: Literal(
                                     Int(
@@ -193,8 +213,18 @@ ParsedProgram {
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
-                        function_name: "add",
-                        expressions: [
+                        function: Expression {
+                            kind: Var(
+                                "add",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    302,
+                                ),
+                                length: 3,
+                            },
+                        },
+                        arguments: [
                             Expression {
                                 kind: Literal(
                                     Int(

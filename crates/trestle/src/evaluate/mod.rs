@@ -203,8 +203,8 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
         }
 
         ExpressionKind::TypeDeclaration {
-            identifier,
-            type_expression,
+            identifier: _,
+            type_expression: _,
         } => Ok(Value::Unit),
     }
 }

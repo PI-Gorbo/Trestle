@@ -74,7 +74,7 @@ TypeCheckedProgram {
                         offset: SourceOffset(
                             157,
                         ),
-                        length: 17,
+                        length: 18,
                     },
                     ty: Fn(
                         Some(
@@ -92,7 +92,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 30,
+                length: 31,
             },
             ty: Unit,
         },
@@ -179,7 +179,7 @@ TypeCheckedProgram {
                                     offset: SourceOffset(
                                         185,
                                     ),
-                                    length: 25,
+                                    length: 27,
                                 },
                                 ty: Fn(
                                     Some(
@@ -198,7 +198,7 @@ TypeCheckedProgram {
                         offset: SourceOffset(
                             185,
                         ),
-                        length: 25,
+                        length: 27,
                     },
                     ty: Fn(
                         Some(
@@ -223,7 +223,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     175,
                 ),
-                length: 35,
+                length: 37,
             },
             ty: Unit,
         },
@@ -255,11 +255,38 @@ TypeCheckedProgram {
                                     ),
                                 },
                                 TypeCheckedExpression {
-                                    kind: FunctionInvocation(
-                                        BindingId(
-                                            4,
-                                        ),
-                                        [
+                                    kind: FunctionInvocation {
+                                        function: TypeCheckedExpression {
+                                            kind: Var(
+                                                BindingId(
+                                                    4,
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    230,
+                                                ),
+                                                length: 3,
+                                            },
+                                            ty: Fn(
+                                                Some(
+                                                    Literal(
+                                                        Int,
+                                                    ),
+                                                ),
+                                                Fn(
+                                                    Some(
+                                                        Literal(
+                                                            Int,
+                                                        ),
+                                                    ),
+                                                    Literal(
+                                                        Int,
+                                                    ),
+                                                ),
+                                            ),
+                                        },
+                                        arguments: [
                                             TypeCheckedExpression {
                                                 kind: Literal(
                                                     Int(
@@ -277,7 +304,7 @@ TypeCheckedProgram {
                                                 ),
                                             },
                                         ],
-                                    ),
+                                    },
                                     span: SourceSpan {
                                         offset: SourceOffset(
                                             230,
@@ -345,7 +372,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     212,
                 ),
-                length: 34,
+                length: 64,
             },
             ty: Unit,
         },
@@ -376,7 +403,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     157,
                 ),
-                length: 17,
+                length: 18,
             },
         },
         TypedBinding {
@@ -395,7 +422,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     144,
                 ),
-                length: 30,
+                length: 31,
             },
         },
         TypedBinding {
@@ -407,7 +434,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     185,
                 ),
-                length: 25,
+                length: 27,
             },
         },
         TypedBinding {
@@ -419,7 +446,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     185,
                 ),
-                length: 25,
+                length: 27,
             },
         },
         TypedBinding {
@@ -445,7 +472,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     175,
                 ),
-                length: 35,
+                length: 37,
             },
         },
         TypedBinding {
@@ -457,7 +484,7 @@ TypeCheckedProgram {
                 offset: SourceOffset(
                     212,
                 ),
-                length: 34,
+                length: 64,
             },
         },
     ],
