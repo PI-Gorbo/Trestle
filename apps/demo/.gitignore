@@ -8,3 +8,6 @@ dist
 # Built by `pnpm build:wasm` from `crates/trestle-wasm`. Regenerated, never committed —
 # see the repo README for the CI step that produces it.
 app/lib/trestle-wasm
+
+# wrangler
+.wrangler

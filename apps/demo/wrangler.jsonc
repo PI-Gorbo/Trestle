@@ -1,0 +1,20 @@
+{
+  // An assets-only Worker: no `main`, no server code. `nuxt generate` with `ssr: false`
+  // produces a static shell plus hashed assets, so there is nothing to run on the edge —
+  // Cloudflare just serves the directory, and requests to static assets are not billed.
+  //
+  // Workers rather than Pages because Pages is in absorb-and-maintain mode: it still works,
+  // but new platform features land on Workers, and this project has nothing invested in Pages.
+  "name": "trestle-web",
+  "compatibility_date": "2026-08-25",
+  "workers_dev": true,
+
+  "assets": {
+    "directory": "./.output/public",
+
+    // The app is a single client-routed page. Without this, an unknown path would be served
+    // Nuxt's `404.html` with a 404 status; with it, the SPA shell is returned at 200 and the
+    // router decides. This replaces the `_redirects` fallback a Pages deploy would need.
+    "not_found_handling": "single-page-application"
+  }
+}

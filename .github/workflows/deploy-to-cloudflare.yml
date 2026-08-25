@@ -1,0 +1,92 @@
+name: demo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/demo/**'
+      - 'crates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - '.github/workflows/demo.yml'
+  pull_request:
+    paths:
+      - 'apps/demo/**'
+      - 'crates/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - '.github/workflows/demo.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: demo-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/demo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/demo/pnpm-lock.yaml
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+
+      - uses: jetli/wasm-pack-action@v0.4.0
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build the WebAssembly compiler
+        run: pnpm build:wasm
+
+      - name: Check the wire format is in step with the compiler
+        run: |
+          cargo test -p trestle-wasm --test wire_format
+          git diff --exit-code -- app/lib/compiler/wire-fixtures.ts
+
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm build
+
+      # A guard against the quiet failure the header describes: `nuxt generate` succeeds
+      # whether or not the compiler was bundled, so assert the artifact is actually in the
+      # output before anything is published.
+      - name: Check the compiler was bundled
+        run: |
+          ls .output/public/_nuxt/*.wasm
+
+      - name: Publish to Cloudflare
+        id: deploy
+        # Pushes and manual runs on `main` publish; pull requests only build.
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/demo
+          packageManager: pnpm
+          command: deploy
+
+      - name: Note where it went
+        if: steps.deploy.outcome == 'success'
+        run: echo "Deployed to ${{ steps.deploy.outputs.deployment-url }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-static
+          path: apps/demo/.output/public
