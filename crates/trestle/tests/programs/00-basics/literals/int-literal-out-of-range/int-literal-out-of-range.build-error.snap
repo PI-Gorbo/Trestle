@@ -1,0 +1,13 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: error
+---
+IntLiteralOutOfRange {
+    literal: "9223372036854775808",
+    span: SourceSpan {
+        offset: SourceOffset(
+            421,
+        ),
+        length: 19,
+    },
+}

@@ -6,8 +6,9 @@
  * explaining: a missing wasm32 target and a missing `wasm-pack` are both one command away
  * from fixed, and a raw cargo error does not say so.
  *
- * The output directory is gitignored. The app degrades to its mock compiler when it is
- * absent, so `nuxt generate` never depends on this having been run.
+ * The output directory is gitignored. `nuxt generate` does not depend on this having been run
+ * — the app resolves the package through `import.meta.glob`, so an absent one is an empty match
+ * rather than a resolve error — but the site it produces cannot compile anything.
  */
 
 import { spawnSync } from 'node:child_process'
@@ -53,8 +54,9 @@ const build = spawnSync(
 if (build.status !== 0) {
   console.error(
     '\nwasm build failed.\n' +
-      'If the errors are in `crates/trestle` rather than `crates/trestle-wasm`, the compiler\n' +
-      'itself does not build yet — the playground will keep running on its mock compiler.\n',
+      'If the errors are in `crates/trestle` rather than `crates/trestle-wasm`, the break is in\n' +
+      'the compiler itself, not in the shim. Until it is fixed the playground will load but\n' +
+      'report the compiler as unavailable.\n',
   )
   process.exit(build.status ?? 1)
 }

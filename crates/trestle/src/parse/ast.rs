@@ -46,7 +46,13 @@ pub struct Expression {
 #[derive(Debug, PartialEq)]
 pub enum Literal {
     Record(BTreeMap<String, Expression>),
-    Int(usize),
+    /// `i64`, deliberately not `usize`: `usize` is 32-bit on `wasm32-unknown-unknown`, so a
+    /// pointer-width literal would accept `4294967295` on a 64-bit host and reject it in the
+    /// browser. `i64` also matches [`evaluate::Value::Int`], removing the cast that used to
+    /// sit between them.
+    ///
+    /// [`evaluate::Value::Int`]: crate::evaluate::Value::Int
+    Int(i64),
     Bool(bool),
     Float(f64),
     String(String),

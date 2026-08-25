@@ -1,0 +1,12 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: error
+---
+DivisionByZero {
+    span: SourceSpan {
+        offset: SourceOffset(
+            301,
+        ),
+        length: 19,
+    },
+}

@@ -4,6 +4,11 @@
  * The tokenizer is derived from `crates/trestle/src/parse/trestle.pest` and the builtin type
  * names from `crates/trestle/src/prelude.rs`. It is a syntax highlighter, not a parser — the
  * real compiler owns correctness, and everything it finds arrives as a marker.
+ *
+ * Last checked against the grammar when records and field access landed: the keyword set
+ * (`let`, `if`, `else`, `type`), the literals (`true`, `false`, `unit`), the operator table and
+ * `PRELUDE_TYPES` all still match. Field access needs no rule of its own — `.` is already a
+ * delimiter and the field name an identifier.
  */
 
 import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api.js'
@@ -58,9 +63,17 @@ const tokenizer: Monaco.languages.IMonarchLanguage = {
   /* eslint-disable regexp/use-ignore-case */
   tokenizer: {
     root: [
-      // A `:` before an identifier is a type annotation (`type_declaration` in the grammar),
-      // which is the only place a bare identifier names a type. Matching the colon and the
-      // name together is what lets `x: Int` colour `Int` as a type without a symbol table.
+      // A `:` before an identifier is a type annotation (`type_declaration` in the grammar).
+      // Matching the colon and the name together is what lets `x: Int` colour `Int` as a type
+      // without a symbol table.
+      //
+      // Records made this an approximation rather than a rule. `{ x: Int }` is a record *type*
+      // and `Int` really is one; `{ x: total }` is a record *literal* and `total` is a value.
+      // Both are `identifier ~ ":" ~ identifier`, and telling them apart needs to know whether
+      // we are in type or expression position — which a Monarch tokenizer, having no parse
+      // tree, cannot. The mis-colouring is confined to a bare identifier as a field value;
+      // literals and calls in that position already tokenize on their own rules. Correctness
+      // lives with the compiler, and everything it finds arrives as a marker.
       [/(:)(\s*)([A-Za-z_]\w*)/, ['delimiter', 'white', 'type']],
 
       [

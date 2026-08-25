@@ -10,8 +10,8 @@
  * Which pipeline stage produced a diagnostic. Trestle fails fast, so a batch is one phase.
  *
  * `internal` is the one value the Rust side never emits: it is synthesised here when a worker
- * traps or times out, so a compiler crash still reaches the user as a diagnostic rather than
- * as silence.
+ * traps or times out, or when the compiler was never built — so a failure of the compiler
+ * itself still reaches the user as a diagnostic rather than as silence.
  */
 export type Phase = 'parse' | 'resolve' | 'typecheck' | 'evaluate' | 'internal'
 
@@ -44,6 +44,15 @@ export type Diagnostic = {
   message: string
   help: string | null
   labels: Label[]
+  /**
+   * `miette`'s own rendering — source excerpt, caret art, every label — as plain text, exactly
+   * what the CLI prints for the same program. The `labels` above are what the editor draws;
+   * this is what the diagnostics panel prints.
+   *
+   * `null` only for the diagnostics this app synthesises itself: a trap or a timeout has no
+   * source position and no compiler rendering to show. The compiler always sends a string.
+   */
+  render: string | null
 }
 
 /** A top-level binding and the type inference settled on for it. */
@@ -65,19 +74,20 @@ export type CompileKind = 'check' | 'run'
 export type CompileResult = CheckResult | RunResult
 
 /**
- * Which compiler actually answered. Surfaced in the header so mock output is never mistaken
- * for the real thing.
+ * Whether the compiler is usable. There is no second implementation to fall back to — the
+ * playground either runs the real thing or says why it cannot, which is the only honest pair
+ * of states for a page whose entire purpose is to show what the compiler does.
  */
 export type CompilerEngine =
   | { kind: 'wasm'; version: string }
-  | { kind: 'mock'; reason: string }
+  | { kind: 'unavailable'; reason: string }
 
 export type WorkerRequest =
   | { id: number; kind: 'init' }
   | { id: number; kind: CompileKind; source: string }
 
 export type WorkerResponse =
-  /** `version` is null when the WebAssembly package is absent — the app then uses the mock. */
+  /** `version` is null when the WebAssembly package is absent — nothing has been built. */
   | { id: number; outcome: 'ready'; version: string | null }
   | { id: number; outcome: 'result'; result: CompileResult }
   /**

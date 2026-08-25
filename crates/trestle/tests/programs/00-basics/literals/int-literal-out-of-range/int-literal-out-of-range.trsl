@@ -1,0 +1,7 @@
+// Int literals are signed 64-bit. This one is one past `i64::MAX`, so the walker rejects it
+// while building the AST — the grammar itself is happy with any run of digits.
+//
+// The width is deliberate: it used to be `usize`, which is 32-bit under
+// `wasm32-unknown-unknown`, so a literal this size parsed fine natively and trapped in the
+// browser. Pinning the boundary here keeps that divergence from coming back.
+9223372036854775808

@@ -1,0 +1,6 @@
+// The other well-typed runtime fault. Left unchecked this is worse than a panic: `+` wraps
+// silently in a release build while panicking in a debug one, so the tested behaviour and
+// the shipped behaviour differ.
+let max = 9223372036854775807
+
+max + 1

@@ -11,10 +11,27 @@
 //!    `miette::Diagnostic`, so we read them through the trait — `labels()`, `code()`,
 //!    `help()`, `severity()`, `Display` — rather than matching on variants. That means a
 //!    new `TypeCheckError` variant shows up in the editor with no change here.
+//!
+//! 3. **Graphical rendering.** The structured labels above drive Monaco's squiggles, but they
+//!    are a reduction of what `miette` can actually draw. `render_graphically` runs the real
+//!    `GraphicalReportHandler` — the same one the CLI uses — so the playground can show the
+//!    caret art and source excerpt verbatim rather than an approximation reassembled in
+//!    TypeScript. This is why every diagnostic is wrapped in a `Report` with the source
+//!    attached: the leaf errors deliberately carry no `#[source_code]` (see
+//!    `parse::build_program::BuildError`), so the excerpt has to be supplied at this boundary,
+//!    exactly as `trestle::parse` and the conformance corpus already do.
 
-use miette::LabeledSpan;
+use miette::{GraphicalReportHandler, GraphicalTheme, LabeledSpan, NamedSource, Report};
 
 use crate::dto::{Diagnostic, Label, Phase, Severity};
+
+/// The name `miette` prints above the source excerpt. The playground has no filename, and
+/// programs are `.trsl`, so this is the honest stand-in.
+const SOURCE_NAME: &str = "playground.trsl";
+
+/// Wider than a terminal because the panel scrolls horizontally and a narrow wrap point makes
+/// long type names unreadable.
+const RENDER_WIDTH: usize = 100;
 
 /// Byte offset -> (line, column) lookup for one source string.
 pub struct LineIndex<'a> {
@@ -31,6 +48,11 @@ impl<'a> LineIndex<'a> {
             source,
             line_starts,
         }
+    }
+
+    /// The source this index was built over. Needed to attach an excerpt to a `Report`.
+    pub fn source(&self) -> &'a str {
+        self.source
     }
 
     /// 1-based line and 1-based UTF-16 column for a byte offset.
@@ -76,11 +98,18 @@ impl<'a> LineIndex<'a> {
 }
 
 /// Read any `miette::Diagnostic` into the wire format.
-pub fn from_miette(
-    diagnostic: &dyn miette::Diagnostic,
-    phase: Phase,
-    index: &LineIndex<'_>,
-) -> Diagnostic {
+///
+/// Takes the error **by value** so it can be moved into a `Report` and given the source text.
+/// That is what makes `render` possible; the structured fields are read back out through the
+/// same `Report`, which delegates every accessor to the error it wraps.
+pub fn from_miette<E>(error: E, phase: Phase, index: &LineIndex<'_>) -> Diagnostic
+where
+    E: miette::Diagnostic + Send + Sync + 'static,
+{
+    let report = Report::new(error)
+        .with_source_code(NamedSource::new(SOURCE_NAME, index.source().to_owned()));
+    let diagnostic: &dyn miette::Diagnostic = report.as_ref();
+
     let labels = diagnostic
         .labels()
         .map(|labels| labels.map(|label| label_from(&label, index)).collect())
@@ -93,7 +122,29 @@ pub fn from_miette(
         message: diagnostic.to_string(),
         help: diagnostic.help().map(|help| help.to_string()),
         labels,
+        render: render_graphically(diagnostic),
     }
+}
+
+/// `miette`'s own rendering of a diagnostic, as plain text.
+///
+/// `unicode_nocolor` rather than a coloured theme: the box-drawing and caret layout are the
+/// valuable part, and emitting ANSI escapes would mean parsing them back out in the browser.
+/// The panel styles the block with CSS instead. Links are disabled explicitly — an OSC-8
+/// hyperlink is meaningless in a `<pre>`.
+fn render_graphically(diagnostic: &dyn miette::Diagnostic) -> String {
+    let mut out = String::new();
+
+    let handler = GraphicalReportHandler::new_themed(GraphicalTheme::unicode_nocolor())
+        .with_width(RENDER_WIDTH)
+        .with_wrap_lines(false)
+        .with_links(false);
+
+    // Rendering is pure string building into a `String`, whose `fmt::Write` is infallible.
+    // A failure here must not cost the caller its diagnostic, so it degrades to no excerpt.
+    let _ = handler.render_report(&mut out, diagnostic);
+
+    out
 }
 
 fn label_from(label: &LabeledSpan, index: &LineIndex<'_>) -> Label {
@@ -112,19 +163,6 @@ fn severity_from(severity: Option<miette::Severity>) -> Severity {
         Some(miette::Severity::Advice) => Severity::Advice,
         // `miette` treats "unset" as an error, and so do we.
         Some(miette::Severity::Error) | None => Severity::Error,
-    }
-}
-
-/// A diagnostic we raise ourselves rather than one the compiler produced — currently only
-/// used for the `EvalError` arm, which is uninhabited today.
-pub fn synthetic(phase: Phase, code: &str, message: String, label: Label) -> Diagnostic {
-    Diagnostic {
-        phase,
-        severity: Severity::Error,
-        code: Some(code.to_owned()),
-        message,
-        help: None,
-        labels: vec![label],
     }
 }
 

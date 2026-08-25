@@ -31,7 +31,7 @@ const idleState = (): CompileState => ({
   valueType: null,
 })
 
-const engine = ref<CompilerEngine>({ kind: 'mock', reason: 'still starting up' })
+const engine = ref<CompilerEngine>({ kind: 'unavailable', reason: 'still starting up' })
 const states = reactive(new Map<string, CompileState>())
 
 /**

@@ -27,6 +27,8 @@ const { engine, stateFor, check, run, forget } = useCompiler()
 const editor = useTemplateRef<{ revealRange: (range: SourceRange) => void }>('editor')
 const rightPanel = ref<'output' | 'diagnostics' | 'bindings'>('output')
 
+const compilerReady = computed(() => engine.value.kind === 'wasm')
+
 const state = computed(() => (active.value ? stateFor(active.value.id) : null))
 const diagnostics = computed(() => state.value?.diagnostics ?? [])
 const bindings = computed(() => state.value?.bindings ?? [])
@@ -109,7 +111,12 @@ watch(errorCount, (count, previous) => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button size="sm" class="gap-1.5" :disabled="!active" @click="runActive">
+        <Button
+          size="sm"
+          class="gap-1.5"
+          :disabled="!active || !compilerReady"
+          @click="runActive"
+        >
           <PlayIcon class="size-3.5" />
           Run
         </Button>
@@ -154,7 +161,7 @@ watch(errorCount, (count, previous) => {
             </TabsList>
 
             <TabsContent value="output" class="mt-0 min-h-0 flex-1">
-              <OutputPanel v-if="state" :state="state" />
+              <OutputPanel v-if="state" :state="state" :engine="engine" />
             </TabsContent>
             <TabsContent value="diagnostics" class="mt-0 min-h-0 flex-1">
               <DiagnosticsPanel :diagnostics="diagnostics" @reveal="reveal" />

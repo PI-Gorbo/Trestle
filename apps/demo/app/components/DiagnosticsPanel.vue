@@ -78,6 +78,20 @@ const colourFor = Match.type<Severity>().pipe(
                 {{ label.startLine }}:{{ label.startColumn }} — {{ label.message }}
               </li>
             </ul>
+
+            <!--
+              The compiler's own rendering, verbatim — the same block `trestle` prints to a
+              terminal. Everything above is the editor-facing reduction of it; this is the
+              thing itself, so it is worth showing rather than paraphrasing.
+
+              `overflow-x-auto` on the `<pre>` and not the row: the report is laid out at a
+              fixed width by miette and must not be reflowed, but it also must not make the
+              panel scroll sideways as a whole.
+            -->
+            <pre
+              v-if="diagnostic.render"
+              class="mt-1 overflow-x-auto rounded-md border border-border bg-background/60 p-2.5 font-mono text-[11px] leading-relaxed text-muted-foreground"
+            >{{ diagnostic.render.trimEnd() }}</pre>
           </div>
         </button>
       </li>

@@ -1,0 +1,91 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "numerator",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            10,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            281,
+                        ),
+                        length: 2,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    265,
+                ),
+                length: 19,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "divisor",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            298,
+                        ),
+                        length: 1,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    284,
+                ),
+                length: 17,
+            },
+        },
+        Expression {
+            kind: Binary(
+                Div,
+                Expression {
+                    kind: Var(
+                        "numerator",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            301,
+                        ),
+                        length: 9,
+                    },
+                },
+                Expression {
+                    kind: Var(
+                        "divisor",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            313,
+                        ),
+                        length: 7,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    301,
+                ),
+                length: 19,
+            },
+        },
+    ],
+}

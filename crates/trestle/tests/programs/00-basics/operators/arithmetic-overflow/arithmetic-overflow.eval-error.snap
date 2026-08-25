@@ -1,0 +1,15 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: error
+---
+ArithmeticOverflow {
+    operator: "+",
+    lhs: 9223372036854775807,
+    rhs: 1,
+    span: SourceSpan {
+        offset: SourceOffset(
+            247,
+        ),
+        length: 7,
+    },
+}

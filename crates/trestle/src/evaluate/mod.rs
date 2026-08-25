@@ -97,7 +97,7 @@ pub fn evaluate(program: TypeCheckedProgram) -> Result<Value, EvalError> {
 fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Value, EvalError> {
     match &expr.kind {
         ExpressionKind::Literal(literal) => Ok(match literal {
-            TypeCheckedLiteral::Int(value) => Value::Int(*value as i64),
+            TypeCheckedLiteral::Int(value) => Value::Int(*value),
             TypeCheckedLiteral::Bool(value) => Value::Bool(*value),
             TypeCheckedLiteral::Float(value) => Value::Float(*value),
             // The string is stored verbatim (quotes included) — carry it through as-is.
@@ -277,13 +277,28 @@ fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value, span: SourceSpan) -> Result
                 ));
             };
 
-            Ok(Value::Int(match op {
-                BinaryOp::Add => l + r,
-                BinaryOp::Sub => l - r,
-                BinaryOp::Mul => l * r,
-                BinaryOp::Div => l / r,
+            // Checked, not bare: `l / r` traps on a zero divisor at every optimisation level,
+            // and `+ - *` panic on overflow in debug while wrapping in release — so the build
+            // under test and the build we ship would disagree. Both faults are reachable from
+            // a well-typed program, which makes them `EvalError`s rather than panics.
+            let (symbol, result) = match op {
+                BinaryOp::Add => ("+", l.checked_add(r)),
+                BinaryOp::Sub => ("-", l.checked_sub(r)),
+                BinaryOp::Mul => ("*", l.checked_mul(r)),
+                BinaryOp::Div if r == 0 => return Err(EvalError::DivisionByZero { span }),
+                // `checked_div` still returns `None` for `i64::MIN / -1`, whose true value is
+                // one past `i64::MAX`. With the zero case already handled above, that is the
+                // only way this arm yields `None`, and overflow is the honest name for it.
+                BinaryOp::Div => ("/", l.checked_div(r)),
                 _ => unreachable!(),
-            }))
+            };
+
+            result.map(Value::Int).ok_or(EvalError::ArithmeticOverflow {
+                operator: symbol,
+                lhs: l,
+                rhs: r,
+                span,
+            })
         }
         // Comparison: Int × Int → Bool.
         BinaryOp::Lt
@@ -341,7 +356,16 @@ fn eval_unary(op: UnaryOp, operand: Value, span: SourceSpan) -> Result<Value, Ev
                     "negation operand did not evaluate to an Int",
                 ));
             };
-            Ok(Value::Int(-n))
+            // `-i64::MIN` overflows. Not reachable from a literal — the parser rejects
+            // anything past `i64::MAX` — but arithmetic can land exactly on `i64::MIN`.
+            n.checked_neg()
+                .map(Value::Int)
+                .ok_or(EvalError::ArithmeticOverflow {
+                    operator: "-",
+                    lhs: 0,
+                    rhs: n,
+                    span,
+                })
         }
         UnaryOp::Not => {
             let Value::Bool(b) = operand else {

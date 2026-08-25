@@ -42,7 +42,8 @@ pub struct ResolvedExpression {
 
 #[derive(Debug, PartialEq)]
 pub enum ResolvedLiteral {
-    Int(usize),
+    /// See [`parse::ast::Literal::Int`](crate::parse::ast::Literal::Int) for why this is `i64`.
+    Int(i64),
     Bool(bool),
     Float(f64),
     String(String),

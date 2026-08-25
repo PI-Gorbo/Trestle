@@ -33,5 +33,6 @@ node_modules
 apps/demo/dist
 
 # The WebAssembly build of `crates/trestle-wasm`, produced by `pnpm build:wasm`. A build
-# artifact, rebuilt in CI; the app falls back to its mock compiler when it is absent.
+# artifact, rebuilt in CI. The app needs it: without it the playground loads, says the compiler
+# is unavailable, and refuses to check or evaluate anything.
 apps/demo/app/lib/trestle-wasm

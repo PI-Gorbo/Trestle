@@ -2,10 +2,12 @@
  * The compiler worker.
  *
  * Compilation runs off the main thread for two reasons. The obvious one is that a synchronous
- * compile would jank the editor. The important one is isolation: `trestle` still has live
- * `todo!()` holes, and a Rust panic under wasm traps the instance permanently — every later
- * call on it fails. Owning the compiler in a worker means the client can throw the whole
- * thread away and start a clean one.
+ * compile would jank the editor. The important one is isolation: a Rust panic under wasm is a
+ * trap, and `panic = "abort"` on this target means there is nothing to catch on either side of
+ * the boundary. Owning the compiler in a worker means the client can throw the whole thread
+ * away and start a clean one. `crates/trestle` still holds `expect`s that encode grammar
+ * invariants, and its walkers recurse without a depth limit against a stack smaller than a
+ * native one, so this is a real path rather than a theoretical one.
  */
 
 /// <reference lib="webworker" />
@@ -61,7 +63,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       post({ id: request.id, outcome: 'ready', version: await load() })
     } catch (error) {
       // The package exists but would not initialise — a corrupt or half-written build.
-      // Report it as unavailable so the app falls back to the mock rather than dying.
+      // Report it as absent so the client explains itself rather than the tab dying.
       post({ id: request.id, outcome: 'ready', version: null })
       console.error('[trestle] failed to initialise the WebAssembly compiler', error)
     }

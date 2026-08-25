@@ -331,12 +331,19 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let child = pair.into_inner().next().expect("literal has one child");
     let span = child.as_span();
     match child.as_rule() {
-        Rule::int => Ok(spanned(
-            span,
-            ExpressionKind::Literal(Literal::Int(
-                child.as_str().parse().expect("int literal fits in usize"),
-            )),
-        )),
+        // Not an `expect`: the grammar matches any run of digits, so overflow is something a
+        // user can type, not an internal invariant. It also used to be silently
+        // platform-dependent — `usize` is 32-bit under `wasm32-unknown-unknown`, so the same
+        // literal parsed on a 64-bit host and trapped in the browser.
+        Rule::int => {
+            let raw = child.as_str();
+            let value = raw.parse().map_err(|_| BuildError::IntLiteralOutOfRange {
+                literal: raw.to_owned(),
+                span: source_span_from_pest_span(span),
+            })?;
+
+            Ok(spanned(span, ExpressionKind::Literal(Literal::Int(value))))
+        }
         Rule::string => {
             // `as_str()` is the raw token incl. the surrounding quotes; strip them,
             // then resolve escape sequences to their runtime characters.

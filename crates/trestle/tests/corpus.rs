@@ -24,7 +24,9 @@
 //! macro docs below.
 
 use miette::{Diagnostic, NamedSource, Report};
+use pest::Parser as _;
 use trestle::AnalysisError;
+use trestle::parse::{Rule, TrestleParser, build_program};
 
 /// Render one failure as miette's fancy diagnostic, with the program source attached so the
 /// error shows its snippet + caret.
@@ -63,6 +65,14 @@ enum Stage {
     /// `AnalysisError`s (suffix `.error`) rather than a success value. This is how
     /// the corpus pins down diagnostics — e.g. an out-of-scope reference.
     Error,
+    /// Build a program that is expected to fail *before* analysis (suffix
+    /// `.build-error`). Drives `TrestleParser` + `build_program` directly rather than
+    /// `trestle::parse`, because that wrapper erases the structured `BuildError` into an
+    /// opaque `Report` — the same reason `trestle-wasm` bypasses it.
+    BuildError,
+    /// Evaluate a program that analyses cleanly but is expected to fault at runtime
+    /// (suffix `.eval-error`) — division by zero, arithmetic overflow.
+    EvalError,
 }
 
 /// Run one stage of one program and snapshot its `Debug` output *next to the
@@ -95,6 +105,23 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
     settings.set_prepend_module_to_snapshot(false);
 
     settings.bind(|| {
+        // Handled before the shared parse below, which panics on a build failure — here the
+        // failure *is* the subject.
+        if let Stage::BuildError = stage {
+            let pairs = TrestleParser::parse(Rule::program, src)
+                .unwrap_or_else(|e| panic!("failed to parse `{path}`:\n{e}"));
+            let pair = pairs
+                .into_iter()
+                .next()
+                .expect("the program rule always yields exactly one pair");
+
+            match build_program(pair) {
+                Ok(_) => panic!("expected `{path}` to fail to build, but it succeeded"),
+                Err(error) => insta::assert_debug_snapshot!(format!("{stem}.build-error"), error),
+            }
+            return;
+        }
+
         let program =
             trestle::parse(src).unwrap_or_else(|e| panic!("failed to parse `{path}`:\n{e:?}"));
         match stage {
@@ -131,6 +158,25 @@ fn run_stage(path: &str, src: &str, stage: Stage) {
                     insta::assert_debug_snapshot!(format!("{stem}.error"), errors);
                 }
             },
+            // Inverse of `Eval`: the program is well-typed, so analysis must succeed; it is
+            // *evaluation* that is expected to fault.
+            Stage::EvalError => {
+                let analysed = trestle::analyse(program).unwrap_or_else(|e| {
+                    panic!(
+                        "failed to analyse `{path}`:\n{}",
+                        render_analysis_error(path, src, e)
+                    )
+                });
+                match trestle::evaluate::evaluate(analysed) {
+                    Ok(value) => {
+                        panic!("expected `{path}` to fault at runtime, but it produced {value:?}")
+                    }
+                    Err(error) => {
+                        insta::assert_debug_snapshot!(format!("{stem}.eval-error"), error)
+                    }
+                }
+            }
+            Stage::BuildError => unreachable!("handled above, before the shared parse"),
         }
     });
 }
@@ -194,6 +240,24 @@ macro_rules! trsl_test {
             }
         }
     };
+    (@stage $name:ident, $path:literal, build_error $(, ignore = $reason:literal)?) => {
+        paste::paste! {
+            #[test]
+            $(#[ignore = $reason])?
+            fn [<$name _build_error>]() {
+                run_stage($path, include_str!(concat!("programs/", $path)), Stage::BuildError);
+            }
+        }
+    };
+    (@stage $name:ident, $path:literal, eval_error $(, ignore = $reason:literal)?) => {
+        paste::paste! {
+            #[test]
+            $(#[ignore = $reason])?
+            fn [<$name _eval_error>]() {
+                run_stage($path, include_str!(concat!("programs/", $path)), Stage::EvalError);
+            }
+        }
+    };
     (@stage $name:ident, $path:literal, error $(, ignore = $reason:literal)?) => {
         paste::paste! {
             #[test]
@@ -236,6 +300,13 @@ trsl_test!(
     "00-basics/literals/unit/unit.trsl",
     [ast, analyse, eval]
 );
+// Rejected while building the AST, so `ast` is not among its stages — there is no tree to
+// snapshot.
+trsl_test!(
+    basics_literals_int_literal_out_of_range,
+    "00-basics/literals/int-literal-out-of-range/int-literal-out-of-range.trsl",
+    [build_error]
+);
 
 // ── operators ─────────────────────────────────────────────
 trsl_test!(
@@ -272,6 +343,18 @@ trsl_test!(
     basics_operators_negation,
     "00-basics/operators/negation/negation.trsl",
     [ast, analyse, eval]
+);
+// Both analyse cleanly and fault at runtime, so they carry `analyse` but `eval_error` in
+// place of `eval`.
+trsl_test!(
+    basics_operators_division_by_zero,
+    "00-basics/operators/division-by-zero/division-by-zero.trsl",
+    [ast, analyse, eval_error]
+);
+trsl_test!(
+    basics_operators_arithmetic_overflow,
+    "00-basics/operators/arithmetic-overflow/arithmetic-overflow.trsl",
+    [ast, analyse, eval_error]
 );
 trsl_test!(
     basics_operators_comparison_greater_than,

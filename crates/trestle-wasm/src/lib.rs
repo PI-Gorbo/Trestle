@@ -8,18 +8,33 @@
 //!
 //! ## On panics
 //!
-//! `trestle` still has `todo!()` holes (record field access in binding resolution, record
-//! unification in the type checker). Reaching one aborts, and a trapped wasm instance is
-//! poisoned for good — every later call fails. We do not try to recover here: `panic =
-//! "abort"` on wasm means there is nothing to catch. Instead the panic surfaces to JS as a
-//! `RuntimeError`, and the caller (`apps/demo/app/lib/compiler/client.ts`) terminates that
-//! worker and spawns a fresh one. `console_error_panic_hook` makes the message readable in
-//! devtools on the way out.
+//! We do not try to recover from one here: `panic = "abort"` on wasm means there is nothing to
+//! catch. The panic surfaces to JS as a `RuntimeError`, and the caller
+//! (`apps/demo/app/lib/compiler/client.ts`) terminates that worker and spawns a fresh one.
+//! `console_error_panic_hook` makes the message readable in devtools on the way out.
+//!
+//! The reachable panics are no longer `todo!()` holes — those are closed — but they have not
+//! gone away:
+//!
+//! - `parse::build_expression` holds `expect`s that encode grammar invariants. Each is correct
+//!   against today's `trestle.pest`; a grammar edit that makes a child optional turns one into
+//!   a trap.
+//! - `evaluate::eval_expr` and `render`'s formatters recurse without a depth limit, and the
+//!   wasm stack is smaller than a native thread's — so deeply nested source overflows here
+//!   sooner than it does under `cargo test`.
+//!
+//! Faults a *correct* program can reach are errors rather than panics: integer literals that do
+//! not fit an `i64` are a `BuildError`, and division by zero and arithmetic overflow are
+//! `EvalError`s. All three arrive in the editor as ordinary diagnostics.
 
 mod diagnostics;
-mod dto;
+/// Public so `tests/wire_format.rs` can build one of each shape and generate the fixtures the
+/// playground type-checks against. It is the wire format; nothing here is an implementation
+/// detail.
+pub mod dto;
 mod render;
 
+use miette::{LabeledSpan, MietteDiagnostic};
 use pest::Parser as _;
 use wasm_bindgen::prelude::*;
 
@@ -80,7 +95,7 @@ pub fn run(source: &str) -> Result<JsValue, JsValue> {
     let result = match trestle::evaluate::evaluate(program) {
         Ok(value) => dto::RunResult::ok(format_value(&value), value_type, bindings),
 
-        Err(error) => dto::RunResult::failed(vec![from_miette(&error, Phase::Evaluate, &index)]),
+        Err(error) => dto::RunResult::failed(vec![from_miette(error, Phase::Evaluate, &index)]),
     };
 
     to_js(&result)
@@ -95,11 +110,11 @@ fn analyse(source: &str, index: &LineIndex<'_>) -> Result<TypeCheckedProgram, Ve
         // Both arms report the whole batch: Trestle fails fast between phases but collects
         // every error within one, and showing all of them at once is the point.
         AnalysisError::BindingResolution(errors) => errors
-            .iter()
+            .into_iter()
             .map(|error| from_miette(error, Phase::Resolve, index))
             .collect(),
         AnalysisError::TypeCheck(errors) => errors
-            .iter()
+            .into_iter()
             .map(|error| from_miette(error, Phase::Typecheck, index))
             .collect(),
     })
@@ -120,26 +135,35 @@ fn parse_source(source: &str, index: &LineIndex<'_>) -> Result<ParsedProgram, Ve
         .next()
         .expect("the program rule always yields exactly one pair");
 
-    build_program(program).map_err(|error| vec![from_miette(&error, Phase::Parse, index)])
+    build_program(program).map_err(|error| vec![from_miette(error, Phase::Parse, index)])
 }
 
 /// A pest parse failure, rebuilt as a diagnostic with a real span.
+///
+/// Assembled as a `miette::MietteDiagnostic` rather than by filling in the wire struct by hand,
+/// so it goes through `from_miette` like every other error and picks up the graphical
+/// rendering. pest is the one error source in the pipeline that is not already a
+/// `miette::Diagnostic`; this is the adapter.
 fn from_pest(error: &pest::error::Error<Rule>, index: &LineIndex<'_>) -> Diagnostic {
     let (offset, length) = match error.location {
-        // A point failure — "expected X here". Widened to one character by `label`.
+        // A point failure — "expected X here". Widened to one character by `from_miette`,
+        // which a zero-width squiggle would otherwise be invisible for.
         pest::error::InputLocation::Pos(offset) => (offset, 0),
         pest::error::InputLocation::Span((start, end)) => (start, end.saturating_sub(start)),
     };
 
     // `variant.message()` is the bare "expected …" text. `error.to_string()` would instead
-    // be pest's multi-line rendering with its own caret art, which duplicates what the
-    // editor is about to draw.
-    diagnostics::synthetic(
-        Phase::Parse,
-        "trestle::syntax_error",
-        error.variant.message().into_owned(),
-        index.label(Some("unexpected here".to_owned()), offset, length),
-    )
+    // be pest's multi-line rendering with its own caret art, which duplicates what miette is
+    // about to draw.
+    let diagnostic = MietteDiagnostic::new(error.variant.message().into_owned())
+        .with_code("trestle::syntax_error")
+        .with_label(LabeledSpan::new(
+            Some("unexpected here".to_owned()),
+            offset,
+            length,
+        ));
+
+    from_miette(diagnostic, Phase::Parse, index)
 }
 
 fn bindings_of(program: &TypeCheckedProgram, index: &LineIndex<'_>) -> Vec<Binding> {

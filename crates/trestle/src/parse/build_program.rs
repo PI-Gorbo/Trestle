@@ -79,6 +79,20 @@ mod error {
             span: SourceSpan,
         },
 
+        /// The one `BuildError` a user can provoke with a *well-formed* program. The grammar
+        /// happily matches any run of digits; whether it fits in an `Int` is a question only
+        /// this walker can answer.
+        #[error("integer literal `{literal}` is out of range")]
+        #[diagnostic(
+            code(trestle::int_literal_out_of_range),
+            help("Trestle integers are signed 64-bit: the largest literal is 9223372036854775807")
+        )]
+        IntLiteralOutOfRange {
+            literal: String,
+            #[label("this literal does not fit in an Int")]
+            span: SourceSpan,
+        },
+
         #[error("internal invariant violated while building {context}")]
         #[diagnostic(
             code(trestle::invariant),
@@ -265,7 +279,7 @@ mod tests {
         matches!(kind, ExpressionKind::Var(v) if v == name)
     }
 
-    fn is_int(expr: &Expression, value: usize) -> bool {
+    fn is_int(expr: &Expression, value: i64) -> bool {
         matches!(expr.kind, ExpressionKind::Literal(Literal::Int(n)) if n == value)
     }
 

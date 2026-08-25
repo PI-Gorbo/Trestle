@@ -53,6 +53,10 @@ pub struct Diagnostic {
     pub message: String,
     pub help: Option<String>,
     pub labels: Vec<Label>,
+    /// `miette`'s own rendering of this diagnostic — header, source excerpt, caret art, every
+    /// label — as plain text. The `labels` above are what Monaco draws; this is what the
+    /// diagnostics panel prints, and it is byte-for-byte what the CLI would have shown.
+    pub render: String,
 }
 
 /// A top-level binding and the type inference settled on for it. Lifted straight from

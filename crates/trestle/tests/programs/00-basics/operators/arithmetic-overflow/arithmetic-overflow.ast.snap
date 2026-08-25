@@ -1,0 +1,68 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "max",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            9223372036854775807,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            226,
+                        ),
+                        length: 19,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    216,
+                ),
+                length: 31,
+            },
+        },
+        Expression {
+            kind: Binary(
+                Add,
+                Expression {
+                    kind: Var(
+                        "max",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            247,
+                        ),
+                        length: 3,
+                    },
+                },
+                Expression {
+                    kind: Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            253,
+                        ),
+                        length: 1,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    247,
+                ),
+                length: 7,
+            },
+        },
+    ],
+}

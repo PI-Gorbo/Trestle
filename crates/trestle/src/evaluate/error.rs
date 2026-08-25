@@ -29,6 +29,33 @@ pub enum EvalError {
         #[label("while evaluating this")]
         span: SourceSpan,
     },
+
+    /// The first variant a *correct* program can reach: `1 / 0` type-checks perfectly well.
+    #[error("division by zero")]
+    #[diagnostic(
+        code(trestle::division_by_zero),
+        help("the right-hand side of `/` evaluated to 0")
+    )]
+    DivisionByZero {
+        #[label("this division has a zero divisor")]
+        span: SourceSpan,
+    },
+
+    /// Also reachable from a well-typed program. Raised rather than allowed to wrap, because
+    /// wrapping is what `--release` would silently do while a debug build panicked — a
+    /// difference between the tested build and the shipped one.
+    #[error("arithmetic overflow evaluating `{operator}`")]
+    #[diagnostic(
+        code(trestle::arithmetic_overflow),
+        help("Trestle integers are signed 64-bit: {lhs} {operator} {rhs} does not fit")
+    )]
+    ArithmeticOverflow {
+        operator: &'static str,
+        lhs: i64,
+        rhs: i64,
+        #[label("this operation overflows")]
+        span: SourceSpan,
+    },
 }
 
 impl EvalError {

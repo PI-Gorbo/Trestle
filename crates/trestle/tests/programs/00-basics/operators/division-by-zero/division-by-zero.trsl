@@ -1,0 +1,7 @@
+// A well-typed program that faults at runtime: `Int / Int` type-checks, and the checker has
+// no way to know the divisor is zero. Raised as an `EvalError` rather than left to panic,
+// because a panic under WebAssembly is a trap with no source position attached.
+let numerator = 10
+let divisor = 0
+
+numerator / divisor

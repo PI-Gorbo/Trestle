@@ -1,14 +1,16 @@
 /**
- * The compiler client: a small pool of workers, plus the fallback to the mock.
+ * The compiler client: a small pool of workers.
  *
  * Pooling buys two things. Compiles for different tabs genuinely overlap rather than queuing
  * behind one another, and — more importantly — a worker that traps or hangs can be discarded
- * without taking the others with it. `crates/trestle` still has reachable `todo!()` holes, so
- * that is a routine event, not a theoretical one.
+ * without taking the others with it. A Rust panic under WebAssembly is a trap with no
+ * unwinding, so there is nothing to catch inside the worker; throwing the whole thread away is
+ * the recovery. `crates/trestle` still reaches `expect`s that encode grammar invariants, and
+ * its walkers recurse without a depth limit against a stack smaller than a native one, so this
+ * is a real path rather than a theoretical one.
  */
 
 import CompilerWorker from './worker?worker'
-import { mockCheck, mockRun } from './stub'
 import type {
   CompileKind,
   CompileResult,
@@ -49,17 +51,26 @@ export type CompilerClient = {
   dispose: () => void
 }
 
-const internalError = (message: string, help: string): CompileResult => ({
+/**
+ * A diagnostic about the compiler rather than about the program. `render` is null and `labels`
+ * empty for the same reason: there is no source position to point at, and no compiler was in a
+ * state to draw one.
+ */
+const internalError = (
+  message: string,
+  help: string,
+  code = 'trestle::internal_compiler_error',
+): CompileResult => ({
   ok: false,
   diagnostics: [
     {
       phase: 'internal',
       severity: 'error',
-      code: 'trestle::internal_compiler_error',
+      code,
       message,
       help,
-      // No labels: a trap gives us no source position to point at.
       labels: [],
+      render: null,
     } satisfies Diagnostic,
   ],
 })
@@ -68,7 +79,7 @@ export const createCompilerClient = (): CompilerClient => {
   const slots: Slot[] = []
   const queue: Job[] = []
 
-  let engine: CompilerEngine = { kind: 'mock', reason: 'still starting up' }
+  let engine: CompilerEngine = { kind: 'unavailable', reason: 'still starting up' }
   let poolSize = 0
   let nextRequestId = 1
   let disposed = false
@@ -166,8 +177,8 @@ export const createCompilerClient = (): CompilerClient => {
 
   /**
    * Probe once, on a worker of its own, before any real work is queued. If the WebAssembly
-   * package is not there we shut the pool down entirely and serve the mock from the main
-   * thread — it is a lexical scan, so it costs microseconds and a worker would be waste.
+   * package is not there, the pool is shut down: there is nothing else to run, and every
+   * later `compile` answers with the reason instead.
    */
   const ready: Promise<CompilerEngine> = new Promise((resolve) => {
     let probe: Slot
@@ -175,7 +186,7 @@ export const createCompilerClient = (): CompilerClient => {
       probe = spawn()
     } catch (error) {
       engine = {
-        kind: 'mock',
+        kind: 'unavailable',
         reason: `web workers are unavailable (${error instanceof Error ? error.message : error})`,
       }
       resolve(engine)
@@ -197,7 +208,7 @@ export const createCompilerClient = (): CompilerClient => {
       if (response.version === null) {
         recycle(probe)
         settle({
-          kind: 'mock',
+          kind: 'unavailable',
           reason: 'the WebAssembly compiler has not been built — run `pnpm build:wasm`',
         })
         return
@@ -219,8 +230,15 @@ export const createCompilerClient = (): CompilerClient => {
     const resolved = await ready
     if (disposed) return internalError('The compiler has been shut down.', 'Reload the page.')
 
-    if (resolved.kind === 'mock') {
-      return kind === 'check' ? mockCheck(source) : mockRun(source)
+    if (resolved.kind === 'unavailable') {
+      return internalError(
+        `The compiler is unavailable: ${resolved.reason}.`,
+        // Deliberately covers both reasons this branch is reachable: an unbuilt package, and a
+        // browser that would not give us a worker. Naming only the first would be wrong advice
+        // in the second case.
+        'Nothing can be checked or evaluated until this is resolved. If the compiler has not been built, run `pnpm build:wasm` and reload.',
+        'trestle::compiler_unavailable',
+      )
     }
 
     return new Promise<CompileResult>((resolve) => {

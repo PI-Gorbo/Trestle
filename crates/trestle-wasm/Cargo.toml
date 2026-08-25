@@ -11,7 +11,10 @@ description = "Browser-facing shim over the `trestle` compiler pipeline."
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-trestle = { path = "../trestle" }
+# `default-features = false` turns off `trestle`'s `fancy` feature, which would pull
+# `backtrace` and the terminal-probing `supports-*` crates into the browser. The renderer
+# itself is kept — see the `miette` entry below.
+trestle = { path = "../trestle", default-features = false }
 
 wasm-bindgen = "0.2"
 serde = { version = "1", features = ["derive"] }
@@ -22,7 +25,12 @@ console_error_panic_hook = "0.1"
 # `build_program` separately is what lets us keep the *structured* pest error
 # (which `trestle::parse` erases into an opaque `miette::Report` via
 # `IntoDiagnostic`, losing the span the editor needs). See `lib.rs::parse_source`.
-miette = "7.6"
+#
+# `fancy-no-syscall` is the feature that matters here: it enables `fancy-base`
+# (`GraphicalReportHandler` + `owo-colors` + `textwrap`) while compiling out every path that
+# probes a terminal. That is what lets the playground render miette's real report — caret art,
+# source excerpt, every label — instead of a reduced version reassembled in TypeScript.
+miette = { version = "7.6", features = ["fancy-no-syscall"] }
 pest = "2.6"
 
 # Size over speed: the wasm ships over the wire to a browser, so bytes cost more than the
@@ -32,3 +40,9 @@ pest = "2.6"
 # impose it on the `trestle` crate too.
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = ["-Os"]
+
+# Test-only. `tests/wire_format.rs` serialises the DTOs to JSON to generate the fixtures the
+# playground type-checks against; it reads the same `serde` attributes `serde-wasm-bindgen`
+# does, which is what makes the generated shapes representative of the real boundary.
+[dev-dependencies]
+serde_json = "1"

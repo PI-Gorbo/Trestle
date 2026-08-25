@@ -3,8 +3,20 @@ name = "trestle"
 version = "0.1.0"
 edition = "2024"
 
+# `fancy` is a *feature*, not the default, so `trestle-wasm` can opt down to
+# `miette/fancy-no-syscall` — the same graphical renderer with the terminal-probing crates
+# (`terminal_size`, `supports-color`/`-hyperlinks`/`-unicode`) and `backtrace` compiled out.
+# Those neither work nor make sense under `wasm32-unknown-unknown`, and they were the bulk of
+# what `fancy` dragged into the browser bundle.
+#
+# `default-features = false` also drops miette's own `derive` default, so it is re-listed:
+# every error type in this crate derives `Diagnostic`.
+[features]
+default = ["fancy"]
+fancy = ["miette/fancy"]
+
 [dependencies]
-miette = { version = "7.6.0", features = ["fancy"] }
+miette = { version = "7.6.0", default-features = false, features = ["derive"] }
 pest = "2.6"
 pest_derive = "2.6"
 thiserror = "2.0.18"

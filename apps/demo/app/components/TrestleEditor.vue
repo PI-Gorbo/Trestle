@@ -64,7 +64,7 @@ const applyMarkers = () => {
 
   const markers = props.diagnostics.flatMap<Monaco.editor.IMarkerData>((diagnostic) => {
     const [primary, ...related] = diagnostic.labels
-    // A diagnostic with no labels (a compiler trap, or the mock declining to evaluate) has
+    // A diagnostic with no labels (a compiler trap, a timeout, or an unbuilt compiler) has
     // nowhere to point. It still shows in the panel; it just gets no squiggle.
     if (!primary) return []
 

@@ -1,9 +1,10 @@
 # Builds the Trestle playground (`apps/demo`) as a static site.
 #
 # Two stages, deliberately separate: the WebAssembly compiler is built from
-# `crates/trestle-wasm`, then the Nuxt app is generated. The app builds either way — with no
-# wasm package it falls back to its mock compiler — which is what keeps this workflow useful
-# while the compiler itself is still being fixed.
+# `crates/trestle-wasm`, then the Nuxt app is generated. The Nuxt build does not itself depend
+# on the wasm having been produced — the app resolves it through `import.meta.glob`, so an
+# absent package is an empty match rather than a resolve error — but a site published without
+# it cannot compile anything, so a failure in the wasm step must fail the job.
 
 name: demo
 
@@ -44,15 +45,16 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # TODO: remove `continue-on-error` once `cargo check --workspace` passes.
-      #
-      # At the time this workflow was written `crates/trestle` does not compile (a
-      # half-finished `FunctionInvocation` refactor), so this step will fail and the site is
-      # published running its mock compiler. Once the compiler builds, drop the flag so a
-      # broken wasm build fails the deploy loudly instead of silently shipping the mock.
       - name: Build the WebAssembly compiler
-        continue-on-error: true
         run: pnpm build:wasm
+
+      # `wire-fixtures.ts` is written by the Rust test from the real DTOs, and the app
+      # type-checks against it. If a change to `dto.rs` was not mirrored in `types.ts`, one of
+      # these two steps fails — the diff here, or `pnpm typecheck` below.
+      - name: Check the wire format is in step with the compiler
+        run: |
+          cargo test -p trestle-wasm --test wire_format
+          git diff --exit-code -- app/lib/compiler/wire-fixtures.ts
 
       - run: pnpm lint
       - run: pnpm typecheck
