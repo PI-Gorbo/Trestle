@@ -55,19 +55,16 @@ for an `i64`, division by zero, arithmetic overflow.
 
 ## Deploying
 
-`pnpm build` emits a static site to `.output/public`, deployable to any static host.
-
-For Cloudflare Pages, from the repository root:
-
-| Setting | Value |
-|---|---|
-| Build command | `cd apps/demo && pnpm install && pnpm build:wasm && pnpm build` |
-| Output directory | `apps/demo/.output/public` |
-| Node version | `22` |
+`pnpm build` emits a static site to `.output/public`, deployable to any static host. This one
+goes to Cloudflare as an assets-only Worker, built and published by GitHub Actions on every
+push to `main` — see
+[docs-and-learnings/deployment](../../docs-and-learnings/deployment/deployment.md) for the
+token scopes, the secrets and the reasoning.
 
 The build host needs Rust, the `wasm32-unknown-unknown` target and `wasm-pack` for
-`build:wasm`. Drop that step and the site still deploys, but it deploys a playground that
-cannot compile anything.
+`build:wasm`, which is why the build runs in CI rather than on the deploy host: no Cloudflare
+build image carries them. Drop that step and the site still deploys, but it deploys a
+playground that cannot compile anything.
 
 ## Examples
 

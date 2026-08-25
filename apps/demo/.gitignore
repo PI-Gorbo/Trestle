@@ -6,7 +6,8 @@ dist
 *.log
 
 # Built by `pnpm build:wasm` from `crates/trestle-wasm`. Regenerated, never committed —
-# see the repo README for the CI step that produces it.
+# see README.md for why it is not optional, and the deployment doc for the CI step that
+# produces it.
 app/lib/trestle-wasm
 
 # wrangler

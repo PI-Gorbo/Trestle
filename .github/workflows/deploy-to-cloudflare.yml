@@ -1,4 +1,19 @@
-name: demo
+# Builds the Trestle playground (`apps/demo`) as a static site and publishes it to Cloudflare
+# on `main`. The long-form setup — token scopes, secrets, why Workers rather than Pages — is in
+# `docs-and-learnings/deployment/deployment.md`.
+#
+# Two build stages, deliberately separate: the WebAssembly compiler is built from
+# `crates/trestle-wasm`, then the Nuxt app is generated. The Nuxt build does not itself depend
+# on the wasm having been produced — the app resolves it through `import.meta.glob`, so an
+# absent package is an empty match rather than a resolve error — but a site published without
+# it cannot compile anything, so a failure in the wasm step must fail the job.
+#
+# That same property is why the wasm is built *here* rather than by Cloudflare. Cloudflare's
+# build images ship Node, Bun, Go, Python and Ruby but no Rust toolchain and no `wasm-pack`, so
+# a Cloudflare-side `pnpm build` would skip the compiler and succeed, publishing a playground
+# that loads and reports itself as unavailable.
+
+name: deploy to cloudflare
 
 on:
   push:
@@ -8,14 +23,14 @@ on:
       - 'crates/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
-      - '.github/workflows/demo.yml'
+      - '.github/workflows/deploy-to-cloudflare.yml'
   pull_request:
     paths:
       - 'apps/demo/**'
       - 'crates/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
-      - '.github/workflows/demo.yml'
+      - '.github/workflows/deploy-to-cloudflare.yml'
   workflow_dispatch:
 
 concurrency:
@@ -32,7 +47,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # `packageManager` lives in `apps/demo/package.json`; the repository root is a Cargo
+      # workspace with no `package.json` at all. Without this the action reads the root, finds
+      # nothing, and fails with "No pnpm version is specified" — `defaults.run.working-directory`
+      # governs `run:` steps only, never `uses:` ones.
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: apps/demo/package.json
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
