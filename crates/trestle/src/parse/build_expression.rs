@@ -1,12 +1,5 @@
-//! Walkers for `Rule::expr` and everything nested under it: lambdas, type
-//! declarations, and binary operators.
-//!
-//! Binary-operator precedence is owned by a pest [`PrattParser`] (`PRATT`), not
-//! the grammar: the flat `binary_expression` rule hands its `primary`/operator
-//! sequence to it. Every builder returns a fully source-spanned [`Expression`];
-//! synthesized `Binary` nodes span both operands via [`merge_spans`].
-
 use super::{BuildError, Rule};
+use crate::parse::Rule::{comma_separated_list_of_type_expressions, primary_postfix};
 use crate::parse::ast::{BinaryOp, Literal, TypeExpressionKind, UnaryOp};
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
@@ -18,14 +11,6 @@ use super::ast::{
     source_span_from_pest_span,
 };
 
-/// The operator-precedence table — the single, explicit statement of Trestle's
-/// order of operations. Levels are listed loosest-binding first, so:
-///   pipe  <  or  <  and  <  comparison  <  additive  <  multiplicative  <  prefix
-/// `|>` binds loosest so `a + b |> f` is `(a + b) |> f` and a chain
-/// `x |> f |> g` is `(x |> f) |> g == g(f(x))`.
-/// Every infix operator is left-associative (pest offers only `Left`/`Right`, so a
-/// chain like `a < b < c` parses as `(a < b) < c` and later type-errors). Prefix ops
-/// bind tightest, so `!a && b` is `(!a) && b` and `-a * b` is `(-a) * b`.
 static PRATT: LazyLock<PrattParser<Rule>> = LazyLock::new(|| {
     PrattParser::new()
         .op(Op::infix(Rule::pipe, Assoc::Left))
@@ -42,7 +27,6 @@ static PRATT: LazyLock<PrattParser<Rule>> = LazyLock::new(|| {
         .op(Op::prefix(Rule::negate) | Op::prefix(Rule::logical_not))
 });
 
-/// Wrap an [`ExpressionKind`] with the source span of the pest pair it came from.
 fn spanned(span: Span, kind: ExpressionKind) -> Expression {
     Expression {
         kind,
@@ -66,9 +50,6 @@ pub fn build_expr(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     }
 }
 
-/// Build a `TypeDeclaration` from a `Rule::type_declaration_expression` pair. The
-/// grammar's `type` and `=` are bare string literals, so `into_inner()` yields
-/// exactly the two children, in order: the alias name and the type it stands for.
 fn build_type_declaration(expr_binding: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = expr_binding.as_span();
     let mut inner = expr_binding.into_inner();
@@ -93,8 +74,6 @@ fn build_type_declaration(expr_binding: Pair<Rule>) -> Result<Expression, BuildE
     ))
 }
 
-/// Dispatch on which alternative a `Rule::type_expression` matched. Like `expr`,
-/// the rule is a wrapper around exactly one child, so unwrap it first.
 fn build_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {
     let inner = get_bindings(pair, "type expression to have an inner type");
     match inner.as_rule() {
@@ -107,11 +86,6 @@ fn build_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError>
     }
 }
 
-/// Build a `Record` from a `Rule::record_type_expression` pair.
-///
-/// `comma_separated_list_of_type_expressions` is a *silent* rule, so it emits no
-/// pair of its own: `into_inner()` yields the fields directly, one
-/// `identifier_with_type_declaration` each (and none at all for `{}`).
 fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {
     let mut fields = BTreeMap::new();
     let span = pair.as_span().clone();
@@ -119,8 +93,7 @@ fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, Buil
         let span = source_span_from_pest_span(field.as_span());
         let (key, value) = build_required_binding_target(field)?;
 
-        // Keyed by name, so a repeated field would silently overwrite the first —
-        // reject it instead, with the caret on the redeclaration.
+        // Keyed by name
         if fields.insert(key.clone(), value).is_some() {
             return Err(BuildError::DuplicateRecordField { name: key, span });
         }
@@ -132,8 +105,6 @@ fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, Buil
     })
 }
 
-/// Build a `Block` from a `Rule::list_of_expressions` pair: a brace-wrapped sequence
-/// of expressions whose value is its last element.
 fn build_list_of_expressions(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
     let expressions = pair.into_inner().try_fold(Vec::new(), |mut list, expr| {
@@ -143,7 +114,6 @@ fn build_list_of_expressions(pair: Pair<Rule>) -> Result<Expression, BuildError>
     Ok(spanned(span, ExpressionKind::Block(expressions)))
 }
 
-/// Build a `Let` from a `Rule::let_binding` pair.
 fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
 
@@ -240,12 +210,6 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     ))
 }
 
-/// Parse an `identifier` followed by an optional `type_declaration` into its
-/// binding name and type annotation. This is the builder for the positions where
-/// the annotation is genuinely optional — `let` bindings and lambda params, both
-/// spelled `identifier_with_optional_type_declaration`. Positions that *require*
-/// the annotation go through [`build_required_binding_target`] instead. The
-/// grammar guarantees the identifier.
 fn build_binding_target(pair: Pair<Rule>) -> (String, Option<TypeExpression>) {
     pair.into_inner()
         .fold((String::new(), None), |(mut name, mut type_dec), p| {
@@ -258,16 +222,7 @@ fn build_binding_target(pair: Pair<Rule>) -> (String, Option<TypeExpression>) {
         })
 }
 
-/// [`build_binding_target`] for a grammar position where the type annotation is
-/// *mandatory* — `identifier_with_type_declaration` (`identifier ~
-/// type_declaration`), which today is only a record field.
-///
-/// Because the rule leaves the annotation no way to be absent, a missing one means
-/// the parse tree doesn't match the grammar rather than that the author forgot
-/// something. It surfaces as [`BuildError::Invariant`], not as an actionable
-/// diagnostic.
 fn build_required_binding_target(pair: Pair<Rule>) -> Result<(String, TypeExpression), BuildError> {
-    // Taken before `build_binding_target` consumes the pair.
     let span = source_span_from_pest_span(pair.as_span());
 
     let (name, type_dec) = build_binding_target(pair);
@@ -279,11 +234,7 @@ fn build_required_binding_target(pair: Pair<Rule>) -> Result<(String, TypeExpres
 }
 
 fn build_param(pair: Pair<Rule>) -> Result<Param, BuildError> {
-    // The grammar accepts untyped params so that `=>` commits the lambda branch.
-    // The annotation stays optional past this point too: an untyped param is not a
-    // parse error, it's a type left for inference to fill in.
     let (name, type_dec) = build_binding_target(pair);
-
     Ok(Param { name, type_dec })
 }
 
@@ -306,9 +257,6 @@ fn build_type_identifier_expression(pair: Pair<Rule>) -> TypeExpression {
     }
 }
 
-/// Fold a `Rule::binary_expression` (`primary (op primary)*`) into a tree of
-/// [`ExpressionKind::Binary`] nodes using the [`PRATT`] precedence table. A lone
-/// primary passes straight through — no `Binary` wrapper.
 fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     PRATT
         .map_primary(build_primary)
@@ -344,9 +292,6 @@ fn build_binary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         })
         .map_prefix(|op, rhs| {
             let rhs = rhs?;
-            // Span runs from the operator token through the operand: `merge_spans`
-            // assumes the first span starts at or before the second, which holds
-            // here since the prefix operator precedes its operand.
             let span = merge_spans(source_span_from_pest_span(op.as_span()), rhs.span);
             let unary_op = match op.as_rule() {
                 Rule::negate => UnaryOp::Neg,
@@ -449,26 +394,113 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 }
 
 fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
-    let child = pair.into_inner().next().expect("primary has one child");
-    let span = child.as_span();
-    match child.as_rule() {
-        Rule::function_invocation => build_function_invocation(child),
-        Rule::literal => build_literal(child),
+    let mut pairs = pair.into_inner();
+
+    // Pull the 'primary_base' off the stack of pairs.
+    let primary_base_pair = pairs.next().expect("primary has one child");
+    let primary_base_span = primary_base_pair.as_span();
+    let primary_base_expr = match primary_base_pair.as_rule() {
+        Rule::literal => build_literal(primary_base_pair),
         Rule::identifier => Ok(spanned(
-            span,
-            ExpressionKind::Var(child.as_str().to_string()),
+            primary_base_span,
+            ExpressionKind::Var(primary_base_pair.as_str().to_string()),
         )),
-        Rule::expr => build_expr(child), // parenthesized expression
+        Rule::expr => build_expr(primary_base_pair), // parenthesized expression
         rule => Err(BuildError::UnexpectedRule {
             rule,
-            span: source_span_from_pest_span(span),
+            span: source_span_from_pest_span(primary_base_span),
         }),
-    }
+    }?;
+
+    // Fold the base expr with the zero or more postfix_pairs that come through.
+    // Each fold iteration wraps the current state.
+    pairs.try_fold(primary_base_expr, |expr, _primary_postfix| {
+        let primary_postfix_rule = _primary_postfix.as_rule();
+        let primary_postfix_span = _primary_postfix.as_span();
+        let Rule::primary_postfix = primary_postfix_rule else {
+            return Err(BuildError::UnexpectedRule {
+                rule: primary_postfix_rule,
+                span: source_span_from_pest_span(_primary_postfix.as_span()),
+            });
+        };
+
+        let inner_pair =
+            _primary_postfix
+                .into_inner()
+                .next()
+                .ok_or_else(|| BuildError::Invariant {
+                    span: source_span_from_pest_span(primary_postfix_span),
+                })?;
+        let inner_pair_rule = inner_pair.as_rule();
+        match inner_pair_rule {
+            Rule::field_access => build_field_access(expr, inner_pair),
+            Rule::call_arguments => build_call_arguments(expr, inner_pair),
+            rule => Err(BuildError::UnexpectedRule {
+                rule,
+                span: source_span_from_pest_span(inner_pair.as_span()),
+            }),
+        }
+    })
 }
 
-/// Build an `If` from a `Rule::if_expression` pair. The grammar's keywords (`if`,
-/// `else`) and delimiters are bare string literals, so `into_inner()` yields only the
-/// `expr` children in order: condition, then-branch, and an optional else-branch.
+fn build_field_access(
+    target: Expression,
+    postfix_pair: Pair<Rule>,
+) -> Result<Expression, BuildError> {
+    let postfix_pair_span = postfix_pair.as_span();
+    let identifier = postfix_pair
+        .into_inner()
+        .next()
+        .map(|v| v.as_str().to_string())
+        .ok_or_else(|| BuildError::Invariant {
+            span: source_span_from_pest_span(postfix_pair_span),
+        })?;
+
+    // The postfix pair covers only `.name`; the synthesized node covers the target too.
+    let span = merge_spans(target.span, source_span_from_pest_span(postfix_pair_span));
+
+    Ok(Expression {
+        kind: ExpressionKind::FieldAccess {
+            target: Box::new(target),
+            identifier,
+        },
+        span,
+    })
+}
+
+fn build_call_arguments(
+    target: Expression,
+    postfix_pair: Pair<Rule>,
+) -> Result<Expression, BuildError> {
+    //  call_arguments has one element, comma_separated_list_of_type_expressions
+    let postfix_pair_span = postfix_pair.as_span();
+    let inner_rule = postfix_pair
+        .into_inner()
+        .next()
+        .ok_or_else(|| BuildError::Invariant {
+            span: source_span_from_pest_span(postfix_pair_span),
+        })?;
+
+    let arguments = inner_rule
+        .into_inner()
+        .try_fold(Vec::new(), |mut arguments, pair| {
+            let expr = build_expr(pair)?;
+            arguments.push(expr);
+            Ok(arguments)
+        })?;
+
+    // The postfix pair covers only `(args)`; the synthesized node covers the callee too.
+    let span = merge_spans(target.span, source_span_from_pest_span(postfix_pair_span));
+
+    Ok(Expression {
+        kind: ExpressionKind::FunctionInvocation {
+            function: Box::new(target),
+            arguments,
+        },
+        span,
+    })
+}
+
 fn build_if_expression(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
     let mut inner = pair.into_inner();

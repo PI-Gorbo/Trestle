@@ -167,24 +167,26 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
             function,
             arguments,
         } => {
-            let mut callee = env
-                .lookup(*callee)
-                .expect("resolved function is bound in the environment")
-                .clone();
+            let evaluated_funciton = eval_expr(env, function)?;
             // A zero-arg call `f()` invokes a nullary closure once — there are no arguments to
             // fold, but the call must still run the body (`apply` discards the unit argument).
-            if args.is_empty() {
-                if let Value::Closure { lambda, .. } = &callee {
+            if arguments.is_empty() {
+                if let Value::Closure { lambda, .. } = &evaluated_funciton {
                     if lambda.parameter.is_none() {
-                        callee = apply(callee, Value::Unit)?;
+                        return Ok(apply(evaluated_funciton, None)?);
                     }
                 }
             }
-            for arg in args {
-                let arg = eval_expr(env, arg)?;
-                callee = apply(callee, arg)?;
-            }
-            Ok(callee)
+
+            let applied_function_result =
+                arguments
+                    .iter()
+                    .try_fold(evaluated_funciton, |evaluated_funciton, arg| {
+                        let evaluated_arg = eval_expr(env, arg)?;
+                        Ok(apply(evaluated_funciton, Some(evaluated_arg))?)
+                    });
+
+            applied_function_result
         }
 
         // The one arm that opens a scope of its own: a block's `let`s are threaded through a
@@ -196,6 +198,7 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
             for expr in exprs {
                 result = eval_expr(&mut inner, expr)?;
             }
+
             Ok(result)
         }
 
@@ -208,14 +211,16 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
 
 /// Apply one argument to a closure: bind the parameter in the closure's captured
 /// environment and evaluate its body.
-fn apply(closure: Value, arg: Value) -> Result<Value, EvalError> {
+fn apply(closure: Value, arg: Option<Value>) -> Result<Value, EvalError> {
     let Value::Closure { lambda, env } = closure else {
         unreachable!("callee type-checks as a function");
     };
-    let mut env = match &lambda.parameter {
-        Some(param) => env.extend(param.binding, arg),
-        None => env,
+    let mut env = match (arg, &lambda.parameter) {
+        (Some(arg), Some(param)) => env.extend(param.binding, arg),
+        (None, None) => env,
+        _ => unreachable!("function application type-checked as valid"),
     };
+
     eval_expr(&mut env, &lambda.body)
 }
 
@@ -269,7 +274,7 @@ fn eval_binary(op: BinaryOp, lhs: Value, rhs: Value) -> Result<Value, EvalError>
             }))
         }
         BinaryOp::Pipe => {
-            let output = apply(rhs, lhs)?;
+            let output = apply(rhs, Some(lhs))?;
             Ok(output)
         }
     }

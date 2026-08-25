@@ -39,7 +39,9 @@ pub(super) fn subsitute_in_expr(map: &UnificationMap, expr: &mut TypeCheckedExpr
             function,
             arguments,
         } => {
-            for arg in typed_expressions {
+            subsitute_in_expr(map, function);
+
+            for arg in arguments {
                 subsitute_in_expr(map, arg);
             }
         }

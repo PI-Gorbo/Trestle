@@ -103,9 +103,15 @@ pub fn type_check(
 mod tests {
     use super::*;
 
+    use crate::parse::ast::{ExpressionKind, Literal, ParsedProgram};
+
     /// Drive the type-check pass directly: parse, resolve names, then type-check.
     fn analyse_src(src: &str) -> Result<TypeCheckedProgram, Vec<TypeCheckError>> {
-        let parsed = crate::parse::parse(src).expect("test source should parse");
+        analyse_parsed(crate::parse::parse(src).expect("test source should parse"))
+    }
+
+    /// Resolve and type-check an already-parsed program, so a test can assert on the AST first.
+    fn analyse_parsed(parsed: ParsedProgram) -> Result<TypeCheckedProgram, Vec<TypeCheckError>> {
         let resolved =
             crate::binding_resolution::resolve(parsed).expect("test source should resolve");
 
@@ -123,8 +129,59 @@ mod tests {
     #[test]
     fn too_many_arguments_is_an_error() {
         // `f` takes one argument; applying two over-applies it.
-        let analysis = analyse_src("let f = (a: Int) => a\nf(1, 2)");
-        let error = analysis.expect_err("over-application is an error");
-        assert!(matches!(error[0], TypeCheckError::TooManyArguments { .. }));
+        const SRC: &str = "let f = (a: Int) => a\nf(1, 2)";
+
+        // The type error hinges on the parse: newlines are insignificant (trestle.pest),
+        // so the two statements are delimited structurally. Pin that shape here — otherwise
+        // a parser that drops the call postfix shows up as a confusing `expect_err` panic.
+        let parsed = crate::parse::parse(SRC).expect("test source should parse");
+        assert_eq!(
+            parsed.expressions.len(),
+            2,
+            "expected a `let` and a call, got {:?}",
+            parsed.expressions
+        );
+
+        match &parsed.expressions[0].kind {
+            ExpressionKind::Let { name, value, .. } => {
+                assert_eq!(name, "f");
+                assert!(
+                    matches!(value.kind, ExpressionKind::Lambda(_)),
+                    "expected `f` to bind a lambda, got {:?}",
+                    value.kind
+                );
+            }
+            other => panic!("expected a `let` binding, got {other:?}"),
+        }
+
+        match &parsed.expressions[1].kind {
+            ExpressionKind::FunctionInvocation {
+                function,
+                arguments,
+            } => {
+                assert!(
+                    matches!(&function.kind, ExpressionKind::Var(name) if name == "f"),
+                    "expected a call to `f`, got {:?}",
+                    function.kind
+                );
+                assert_eq!(
+                    arguments.len(),
+                    2,
+                    "expected `f(1, 2)` to carry both arguments"
+                );
+                assert!(matches!(
+                    arguments[0].kind,
+                    ExpressionKind::Literal(Literal::Int(1))
+                ));
+                assert!(matches!(
+                    arguments[1].kind,
+                    ExpressionKind::Literal(Literal::Int(2))
+                ));
+            }
+            other => panic!("expected `f(1, 2)` to parse as a call, got {other:?}"),
+        }
+
+        let errors = analyse_parsed(parsed).expect_err("over-application is an error");
+        assert!(matches!(errors[0], TypeCheckError::TooManyArguments { .. }));
     }
 }

@@ -239,18 +239,9 @@ pub(super) fn infer_type_of_expression(
             let typed_function =
                 infer_type_of_expression(*function, ctx, unification_map, bindings)?;
 
-            let function_type = match typed_function.kind {
-                ExpressionKind::Var(binding_id) => ctx
-                    .variable_env
-                    .get(binding_id)
-                    .ok_or(TypeCheckError::ExpressionNotCallable { span }),
-                ExpressionKind::Lambda(lambda) => todo!(),
-                kind => Err(TypeCheckError::ExpressionNotCallable { span }),
-            }?;
-
             let output_type = get_type_after_applying_arguments(
                 unification_map,
-                function_type,
+                &typed_function.ty,
                 &analysed_args,
                 span,
             )?;
@@ -259,8 +250,8 @@ pub(super) fn infer_type_of_expression(
             // peeling one arrow (and checking one arg) per element; the leftover is the result.
             (
                 ExpressionKind::FunctionInvocation {
-                    function: FunctionInvocation(function, analysed_args),
-                    arguments: todo!(),
+                    function: Box::new(typed_function),
+                    arguments: analysed_args,
                 },
                 output_type,
             )
@@ -364,6 +355,7 @@ pub(super) fn infer_type_of_expression(
             function,
             arguments,
         } => todo!(),
+
         ResolvedExpressionKind::FieldAccess { target, field_name } => todo!(),
     };
 
