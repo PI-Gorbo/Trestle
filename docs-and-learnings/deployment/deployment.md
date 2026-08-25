@@ -182,6 +182,14 @@ a failed `instantiateStreaming` and falls back to `arrayBuffer` and `instantiate
 Cloudflare does send `application/wasm`, so it should not appear at all; if it does, it
 costs a little startup time rather than correctness.
 
+**The site 404s with `error code: 1042` shortly after the very first deploy.** Observed once,
+on 2026-08-25: the first-ever deploy served correctly for a few minutes, then the
+`workers.dev` hostname began returning 404 consistently, from more than one network. The
+error comes from Cloudflare ahead of the Worker rather than from the assets, and a plain
+redeploy — **Run workflow** on `main`, no code change — restored it permanently. Treat it as
+first-time route registration settling rather than anything in `wrangler.jsonc`, and reach
+for a redeploy before changing configuration.
+
 **A deploy succeeded but the old site is still showing.** Hard-reload. Everything under
 `_nuxt/` changes name every build, so a stale `index.html` in the browser cache is the only
 thing that can pin a visitor to an old version.
