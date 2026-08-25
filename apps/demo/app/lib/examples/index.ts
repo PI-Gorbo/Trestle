@@ -5,8 +5,9 @@
  * genuine regression rather than playground rot.
  *
  * Tiers 02 (match), 04 (generics) and 05 (effects) are deliberately absent: that syntax is
- * aspirational and does not parse yet. Tier 03 is only partly here — records and field access
- * work; ADTs, nested record types and field-call chains do not.
+ * aspirational and does not parse yet. Tier 03 is only partly here — records, field access and
+ * records nested by naming the inner type work; ADTs, an *inline* record type in field position,
+ * and field-call chains do not.
  *
  * Programs are copied verbatim, with two exceptions. The stale `// @skip:` markers some corpus
  * files still carry are dropped, and where a file's preamble is a note to whoever is fixing the
@@ -182,6 +183,45 @@ sum
 let p = { x: 3, y: 4 }
 
 p.x + p.y     // 7
+`,
+  },
+  {
+    name: 'type-aliases',
+    source: '01-unification/type-alias-declaration/named-alias',
+    description: 'A type name is an alias — for a builtin, or for another alias.',
+    code: `// A \`type\` declaration binds a name to a type. The name is an alias, not a new nominal
+// type: \`Celsius\` and \`Int\` are the same type, so a \`Celsius\` still adds to an \`Int\`.
+// An alias may name a builtin, or another alias.
+
+type Celsius = Int
+type Temperature = Celsius
+
+let freezing: Celsius = 0
+let boiling: Temperature = 100
+
+let range = boiling - freezing   // 100
+range
+`,
+  },
+  {
+    name: 'nested-record',
+    source: '03-records-and-adts/nested-record-alias',
+    description: 'A record type nested inside another, by naming the inner type first.',
+    code: `// Nesting a record inside a record type means naming the inner type first: a field's
+// annotation is a bare identifier, so \`value: { key: String }\` written inline does not
+// parse yet. \`Nested\` still expands to the full nested type — hover \`nestedValue\`, or open
+// the Bindings tab, to see it — and \`.\` chains as far as the nesting goes.
+
+type Inner = { key: String, value: String }
+
+type Nested = {
+    name: String,
+    value: Inner
+}
+
+let nestedValue: Nested = { name: "Sam", value: { key: "A key", value: "A value" } }
+
+nestedValue.value.value       // "A value"
 `,
   },
   {

@@ -1,0 +1,15 @@
+// TARGET: a record type nested inside a record type, by naming the inner type first.
+// A field's type annotation is a bare identifier, so the inner record has to be a
+// declared alias — writing it inline (`value: { key: String }`) does not parse yet, which
+// is what `nested-record-types` is still waiting on.
+
+type Inner = { key: String, value: String }
+
+type Nested = {
+    name: String,
+    value: Inner
+}
+
+let nestedValue: Nested = { name: "Sam", value: { key: "A key", value: "A value" } }
+
+nestedValue.value.value       // "A value"

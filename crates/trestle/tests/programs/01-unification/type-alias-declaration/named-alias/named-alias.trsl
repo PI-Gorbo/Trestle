@@ -1,0 +1,12 @@
+// A `type` declaration binds a name to a type. The name is an alias, not a new nominal
+// type: `Celsius` and `Int` are the same type, so a `Celsius` still adds to an `Int`.
+// An alias may name a builtin, or another alias.
+
+type Celsius = Int
+type Temperature = Celsius
+
+let freezing: Celsius = 0
+let boiling: Temperature = 100
+
+let range = boiling - freezing   // 100
+range

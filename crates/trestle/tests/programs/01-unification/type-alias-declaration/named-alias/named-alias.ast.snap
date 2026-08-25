@@ -1,0 +1,182 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Celsius",
+                type_expression: TypeExpression {
+                    kind: Named(
+                        "Int",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            241,
+                        ),
+                        length: 3,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    226,
+                ),
+                length: 18,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Temperature",
+                type_expression: TypeExpression {
+                    kind: Named(
+                        "Celsius",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            264,
+                        ),
+                        length: 7,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    245,
+                ),
+                length: 26,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "freezing",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Celsius",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                285,
+                            ),
+                            length: 9,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            0,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            297,
+                        ),
+                        length: 1,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    273,
+                ),
+                length: 26,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "boiling",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Temperature",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                310,
+                            ),
+                            length: 13,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            100,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            326,
+                        ),
+                        length: 3,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    299,
+                ),
+                length: 32,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "range",
+                type_dec: None,
+                value: Expression {
+                    kind: Binary(
+                        Sub,
+                        Expression {
+                            kind: Var(
+                                "boiling",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    343,
+                                ),
+                                length: 7,
+                            },
+                        },
+                        Expression {
+                            kind: Var(
+                                "freezing",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    353,
+                                ),
+                                length: 8,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            343,
+                        ),
+                        length: 18,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    331,
+                ),
+                length: 30,
+            },
+        },
+        Expression {
+            kind: Var(
+                "range",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    371,
+                ),
+                length: 5,
+            },
+        },
+    ],
+}

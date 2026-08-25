@@ -1,0 +1,405 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+TypeCheckedProgram {
+    expressions: [
+        TypeCheckedExpression {
+            kind: TypeDeclaration {
+                identifier: TypeBindingId(
+                    5,
+                ),
+                type_expression: Record(
+                    {
+                        "key": Literal(
+                            String,
+                        ),
+                        "value": Literal(
+                            String,
+                        ),
+                    },
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    317,
+                ),
+                length: 43,
+            },
+            ty: Record(
+                {
+                    "key": Literal(
+                        String,
+                    ),
+                    "value": Literal(
+                        String,
+                    ),
+                },
+            ),
+        },
+        TypeCheckedExpression {
+            kind: TypeDeclaration {
+                identifier: TypeBindingId(
+                    6,
+                ),
+                type_expression: Record(
+                    {
+                        "name": Literal(
+                            String,
+                        ),
+                        "value": Record(
+                            {
+                                "key": Literal(
+                                    String,
+                                ),
+                                "value": Literal(
+                                    String,
+                                ),
+                            },
+                        ),
+                    },
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    362,
+                ),
+                length: 52,
+            },
+            ty: Record(
+                {
+                    "name": Literal(
+                        String,
+                    ),
+                    "value": Record(
+                        {
+                            "key": Literal(
+                                String,
+                            ),
+                            "value": Literal(
+                                String,
+                            ),
+                        },
+                    ),
+                },
+            ),
+        },
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    0,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "name": TypeCheckedExpression {
+                                    kind: Literal(
+                                        String(
+                                            "Sam",
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            450,
+                                        ),
+                                        length: 5,
+                                    },
+                                    ty: Literal(
+                                        String,
+                                    ),
+                                },
+                                "value": TypeCheckedExpression {
+                                    kind: Literal(
+                                        Record(
+                                            {
+                                                "key": TypeCheckedExpression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "A key",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            471,
+                                                        ),
+                                                        length: 7,
+                                                    },
+                                                    ty: Literal(
+                                                        String,
+                                                    ),
+                                                },
+                                                "value": TypeCheckedExpression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "A value",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            487,
+                                                        ),
+                                                        length: 9,
+                                                    },
+                                                    ty: Literal(
+                                                        String,
+                                                    ),
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            464,
+                                        ),
+                                        length: 34,
+                                    },
+                                    ty: Record(
+                                        {
+                                            "key": Literal(
+                                                String,
+                                            ),
+                                            "value": Literal(
+                                                String,
+                                            ),
+                                        },
+                                    ),
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            442,
+                        ),
+                        length: 58,
+                    },
+                    ty: Record(
+                        {
+                            "name": Literal(
+                                String,
+                            ),
+                            "value": Record(
+                                {
+                                    "key": Literal(
+                                        String,
+                                    ),
+                                    "value": Literal(
+                                        String,
+                                    ),
+                                },
+                            ),
+                        },
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    416,
+                ),
+                length: 86,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: FieldAccess {
+                target: TypeCheckedExpression {
+                    kind: FieldAccess {
+                        target: TypeCheckedExpression {
+                            kind: Var(
+                                BindingId(
+                                    0,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    502,
+                                ),
+                                length: 11,
+                            },
+                            ty: Record(
+                                {
+                                    "name": Literal(
+                                        String,
+                                    ),
+                                    "value": Record(
+                                        {
+                                            "key": Literal(
+                                                String,
+                                            ),
+                                            "value": Literal(
+                                                String,
+                                            ),
+                                        },
+                                    ),
+                                },
+                            ),
+                        },
+                        field_name: "value",
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            502,
+                        ),
+                        length: 17,
+                    },
+                    ty: Record(
+                        {
+                            "key": Literal(
+                                String,
+                            ),
+                            "value": Literal(
+                                String,
+                            ),
+                        },
+                    ),
+                },
+                field_name: "value",
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    502,
+                ),
+                length: 23,
+            },
+            ty: Literal(
+                String,
+            ),
+        },
+    ],
+    bindings: [
+        TypedBinding {
+            name: "nestedValue",
+            ty: Record(
+                {
+                    "name": Literal(
+                        String,
+                    ),
+                    "value": Record(
+                        {
+                            "key": Literal(
+                                String,
+                            ),
+                            "value": Literal(
+                                String,
+                            ),
+                        },
+                    ),
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    416,
+                ),
+                length: 86,
+            },
+        },
+    ],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Inner",
+            ty: Record(
+                {
+                    "key": Literal(
+                        String,
+                    ),
+                    "value": Literal(
+                        String,
+                    ),
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    317,
+                ),
+                length: 43,
+            },
+        },
+        TypedBinding {
+            name: "Nested",
+            ty: Record(
+                {
+                    "name": Literal(
+                        String,
+                    ),
+                    "value": Record(
+                        {
+                            "key": Literal(
+                                String,
+                            ),
+                            "value": Literal(
+                                String,
+                            ),
+                        },
+                    ),
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    362,
+                ),
+                length: 52,
+            },
+        },
+    ],
+}

@@ -594,6 +594,14 @@ trsl_test!(
     "01-unification/type-alias-declaration/record/record.trsl",
     [ast, analyse, eval]
 );
+// The other half of a type declaration: naming a type that already exists, rather than
+// describing a new record. An alias is structural, not nominal — `Celsius` *is* `Int`, so a
+// value annotated with it unifies with plain `Int` arithmetic. Aliases chain, too.
+trsl_test!(
+    unification_type_alias_declaration_named_alias,
+    "01-unification/type-alias-declaration/named-alias/named-alias.trsl",
+    [ast, analyse, eval]
+);
 
 // ══ 02 control flow ═══════════════════════════════════════
 trsl_test!(
@@ -624,12 +632,20 @@ trsl_test!(
 trsl_test!(
     records_nested_field_access,
     "03-records-and-adts/nested-field-access/nested-field-access.trsl",
-    [ast]
+    [ast, analyse, eval]
+);
+// The working half of `nested-record-types` below: a field's annotation is a bare identifier,
+// so an inner record type has to be *named* first. Nesting the type is what makes the `.`
+// chain check — `nestedValue.value` has to resolve to a record for the second `.` to land.
+trsl_test!(
+    records_nested_record_alias,
+    "03-records-and-adts/nested-record-alias/nested-record-alias.trsl",
+    [ast, analyse, eval]
 );
 trsl_test!(
     records_nested_record_types,
     "03-records-and-adts/nested-record-types/nested-record-types.trsl",
-    ignore = "needs nested record type expressions in field position"
+    ignore = "needs *inline* record type expressions in field position"
 );
 trsl_test!(
     records_record_function_field,

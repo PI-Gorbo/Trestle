@@ -1,0 +1,222 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Inner",
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {
+                            "key": TypeExpression {
+                                kind: Named(
+                                    "String",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        335,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                            "value": TypeExpression {
+                                kind: Named(
+                                    "String",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        350,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            330,
+                        ),
+                        length: 30,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    317,
+                ),
+                length: 43,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Nested",
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {
+                            "name": TypeExpression {
+                                kind: Named(
+                                    "String",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        386,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                            "value": TypeExpression {
+                                kind: Named(
+                                    "Inner",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        405,
+                                    ),
+                                    length: 7,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            376,
+                        ),
+                        length: 38,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    362,
+                ),
+                length: 52,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "nestedValue",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Nested",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                431,
+                            ),
+                            length: 8,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "name": Expression {
+                                    kind: Literal(
+                                        String(
+                                            "Sam",
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            450,
+                                        ),
+                                        length: 5,
+                                    },
+                                },
+                                "value": Expression {
+                                    kind: Literal(
+                                        Record(
+                                            {
+                                                "key": Expression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "A key",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            471,
+                                                        ),
+                                                        length: 7,
+                                                    },
+                                                },
+                                                "value": Expression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "A value",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            487,
+                                                        ),
+                                                        length: 9,
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            464,
+                                        ),
+                                        length: 34,
+                                    },
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            442,
+                        ),
+                        length: 58,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    416,
+                ),
+                length: 86,
+            },
+        },
+        Expression {
+            kind: FieldAccess {
+                target: Expression {
+                    kind: FieldAccess {
+                        target: Expression {
+                            kind: Var(
+                                "nestedValue",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    502,
+                                ),
+                                length: 11,
+                            },
+                        },
+                        identifier: "value",
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            502,
+                        ),
+                        length: 17,
+                    },
+                },
+                identifier: "value",
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    502,
+                ),
+                length: 23,
+            },
+        },
+    ],
+}
