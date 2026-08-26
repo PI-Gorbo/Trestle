@@ -1,0 +1,13 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: error
+---
+DuplicateRecordField {
+    name: "x",
+    span: SourceSpan {
+        offset: SourceOffset(
+            346,
+        ),
+        length: 9,
+    },
+}

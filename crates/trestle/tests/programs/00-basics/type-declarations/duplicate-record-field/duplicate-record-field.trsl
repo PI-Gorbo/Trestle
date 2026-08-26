@@ -1,0 +1,6 @@
+// A record type that names the same field twice. `build_record_type_expression` keys the
+// fields by name, so the second `x` collides with the first and the program is rejected
+// while the AST is still being built — before binding resolution ever sees it.
+// The negative twin of the `record` program's shape coverage.
+
+type Bad = { x: Int, x: String }

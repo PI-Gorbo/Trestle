@@ -1,0 +1,13 @@
+// @skip: needs ADTs — variants with a record payload (tier 03) — PROPOSED syntax
+// TARGET: variants whose payload is a record, so the fields are named rather than
+// positional. This is the form `algebraic-data-types` consumes with `match`.
+
+type Shape =
+    | Circle { radius: Int }
+    | Rectangle { width: Int, height: Int }
+
+let unit: Shape = Circle { radius: 1 }
+
+let box: Shape = Rectangle { width: 3, height: 4 }
+
+box

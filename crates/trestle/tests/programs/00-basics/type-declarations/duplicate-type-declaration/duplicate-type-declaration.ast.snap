@@ -1,0 +1,100 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Foo",
+                type_expression: TypeExpression {
+                    kind: Named(
+                        "Int",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            731,
+                        ),
+                        length: 3,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    720,
+                ),
+                length: 14,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Foo",
+                type_expression: TypeExpression {
+                    kind: Named(
+                        "String",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            746,
+                        ),
+                        length: 6,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    735,
+                ),
+                length: 17,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "value",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Foo",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                763,
+                            ),
+                            length: 5,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Literal(
+                        String(
+                            "the second declaration wins",
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            771,
+                        ),
+                        length: 29,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    754,
+                ),
+                length: 48,
+            },
+        },
+        Expression {
+            kind: Var(
+                "value",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    802,
+                ),
+                length: 5,
+            },
+        },
+    ],
+}

@@ -29,3 +29,11 @@ omnibus program.
   covers a block-local `let` reusing an enclosing name (the inner binding wins
   inside the block; the outer one is restored after), while `block-scope-leak` is
   the negative test that a block-local binding does not leak out.
+- **type-declarations** — the `type` keyword as its own subject: what may stand on
+  the right of `type X = …`. Aliases (`named-alias`, `alias-to-every-builtin`),
+  record types by shape (`record`), and the two negative tests `unknown-type-name`
+  (`UnboundTypeName`) and `duplicate-record-field` (`DuplicateRecordField`).
+  `duplicate-type-declaration` records that a repeated `type` shadows silently
+  where a repeated `let` errors. Function types are not supported yet — three
+  ignored programs pin the decided `(n: Int) => Int` syntax. See
+  [type-declarations/README.md](type-declarations/README.md).

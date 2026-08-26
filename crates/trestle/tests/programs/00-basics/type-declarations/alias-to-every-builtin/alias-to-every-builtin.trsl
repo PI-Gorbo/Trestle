@@ -1,0 +1,19 @@
+// An alias for each of the five builtin type names the prelude seeds. `named-alias` covers
+// what an alias *means* (it is structural, and aliases chain); this one covers the breadth —
+// every builtin is reachable through an alias, not just `Int`.
+
+type Celsius = Int
+type Ratio = Float
+type Name = String
+type Flag = Bool
+type Nothing = Unit
+
+let freezing: Celsius = 0
+let half: Ratio = 0.5
+let who: Name = "Sam"
+let ready: Flag = true
+let nothing: Nothing = unit
+
+let boiling: Celsius = 100
+
+boiling - freezing      // 100

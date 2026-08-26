@@ -44,7 +44,7 @@ the authoritative ledger and cannot drift: a program registered there *without* 
 table here would go stale the way the one it replaced did. Read `corpus.rs` top to bottom
 for what works; read its `ignore` reasons for what does not.
 
-At the time of writing that is 183 passing stage-tests over ~50 programs, with 11 ignored.
+At the time of writing that is 195 passing stage-tests over 85 programs, with 17 ignored.
 Shipping, in tiers: all five literal forms plus records; the full operator set; `let` and
 typed `let`; blocks, block scoping and shadowing; `if` / `if`-`else` with block branches;
 lambdas (typed, untyped, zero-parameter, with return annotations), currying, partial
@@ -59,9 +59,9 @@ the same source. If a feature ships and the playground does not show it, that is
 visible gap.
 
 **Not yet supported** (each has an ignored corpus program naming its blocker): function type
-expressions in annotations; *inline* record type expressions in field position; mixed
-postfix chaining (`a.b().c`); `match` (tier 02); ADTs (tier 03); generics (tier 04); the
-effect system (tier 05).
+expressions, both as a `type` right-hand side and in annotations; *inline* record type
+expressions in field position; mixed postfix chaining (`a.b().c`); `match` (tier 02); ADTs
+(tier 03); generics (tier 04); the effect system (tier 05).
 
 **Known limits that are deliberate, not bugs:**
 - **Operators are hardcoded to `Int`.** Arithmetic and *all* comparisons — `==` and `!=`
@@ -213,8 +213,16 @@ is done; what follows is what is actually left.
        Either make them short-circuit in `eval_binary` or say plainly that they do not.
 4. [ ] Inline record type expressions in field position, then mixed postfix chaining
        (`a.b().c`) — the two smallest ignored programs, and both tier-03 blockers.
-5. [ ] Function type expressions in annotations (`f: (name: String) => Int`), which unblocks
-       two more ignored programs.
+5. [ ] Function type expressions, which unblock five ignored programs. The syntax is
+       decided: `=>` mirroring lambdas, with the parameter name **optional** because it is
+       documentation, not part of the type — so `(n: Int) => Int` and `(Int) => Int` are the
+       same type, a multi-parameter form curries as a multi-parameter lambda does, and
+       `() => Int` is the nullary case. It all maps onto the existing
+       `Type::Fn(Option<Box<Type>>, Box<Type>)`, so the blocker is `type_expression` in the
+       grammar, not the checker. Two positions, and they are separable: as a `type`
+       right-hand side (`00-basics/type-declarations/function-type*`, three programs), and in
+       *annotation* position, where `type_declaration = { ":" ~ identifier }` has to widen to
+       a full `type_expression` (`function-typed-parameter`, `record-function-field`).
 6. [ ] ADTs + constructors + `match` (tiers 02–03).
 
 ## 5. Design directions (recorded)

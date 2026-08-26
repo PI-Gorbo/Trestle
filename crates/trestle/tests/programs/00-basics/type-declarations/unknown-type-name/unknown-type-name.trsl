@@ -1,0 +1,5 @@
+// A `type` declaration whose right-hand side names a type that was never declared. It parses
+// — a type expression is just an identifier here — and fails in `binding_resolution` with
+// `UnboundTypeName`. The type namespace's counterpart to `UnboundName` in the value namespace.
+
+type Bad = DoesNotExist

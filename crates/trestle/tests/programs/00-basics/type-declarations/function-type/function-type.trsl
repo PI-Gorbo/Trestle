@@ -1,0 +1,19 @@
+// @skip: needs function type expressions (`(n: Int) => Int` as a `type` right-hand side)
+// TARGET: a type alias naming a function type, used to annotate a lambda.
+//
+// The arrow is `=>`, matching lambda syntax, and the parameter name is optional — it is
+// documentation, not part of the type, so `Transform` and `Transform2` are the same type.
+// `() => Int` is the nullary case, the type of a zero-parameter lambda.
+//
+// Only the `type` right-hand side is new here: the `let` annotations are bare identifiers,
+// which already work. That is what keeps this program to one feature.
+
+type Transform = (n: Int) => Int
+type Transform2 = (Int) => Int
+type Thunk = () => Int
+
+let double: Transform = (n) => n * 2
+let triple: Transform2 = (n) => n * 3
+let answer: Thunk = () => 42
+
+double(21) + triple(0) + answer()      // 42

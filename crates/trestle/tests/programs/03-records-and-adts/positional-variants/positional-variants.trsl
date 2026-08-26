@@ -1,0 +1,17 @@
+// @skip: needs ADTs — variants with a positional payload (tier 03) — PROPOSED syntax
+// TARGET: variants that carry an ordered, unlabelled payload, applied like a function.
+// Arity and position are the whole interface — `Rectangle(3, 4)` is width-then-height
+// only by convention.
+
+type Shape =
+    | Point
+    | Circle(Int)
+    | Rectangle(Int, Int)
+
+let origin: Shape = Point
+
+let unit: Shape = Circle(1)
+
+let box: Shape = Rectangle(3, 4)
+
+box

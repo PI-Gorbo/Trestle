@@ -1,0 +1,17 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: errors
+---
+BindingResolution(
+    [
+        UnboundTypeName {
+            name: "DoesNotExist",
+            span: SourceSpan {
+                offset: SourceOffset(
+                    297,
+                ),
+                length: 12,
+            },
+        },
+    ],
+)

@@ -1,0 +1,18 @@
+// @skip: needs function type expressions in nested position (`(f: (Int) => Int, x: Int) => Int`)
+// TARGET: a function type appearing inside another function type's parameter list.
+//
+// Two spellings of the same thing: naming the inner function type first (`IntOp`, the way
+// `nested-record-alias` names an inner record), and writing it inline. `Apply` and `Apply2`
+// are the same type — the alias buys readability, not a distinct type.
+
+type IntOp = (Int) => Int
+
+type Apply = (f: IntOp, x: Int) => Int
+type Apply2 = (f: (Int) => Int, x: Int) => Int
+
+let apply: Apply = (f, x) => f(x)
+let apply2: Apply2 = (f, x) => f(f(x))
+
+let double: IntOp = (n) => n * 2
+
+apply(double, 5) + apply2(double, 5)      // 10 + 20 = 30

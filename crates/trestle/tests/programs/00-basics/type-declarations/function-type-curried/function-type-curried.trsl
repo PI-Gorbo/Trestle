@@ -1,0 +1,19 @@
+// @skip: needs function type expressions (`(a: Int, b: Int) => Int` as a `type` right-hand side)
+// TARGET: a multi-parameter function type currying to nested single-parameter arrows.
+//
+// `(a: Int, b: Int) => Int` is sugar for `(a: Int) => (b: Int) => Int`, exactly as the
+// multi-parameter lambda `(a, b) => …` is sugar for `(a) => (b) => …`. `Add` and `Add2` are
+// therefore the same type, which is what binding the *same* lambda through each pins.
+//
+// Partially applying through the sugared alias is the other half: `add(1)` is a function
+// awaiting the remaining argument, and its type is the alias's tail.
+
+type Add = (a: Int, b: Int) => Int
+type Add2 = (a: Int) => (b: Int) => Int
+
+let add: Add = (a, b) => a + b
+let add2: Add2 = (a, b) => a + b
+
+let increment = add(1)
+
+add(1, 2) + add2(3, 4) + increment(9)      // 3 + 7 + 10 = 20

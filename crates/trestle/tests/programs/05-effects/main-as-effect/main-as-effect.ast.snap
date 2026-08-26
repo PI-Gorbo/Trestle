@@ -1,0 +1,124 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "main",
+                type_dec: None,
+                value: Expression {
+                    kind: Var(
+                        "effect",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            224,
+                        ),
+                        length: 6,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    213,
+                ),
+                length: 18,
+            },
+        },
+        Expression {
+            kind: Block(
+                [
+                    Expression {
+                        kind: Let {
+                            name: "name",
+                            type_dec: None,
+                            value: Expression {
+                                kind: Var(
+                                    "readLine",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        248,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                        },
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                237,
+                            ),
+                            length: 66,
+                        },
+                    },
+                    Expression {
+                        kind: FunctionInvocation {
+                            function: Expression {
+                                kind: Var(
+                                    "print",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        303,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                            arguments: [
+                                Expression {
+                                    kind: Binary(
+                                        Add,
+                                        Expression {
+                                            kind: Literal(
+                                                String(
+                                                    "hello, ",
+                                                ),
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    309,
+                                                ),
+                                                length: 9,
+                                            },
+                                        },
+                                        Expression {
+                                            kind: Var(
+                                                "name",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    321,
+                                                ),
+                                                length: 4,
+                                            },
+                                        },
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            309,
+                                        ),
+                                        length: 16,
+                                    },
+                                },
+                            ],
+                        },
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                303,
+                            ),
+                            length: 23,
+                        },
+                    },
+                ],
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    231,
+                ),
+                length: 147,
+            },
+        },
+    ],
+}

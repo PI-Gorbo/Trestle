@@ -1,0 +1,10 @@
+type Colour =
+    | Red
+    | Green
+    | Blue
+
+let favourite: Colour = Red
+
+let fallback = Blue
+
+favourite

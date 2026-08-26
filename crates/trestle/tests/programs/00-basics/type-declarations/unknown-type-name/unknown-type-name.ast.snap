@@ -1,0 +1,30 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Bad",
+                type_expression: TypeExpression {
+                    kind: Named(
+                        "DoesNotExist",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            297,
+                        ),
+                        length: 12,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    286,
+                ),
+                length: 23,
+            },
+        },
+    ],
+}

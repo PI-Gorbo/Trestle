@@ -557,6 +557,75 @@ trsl_test!(
     [ast, analyse, eval]
 );
 
+// ── type declarations ─────────────────────────────────────
+// The `type` keyword as a subject in its own right: what may stand on the right-hand side of
+// `type X = …`, and what is rejected there. Placed last in the tier because the programs lean
+// on typed `let` and lambdas from the houses above. Records-as-*values* are tier 03; this
+// house is only about the declaration.
+trsl_test!(
+    basics_type_declarations_record,
+    "00-basics/type-declarations/record/record.trsl",
+    [ast, analyse, eval]
+);
+// The other half of a type declaration: naming a type that already exists, rather than
+// describing a new record. An alias is structural, not nominal — `Celsius` *is* `Int`, so a
+// value annotated with it unifies with plain `Int` arithmetic. Aliases chain, too.
+trsl_test!(
+    basics_type_declarations_named_alias,
+    "00-basics/type-declarations/named-alias/named-alias.trsl",
+    [ast, analyse, eval]
+);
+// Breadth where `named-alias` has depth: every one of the five type names the prelude seeds is
+// reachable through an alias, not just `Int`. Pins the positional `TypeBindingId` seeding.
+trsl_test!(
+    basics_type_declarations_alias_to_every_builtin,
+    "00-basics/type-declarations/alias-to-every-builtin/alias-to-every-builtin.trsl",
+    [ast, analyse, eval]
+);
+// Redeclaring a *type* is currently allowed — the second declaration shadows the first — where
+// redeclaring a `let` in the same block is a `DuplicateBinding` error. The eval value pins
+// which declaration wins; the program exists to make that asymmetry visible rather than to
+// bless it. If types should reject redeclaration too, this becomes `[ast, error]`.
+trsl_test!(
+    basics_type_declarations_duplicate_type_declaration,
+    "00-basics/type-declarations/duplicate-type-declaration/duplicate-type-declaration.trsl",
+    [ast, analyse, eval]
+);
+// A right-hand side naming a type that was never declared. Parses, then fails in
+// `binding_resolution`; the `error` stage pins the `UnboundTypeName` diagnostic — the type
+// namespace's counterpart to `UnboundName`.
+trsl_test!(
+    basics_type_declarations_unknown_type_name,
+    "00-basics/type-declarations/unknown-type-name/unknown-type-name.trsl",
+    [ast, error]
+);
+// Rejected while building the AST — `build_record_type_expression` keys fields by name, so the
+// repeat collides — which is why `ast` is not among its stages: there is no tree to snapshot.
+trsl_test!(
+    basics_type_declarations_duplicate_record_field,
+    "00-basics/type-declarations/duplicate-record-field/duplicate-record-field.trsl",
+    [build_error]
+);
+// The function type form: `=>` matching lambda syntax, with the parameter name optional
+// because it is documentation rather than part of the type. `Type::Fn` already models all
+// three of these; only the surface syntax is missing, so the blocker is `type_expression` in
+// the grammar, not the checker.
+trsl_test!(
+    basics_type_declarations_function_type,
+    "00-basics/type-declarations/function-type/function-type.trsl",
+    ignore = "needs function type expressions"
+);
+trsl_test!(
+    basics_type_declarations_function_type_curried,
+    "00-basics/type-declarations/function-type-curried/function-type-curried.trsl",
+    ignore = "needs function type expressions"
+);
+trsl_test!(
+    basics_type_declarations_function_type_higher_order,
+    "00-basics/type-declarations/function-type-higher-order/function-type-higher-order.trsl",
+    ignore = "needs function type expressions"
+);
+
 // ══ 01 pipelines ══════════════════════════════════════════
 trsl_test!(
     pipelines_pipeline,
@@ -602,20 +671,6 @@ trsl_test!(
     unification_infinite_type_record_self_reference,
     "01-unification/infinite-type/record-self-reference.trsl",
     [ast, error]
-);
-
-trsl_test!(
-    unification_type_alias_declaration_record,
-    "01-unification/type-alias-declaration/record/record.trsl",
-    [ast, analyse, eval]
-);
-// The other half of a type declaration: naming a type that already exists, rather than
-// describing a new record. An alias is structural, not nominal — `Celsius` *is* `Int`, so a
-// value annotated with it unifies with plain `Int` arithmetic. Aliases chain, too.
-trsl_test!(
-    unification_type_alias_declaration_named_alias,
-    "01-unification/type-alias-declaration/named-alias/named-alias.trsl",
-    [ast, analyse, eval]
 );
 
 // ══ 02 control flow ═══════════════════════════════════════
@@ -681,6 +736,41 @@ trsl_test!(
     records_field_call_chain,
     "03-records-and-adts/field-call-chain/field-call-chain.trsl",
     ignore = "needs mixed postfix chaining (a.b().c)"
+);
+// The three ADT variant forms, declared and constructed but never matched — `match` is a
+// separate blocker, so each of these can go live the moment its variant form parses,
+// checks and evaluates. `algebraic-data-types` below is the one that also needs `match`.
+trsl_test!(
+    records_unit_variants,
+    "03-records-and-adts/unit-variants/unit-variants.trsl",
+    ignore = "needs ADTs — variants with no payload"
+);
+trsl_test!(
+    records_positional_variants,
+    "03-records-and-adts/positional-variants/positional-variants.trsl",
+    ignore = "needs ADTs — variants with a positional payload"
+);
+trsl_test!(
+    records_record_variants,
+    "03-records-and-adts/record-variants/record-variants.trsl",
+    ignore = "needs ADTs — variants with a record payload"
+);
+// Naming a variant through its type — `Colour.Red` — alongside the bare `Green`. Two types
+// both declaring `Red` is the case that makes qualification *necessary* rather than stylistic:
+// bare `Red` is ambiguous here, and ordinary shadowing would silently pick the second.
+//
+// Syntactically this already parses today: `primary_base` matches the identifier `Colour` and
+// `field_access` matches `.Red`, so `Colour.Red` builds as `FieldAccess { Var("Colour"), "Red" }`
+// with no grammar change at all. What it needs is resolution — `type` extends the *type* scope
+// (`scope.extend_type`, a separate arena), while the `FieldAccess` arm resolves its target as an
+// ordinary expression, so `Colour` misses the value scope and comes back unbound. Making this
+// work means retrying a bare-`Var` target in the type scope and emitting a constructor
+// reference on a hit, which is what makes `.` mean two things depending on which namespace the
+// left side lands in. See `unit-variants` for the bare-only form this is additive over.
+trsl_test!(
+    records_qualified_constructors,
+    "03-records-and-adts/qualified-constructors/qualified-constructors.trsl",
+    ignore = "needs ADTs — qualified constructor references (`Colour.Red`)"
 );
 trsl_test!(
     records_algebraic_data_types,

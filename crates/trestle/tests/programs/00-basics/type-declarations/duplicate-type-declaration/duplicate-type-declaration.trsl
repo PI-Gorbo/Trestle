@@ -1,0 +1,16 @@
+// The same type name declared twice in one block. This *succeeds*: the second declaration
+// mints a fresh `TypeBindingId` and shadows the first, so `Foo` is `String` from that point on.
+//
+// Note the asymmetry with the value namespace, which this program exists to make visible: a
+// repeated `let` in the same block is a `DuplicateBinding` error (see
+// `00-basics/bindings/duplicate-binding`), because the same-block redeclaration check in
+// `binding_resolution` matches only `ExpressionKind::Let`. Types are not checked at all.
+// Whether that is intended is an open question — if types should reject redeclaration too,
+// this program becomes a negative test and its `error` snapshot replaces the `eval` one.
+
+type Foo = Int
+type Foo = String
+
+let value: Foo = "the second declaration wins"
+
+value

@@ -1,0 +1,16 @@
+type Colour =
+    | Red
+    | Green
+    | Blue
+
+type Alert =
+    | Red
+    | Amber
+
+let favourite: Colour = Colour.Red
+
+let severity: Alert = Alert.Red
+
+let shorthand: Colour = Green
+
+severity
