@@ -1,0 +1,53 @@
+// Builders are pipelines, part two — this time the thing being built is a nested record.
+//
+// Every step is data-last and curried, so `withName("api")` is a `Server => Server` still
+// waiting for its record, and `|>` threads one step's result into the next. There is no
+// record-update syntax yet — `{ ...server, name: name }` is what row polymorphism will
+// bring — so each step spells out the fields it keeps. That makes the important property
+// visible rather than hidden: a step returns a *new* record, it does not mutate the one it
+// was handed.
+
+type Address = { host: String, port: Int }
+type Retry   = { attempts: Int, backoffMs: Int }
+type Server  = { name: String, address: Address, retry: Retry }
+
+let base: Server = {
+    name: "unnamed",
+    address: { host: "localhost", port: 80 },
+    retry: { attempts: 0, backoffMs: 0 }
+}
+
+let withName = (name: String, server: Server) => {
+    name: name,
+    address: server.address,
+    retry: server.retry
+}
+
+let withAddress = (host: String, port: Int, server: Server) => {
+    name: server.name,
+    address: { host: host, port: port },
+    retry: server.retry
+}
+
+let withRetry = (attempts: Int, backoffMs: Int, server: Server) => {
+    name: server.name,
+    address: server.address,
+    retry: { attempts: attempts, backoffMs: backoffMs }
+}
+
+// A step that reads the record it is handed rather than only overwriting it: `.` chains
+// through the nesting to reach the port, and the new port is derived from the old one.
+let shiftPort = (offset: Int, server: Server) => {
+    name: server.name,
+    address: { host: server.address.host, port: server.address.port + offset },
+    retry: server.retry
+}
+
+let server =
+    base
+    |> withName("api")
+    |> withAddress("0.0.0.0", 8000)
+    |> withRetry(3, 250)
+    |> shiftPort(80)          // 8000 + 80 = 8080
+
+server

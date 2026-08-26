@@ -8,12 +8,15 @@ on `match` (tier 02) to be consumed.
 - `inferred-record-let` — a record bound with no annotation, so its type is inferred.
 - `nested-field-access` — a record inside a record, read with a `.` chain.
 - `nested-record-alias` — a record type nested by *naming* the inner record type.
+- `record-builder-pipeline` — tier 01's builder pattern over a nested record: data-last
+  steps chained with `|>`, each rebuilding rather than mutating.
 - `nested-record-types` — the same nesting written inline, without naming the inner type.
 - `record-function-field` — a field holding a function, invoked through `.`.
 - `field-call-chain` — `a.b().c`: field read, call, field read.
 - `algebraic-data-types` — sum types with constructors, consumed by `match`.
 
-`records`, `field-access`, `inferred-record-let`, `nested-field-access` and
-`nested-record-alias` are live through evaluation. The rest are ignored *(proposed
-syntax)* — `nested-record-types` specifically because a field's type annotation is a
-bare identifier today, so an *inline* record type in field position does not parse.
+`records`, `field-access`, `inferred-record-let`, `nested-field-access`,
+`nested-record-alias` and `record-builder-pipeline` are live through
+evaluation. The rest are ignored *(proposed syntax)* — `nested-record-types`
+specifically because a field's type annotation is a bare identifier today, so
+an *inline* record type in field position does not parse.

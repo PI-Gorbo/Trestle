@@ -1,6 +1,6 @@
 # Trestle — State of the Language & Plan Forward
 
-_Last updated: 2026-07-12_
+_Last updated: 2026-08-26_
 
 This is the living companion to the [origin spec](../inital-spec/inital-spec.md). The
 spec captures the *design intent*; this doc captures *where the implementation actually
@@ -23,50 +23,67 @@ this doc for status and the spec for the long-term vision.
 
 ## 1. Where we are today
 
-**Implementation:** Rust, single crate `crates/trestle`. Three-phase pipeline:
+_Section last reconciled against `crates/trestle/tests/corpus.rs`: 2026-08-26._
+
+**Implementation:** Rust, single crate `crates/trestle`. Four-phase pipeline:
 
 ```
-parse (pest)  →  analyse (resolve names + type check)  →  evaluate (tree-walk)
+parse (pest)  →  binding_resolution  →  type_check  →  evaluate
 ```
 
 - `parse/` — pest grammar (`trestle.pest`) + AST builders. No separate lexer.
-- `analyse/` — pass 1 `resolve_names` (names → `BindingId`), pass 2 `type_check`
-  (nominal, annotation-driven; `unify` is currently just type equality).
-- `evaluate/` — tree-walk over the analysed AST; `Rc`-linked persistent environment.
+- `binding_resolution/` — names → `BindingId`, scopes, shadowing. Values and types live in
+  separate namespaces.
+- `type_check/` — real Hindley–Milner: union-find `unification` with a genuine occurs check,
+  bottom-up `inference`, `substitution`.
+- `evaluate/` — tree-walk over the type-checked AST; `Rc`-linked persistent environment.
 
-**Feature matrix (end-to-end):**
+**The feature matrix lives in the corpus, not here.** `crates/trestle/tests/corpus.rs` is
+the authoritative ledger and cannot drift: a program registered there *without* an `ignore =
+"…"` parses, analyses **and** evaluates, and a recorded snapshot proves each stage. A prose
+table here would go stale the way the one it replaced did. Read `corpus.rs` top to bottom
+for what works; read its `ignore` reasons for what does not.
 
-| Feature | Parse | Analyse | Evaluate |
-|---|---|---|---|
-| Int / Float / Bool / String literals | ✅ | ✅ | ✅ (code) |
-| Arithmetic `+ - * /` | ✅ | ✅ (Int only) | ✅ |
-| Comparison `< > <= >= == !=` | ✅ | ✅ (**Int only**) | ✅ |
-| Logical `&& \|\|`, unary `!`, negation `-` | ✅ | ✅ | ✅ |
-| Precedence / grouping | ✅ | ✅ | ✅ |
-| `let` bindings, blocks `{…}` | ✅ | ✅ | ✅ |
-| `if` / `if-else` | ✅ | ✅ | ✅ (code, see bug below) |
-| Lambdas (typed params), closures | ✅ | ✅ | ✅ |
-| Function invocation, currying, partial application | ✅ | ✅ | ✅ (code) |
+At the time of writing that is 183 passing stage-tests over ~50 programs, with 11 ignored.
+Shipping, in tiers: all five literal forms plus records; the full operator set; `let` and
+typed `let`; blocks, block scoping and shadowing; `if` / `if`-`else` with block branches;
+lambdas (typed, untyped, zero-parameter, with return annotations), currying, partial
+application and closures; the `|>` pipe with leading-pipe continuation; `type` aliases
+(structural, chaining); record types, record literals, field access and `.` chains, and
+records nested by naming the inner type; inference of unannotated parameters and unannotated
+records.
 
-**Important nuance — "eval" is barely rolled out.** The evaluator *code* covers almost
-all of tier-00, but the conformance corpus (`tests/corpus.rs`) currently opts only the
-**`int` literal** program into the `eval` snapshot stage. Everything else is proven only
-through `parse + analyse`. Rolling eval across the corpus is the very next task (§4).
+`apps/demo` — the playground — carries a curated example for every one of those, lifted
+verbatim from the corpus, plus a Features dialog that states the shipped/planned split from
+the same source. If a feature ships and the playground does not show it, that is now a
+visible gap.
 
-**Not yet supported:** `|>` pipe (tier 01), `match` (tier 02), records / field access /
-ADTs (tier 03), generics (tier 04), the effect system (tier 05). Also missing: typed
-`let` (`let x: Int = …` — grammar accepts it, AST drops it), zero-param lambdas,
-inference for untyped params, comparisons on non-Int types.
+**Not yet supported** (each has an ignored corpus program naming its blocker): function type
+expressions in annotations; *inline* record type expressions in field position; mixed
+postfix chaining (`a.b().c`); `match` (tier 02); ADTs (tier 03); generics (tier 04); the
+effect system (tier 05).
 
-**Known issues to clean up:**
-- **Dropped `else` branch:** `type_check.rs` type-checks the `else` expression but builds
-  the analysed `If` with `else_branch: None`, so a false condition yields `Unit` even when
-  an `else` was written. High-priority correctness bug — surfaces the moment `if-else` is
-  opted into eval.
-- **Stale docs:** comments in `analyse/resolved.rs` and `tests/corpus.rs` claim `if` is
-  unsupported / rejected; it is actually resolved, type-checked, and evaluated.
-- **`main.rs` is parse-only:** the CLI never analyses or evaluates. You can't yet *run* a
-  `.trsl` file end-to-end outside the test harness.
+**Known limits that are deliberate, not bugs:**
+- **Operators are hardcoded to `Int`.** Arithmetic and *all* comparisons — `==` and `!=`
+  included — are `Int` against `Int`; `&&` / `||` are `Bool`. This dissolves when operators
+  retrofit onto `Add` / `Eq` / `Ord` instances (see Learning 2); do not hand-expand it
+  first.
+- **`&&` / `||` do not short-circuit.** `eval_binary` evaluates both operands. (Some corpus
+  comments still describe them as short-circuiting; the evaluator is the truth.)
+- **Inference is monomorphic** — no let-generalization, so `let id = (x) => x` cannot be
+  used at two types. Generalization arrives with generics (Phase 2.3).
+- **`let` is not recursive.** A binding's value resolves before its own name binds, so a
+  function cannot yet call itself; mutual recursion needs the same pre-registration.
+- **Records unify on exactly equal field sets.** Width subtyping waits on row polymorphism.
+
+**Still to clean up:**
+- **`main.rs` is parse-only:** the CLI never analyses or evaluates. You cannot yet *run* a
+  `.trsl` file end to end outside the test harness and the wasm playground.
+- **Stale `// @skip:` markers** litter corpus `.trsl` files for features that now work
+  (`if`, `|>`, string/bool/float literals, zero-parameter lambdas). Trust `corpus.rs`, not
+  the markers. The playground strips them when it lifts a program.
+- **Stale tier READMEs** under `tests/programs/` say the same about `if`, typed `let` and
+  zero-parameter lambdas.
 
 ## 2. The three learnings that reshape the plan
 
@@ -143,18 +160,23 @@ library." The roadmap in §3 makes this concrete.
 The origin spec's four phases still hold; this refines the interior ordering to serve the
 three learnings.
 
-### Phase 1 — Interpreter core *(current — finishing)*
+### Phase 1 — Interpreter core *(essentially done)*
 Get real programs running end to end.
-1. Roll `eval` across the whole `00-basics` corpus (only `int` is wired today).
-2. Fix the known issues (dropped `else` branch; stale docs; wire `main.rs` to
-   analyse + evaluate so `trestle run file.trsl` actually executes).
-3. `|>` pipe operator + leading-pipe continuation (tier 01). Dumb desugar: `x |> f ≡ f(x)`.
-4. Close small gaps: zero-param lambdas, typed `let`.
+1. ✅ `eval` rolled across the corpus, not just the `int` literal.
+2. ✅ Dropped `else` branch fixed (`58bbbb7`).
+3. ✅ `|>` pipe operator + leading-pipe continuation (tier 01), the dumb `x |> f ≡ f(x)`
+   desugar.
+4. ✅ Zero-parameter lambdas and typed `let`.
+5. ⬜ Wire `main.rs` to the full pipeline so `trestle run file.trsl` executes outside the
+   test harness and the playground. The one item still open.
 
-### Phase 2 — Type system *(the enabling layer for the whole vision)*
-1. **Real inference:** turn `unify` into actual unification, add a `Type::Var` variant,
-   infer unannotated params (removes today's `MissingAnnotation` friction).
-2. **ADTs + records + `match`** (tiers 02–03).
+### Phase 2 — Type system *(current — the enabling layer for the whole vision)*
+1. ✅ **Real inference:** `unify` is genuine union-find unification with `Type::Var` and an
+   occurs check, and unannotated parameters infer. Still monomorphic — generalization comes
+   with generics, at step 3.
+2. **Records ✅, ADTs + `match` ⬜** (tiers 02–03). Records, field access, nested records and
+   `type` aliases ship; what remains is inline record types in field position, mixed postfix
+   chaining, and then sum types with pattern matching.
 3. **Generics / type parameters** (tier 04).
 4. **Traits / type classes** — resolve the dispatch model, then **retrofit operators**
    (Learning 2). This is the capstone that makes operators polymorphic.
@@ -179,20 +201,21 @@ Get real programs running end to end.
 
 ## 4. Near-term task list (concrete)
 
-Ordered, actionable, for the current push:
+Ordered, actionable, for the current push. Everything the previous edition of this list held
+is done; what follows is what is actually left.
 
-1. [ ] Opt each `00-basics` program into the `eval` stage in `tests/corpus.rs`, record
-       snapshots, and confirm they match hand-computed values.
-2. [ ] Fix the **dropped `else` branch** in `analyse/type_check.rs` (carry the analysed
-       else expression into `ExpressionKind::If`); add an `if-else` eval snapshot that
-       would have caught it.
-3. [ ] Correct the stale "`if` is unsupported/rejected" comments in `analyse/resolved.rs`
-       and `tests/corpus.rs`.
-4. [ ] Make `main.rs` run the full pipeline (`parse → analyse → evaluate`) so `.trsl`
-       files execute from the CLI.
-5. [ ] Implement the `|>` operator + leading-pipe continuation; un-ignore tier-01
-       programs.
-6. [ ] (Small) zero-param lambdas and typed `let` bindings.
+1. [ ] Make `main.rs` run the full pipeline (`parse → binding_resolution → type_check →
+       evaluate`) so `.trsl` files execute from the CLI. The last Phase 1 item.
+2. [ ] Sweep the stale `// @skip:` markers out of the corpus `.trsl` files and correct the
+       tier `README.md`s — both still describe `if`, `|>`, typed `let` and zero-parameter
+       lambdas as unsupported.
+3. [ ] Correct the `operators/logical/*` comments that claim `&&` / `||` short-circuit.
+       Either make them short-circuit in `eval_binary` or say plainly that they do not.
+4. [ ] Inline record type expressions in field position, then mixed postfix chaining
+       (`a.b().c`) — the two smallest ignored programs, and both tier-03 blockers.
+5. [ ] Function type expressions in annotations (`f: (name: String) => Int`), which unblocks
+       two more ignored programs.
+6. [ ] ADTs + constructors + `match` (tiers 02–03).
 
 ## 5. Design directions (recorded)
 

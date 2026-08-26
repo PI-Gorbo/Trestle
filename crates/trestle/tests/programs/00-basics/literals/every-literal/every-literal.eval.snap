@@ -1,0 +1,14 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: value
+---
+Record(
+    {
+        "x": Int(
+            0,
+        ),
+        "y": Int(
+            0,
+        ),
+    },
+)

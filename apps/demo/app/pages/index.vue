@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDownIcon, PlayIcon } from '@lucide/vue'
+import { ChevronDownIcon, ListChecksIcon, PlayIcon } from '@lucide/vue'
 import { useDebounceFn } from '@vueuse/core'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,8 @@ import {
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { EXAMPLES } from '@/lib/examples'
+import { EXAMPLES, EXAMPLE_GROUPS } from '@/lib/examples'
+import { REPO_URL } from '@/lib/links'
 import type { SourceRange } from '@/lib/compiler/types'
 
 /** Long enough that a burst of typing produces one compile, not one per keystroke. */
@@ -26,6 +27,14 @@ const { engine, stateFor, check, run, forget } = useCompiler()
 
 const editor = useTemplateRef<{ revealRange: (range: SourceRange) => void }>('editor')
 const rightPanel = ref<'output' | 'diagnostics' | 'bindings'>('output')
+const featuresOpen = ref(false)
+
+// The dropdown is long enough now that a flat list is hard to scan, so it is sectioned. The
+// order comes from `EXAMPLE_GROUPS`; a group with no examples simply does not render.
+const groupedExamples = EXAMPLE_GROUPS.map((title) => ({
+  title,
+  examples: EXAMPLES.filter((example) => example.group === title),
+})).filter((group) => group.examples.length > 0)
 
 const compilerReady = computed(() => engine.value.kind === 'wasm')
 
@@ -96,20 +105,34 @@ watch(errorCount, (count, previous) => {
               <ChevronDownIcon class="size-3.5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="w-80">
-            <DropdownMenuLabel>From the conformance corpus</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              v-for="example in EXAMPLES"
-              :key="example.name"
-              class="flex-col items-start gap-0.5"
-              @select="openExample(example.name)"
-            >
-              <span class="font-mono text-sm">{{ example.name }}.trsl</span>
-              <span class="text-xs text-muted-foreground">{{ example.description }}</span>
-            </DropdownMenuItem>
+          <DropdownMenuContent align="end" class="max-h-[70vh] w-80 overflow-y-auto">
+            <template v-for="(group, index) in groupedExamples" :key="group.title">
+              <DropdownMenuSeparator v-if="index > 0" />
+              <DropdownMenuLabel>{{ group.title }}</DropdownMenuLabel>
+              <DropdownMenuItem
+                v-for="example in group.examples"
+                :key="example.name"
+                class="flex-col items-start gap-0.5"
+                @select="openExample(example.name)"
+              >
+                <span class="font-mono text-sm">{{ example.name }}.trsl</span>
+                <span class="text-xs text-muted-foreground">{{ example.description }}</span>
+              </DropdownMenuItem>
+            </template>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button variant="outline" size="sm" class="gap-1.5" @click="featuresOpen = true">
+          <ListChecksIcon class="size-3.5" />
+          Features
+        </Button>
+
+        <Button as-child variant="outline" size="sm" class="gap-1.5">
+          <a :href="REPO_URL" target="_blank" rel="noreferrer noopener">
+            <GithubMark class="size-3.5" />
+            GitHub
+          </a>
+        </Button>
 
         <Button
           size="sm"
@@ -121,6 +144,8 @@ watch(errorCount, (count, previous) => {
           Run
         </Button>
       </header>
+
+      <FeaturesDialog v-model:open="featuresOpen" @open-example="openExample" />
 
       <ProgramTabs
         :programs="programs"

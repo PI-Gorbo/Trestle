@@ -1,0 +1,12 @@
+// Every literal form the grammar has, one binding each. `unit` is spelled as a bare word
+// rather than `()`, and a `{ … }` in value position is a record literal, not a block.
+
+let count   = 42
+let ratio   = 3.14
+let name    = "trestle"
+let ready   = true
+let nothing = unit
+
+let origin = { x: 0, y: 0 }
+
+origin

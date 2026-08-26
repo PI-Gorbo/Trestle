@@ -23,6 +23,17 @@ const host = useTemplateRef<HTMLDivElement>('host')
 let monaco: typeof Monaco | null = null
 let editor: Monaco.editor.IStandaloneCodeEditor | null = null
 
+/**
+ * Where Monaco's overflowing widgets — hovers, the suggest list, the context menu — are
+ * rendered. Left to itself Monaco puts them inside `.overflow-guard`, which is `overflow:
+ * hidden`, and reka-ui's splitter wraps the whole editor in a second `overflow: hidden`; a
+ * hover off one of the first lines was being clipped at the editor's top edge, which read as
+ * the header cutting it off. Reparenting them to a node on `body` makes them `position: fixed`,
+ * which escapes both clips. See `.monaco-overflow-widgets` in `assets/css/main.css` for the
+ * stacking half of this.
+ */
+let overflowWidgets: HTMLDivElement | null = null
+
 const models = new Map<string, Monaco.editor.ITextModel>()
 const viewStates = new Map<string, Monaco.editor.ICodeEditorViewState | null>()
 
@@ -154,6 +165,10 @@ onMounted(async () => {
     },
   })
 
+  overflowWidgets = document.createElement('div')
+  overflowWidgets.className = 'monaco-overflow-widgets'
+  document.body.appendChild(overflowWidgets)
+
   editor = api.editor.create(host.value!, {
     model: modelFor(props.programId, code.value),
     theme: TRESTLE_THEME_ID,
@@ -172,7 +187,15 @@ onMounted(async () => {
     // anything the compiler will reject.
     quickSuggestions: false,
     occurrencesHighlight: 'off',
+    fixedOverflowWidgets: true,
+    overflowWidgetsDomNode: overflowWidgets,
   })
+
+  // Monaco does not put its theme classes on a supplied overflow node, and the widget styles
+  // are keyed off them (the theme's id is `vs-dark trestle-dark` — the base plus the name).
+  // Copying the editor's own class list is exact, and survives ever renaming the theme.
+  const editorDom = editor.getDomNode()
+  if (editorDom) overflowWidgets.className = `monaco-overflow-widgets ${editorDom.className}`
 
   editor.addCommand(api.KeyMod.CtrlCmd | api.KeyCode.Enter, () => emit('run'))
 
@@ -213,6 +236,8 @@ onBeforeUnmount(() => {
   editor?.dispose()
   for (const model of models.values()) model.dispose()
   models.clear()
+  overflowWidgets?.remove()
+  overflowWidgets = null
 })
 </script>
 

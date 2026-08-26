@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
+    "dev": "pnpm build:wasm && nuxt dev",
     "build": "nuxt generate",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

@@ -300,6 +300,13 @@ trsl_test!(
     "00-basics/literals/unit/unit.trsl",
     [ast, analyse, eval]
 );
+// The literal forms side by side, one binding each — the program the playground uses to show
+// what the Bindings panel makes of each of them.
+trsl_test!(
+    basics_literals_every_literal,
+    "00-basics/literals/every-literal/every-literal.trsl",
+    [ast, analyse, eval]
+);
 // Rejected while building the AST, so `ast` is not among its stages — there is no tree to
 // snapshot.
 trsl_test!(
@@ -399,6 +406,14 @@ trsl_test!(
 trsl_test!(
     basics_operators_logical_negation,
     "00-basics/operators/logical/logical-negation/logical-negation.trsl",
+    [ast, analyse, eval]
+);
+// The comparison and logical families combined into one readable program. The single-operator
+// programs above pin each operator; this one pins that they compose, and is what the playground
+// shows rather than a bare `5 > 3`.
+trsl_test!(
+    basics_operators_comparison_and_logic,
+    "00-basics/operators/comparison-and-logic/comparison-and-logic.trsl",
     [ast, analyse, eval]
 );
 
@@ -640,6 +655,16 @@ trsl_test!(
 trsl_test!(
     records_nested_record_alias,
     "03-records-and-adts/nested-record-alias/nested-record-alias.trsl",
+    [ast, analyse, eval]
+);
+// Tier 01's `builder-as-pipeline` over structured data: data-last steps chained with `|>`,
+// each rebuilding a nested record rather than mutating it. Lives here rather than in
+// `01-pipelines` because records are its highest dependency. It is also the program that will
+// have to change when record update lands — every step spells out the fields it keeps only
+// because `{ ...server, name: name }` does not exist yet.
+trsl_test!(
+    records_record_builder_pipeline,
+    "03-records-and-adts/record-builder-pipeline/record-builder-pipeline.trsl",
     [ast, analyse, eval]
 );
 trsl_test!(

@@ -1,0 +1,31 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: value
+---
+Record(
+    {
+        "address": Record(
+            {
+                "host": String(
+                    "0.0.0.0",
+                ),
+                "port": Int(
+                    8080,
+                ),
+            },
+        ),
+        "name": String(
+            "api",
+        ),
+        "retry": Record(
+            {
+                "attempts": Int(
+                    3,
+                ),
+                "backoffMs": Int(
+                    250,
+                ),
+            },
+        ),
+    },
+)

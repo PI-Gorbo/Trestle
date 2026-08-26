@@ -1,0 +1,12 @@
+// The boolean expressions: the six comparisons, and the three logical combinators over
+// their results. Comparison is `Int` against `Int` today — comparing Strings, Floats or
+// Bools is a type error until operators dispatch through traits.
+
+let low  = 3
+let high = 9
+
+let ordered  = low < high && high > low          // true
+let bounded  = low <= 3 && high >= 9             // true
+let distinct = low != high && !(low == high)     // true
+
+ordered && bounded && distinct

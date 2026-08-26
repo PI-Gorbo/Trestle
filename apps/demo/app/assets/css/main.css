@@ -90,3 +90,19 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 }
+
+/**
+ * Monaco's overflowing widgets — hovers, the suggest list, the context menu — are reparented
+ * into this node on `body` (see `fixedOverflowWidgets` in `TrestleEditor.vue`), which makes
+ * them `position: fixed` and so frees them from `.overflow-guard` and from the splitter's
+ * `overflow: hidden`. The node has no size of its own — every child positions itself — so it
+ * covers nothing and blocks no clicks. Everything shadcn ships here sits at `z-50`, so `60`
+ * puts a hover above the header, the tabs and the panels; the dialog and dropdowns cover the
+ * editor and trap focus while open, so nothing can hover underneath one.
+ */
+.monaco-overflow-widgets {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 60;
+}

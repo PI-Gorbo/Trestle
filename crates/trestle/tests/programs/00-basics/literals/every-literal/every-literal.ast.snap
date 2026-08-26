@@ -1,0 +1,194 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "count",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Int(
+                            42,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            194,
+                        ),
+                        length: 2,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    180,
+                ),
+                length: 17,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "ratio",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Float(
+                            3.14,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            211,
+                        ),
+                        length: 4,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    197,
+                ),
+                length: 19,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "name",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        String(
+                            "trestle",
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            230,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    216,
+                ),
+                length: 24,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "ready",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Bool(
+                            true,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            254,
+                        ),
+                        length: 4,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    240,
+                ),
+                length: 19,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "nothing",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Unit,
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            273,
+                        ),
+                        length: 4,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    259,
+                ),
+                length: 20,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "origin",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "x": Expression {
+                                    kind: Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            297,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                                "y": Expression {
+                                    kind: Literal(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            303,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            292,
+                        ),
+                        length: 14,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    279,
+                ),
+                length: 29,
+            },
+        },
+        Expression {
+            kind: Var(
+                "origin",
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    308,
+                ),
+                length: 6,
+            },
+        },
+    ],
+}
