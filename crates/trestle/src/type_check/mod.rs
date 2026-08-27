@@ -12,7 +12,7 @@ use crate::binding_resolution::BindingResolvedProgram;
 
 use binding_table::attach_types_to_bindings;
 use inference::{InferenceCtx, infer_type_of_expression};
-use substitution::subsitute_in_expr;
+use substitution::substitute_in_expr;
 use typed_ast::TypeCheckedExpression;
 use unification::UnificationMap;
 
@@ -76,7 +76,7 @@ pub fn type_check(
     let mut subsituted_expressions = final_state.expressions;
     subsituted_expressions
         .iter_mut()
-        .for_each(|expr| subsitute_in_expr(&final_state.unification_map, expr));
+        .for_each(|expr| substitute_in_expr(&final_state.unification_map, expr));
 
     Ok(TypeCheckedProgram {
         expressions: subsituted_expressions,
