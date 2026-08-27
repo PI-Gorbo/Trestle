@@ -16,19 +16,28 @@ pub fn source_span_from_pest_span(pest_span: Span) -> SourceSpan {
     (pest_span.start(), pest_span.end() - pest_span.start()).into()
 }
 
-/// Merge two spans into one covering from the start of `a` to the end of `b`.
-///
-/// Used for synthesized `Binary` nodes that span both operands.
-/// Assumes `a` starts at or before `b` (true for the left-to-right operand fold).
 pub fn merge_spans(a: SourceSpan, b: SourceSpan) -> SourceSpan {
     let start = a.offset();
     (start, b.offset() + b.len() - start).into()
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OptionallyNamedTypeExpression {
+    pub type_dec: Box<TypeExpression>,
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LambdaTypeExpression {
+    pub parameter: Option<OptionallyNamedTypeExpression>,
+    pub return_type: Box<TypeExpression>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TypeExpressionKind {
     Named(String),
     Record(BTreeMap<String, TypeExpression>),
+    Lambda(LambdaTypeExpression),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,12 +55,6 @@ pub struct Expression {
 #[derive(Debug, PartialEq)]
 pub enum Literal {
     Record(BTreeMap<String, Expression>),
-    /// `i64`, deliberately not `usize`: `usize` is 32-bit on `wasm32-unknown-unknown`, so a
-    /// pointer-width literal would accept `4294967295` on a 64-bit host and reject it in the
-    /// browser. `i64` also matches [`evaluate::Value::Int`], removing the cast that used to
-    /// sit between them.
-    ///
-    /// [`evaluate::Value::Int`]: crate::evaluate::Value::Int
     Int(i64),
     Bool(bool),
     Float(f64),
@@ -59,19 +62,14 @@ pub enum Literal {
     Unit,
 }
 
-/// A binary operator. The single source of truth for the operator set —
-/// `resolved` and `analysed` reuse this rather than defining their own. Precedence
-/// and associativity are not encoded here; they live in the `PrattParser`
-/// (see `build_expression.rs`). Arithmetic ops take `Int`s and yield an `Int`;
-/// comparison ops take `Int`s and yield a `Bool`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BinaryOp {
     Add,
     Sub,
     Mul,
     Div,
-    And, // Bool × Bool → Bool
-    Or,  // Bool × Bool → Bool
+    And,
+    Or,
     Lt,
     Gt,
     Le,
@@ -81,13 +79,10 @@ pub enum BinaryOp {
     Pipe,
 }
 
-/// A prefix (unary) operator. Like [`BinaryOp`], the single source of truth reused by
-/// `resolved` and `analysed`. `Neg` takes an `Int` and yields an `Int`; `Not` takes a
-/// `Bool` and yields a `Bool`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UnaryOp {
-    Neg, // arithmetic negation: `-x`
-    Not, // logical not: `!x`
+    Neg,
+    Not,
 }
 
 #[derive(Debug, PartialEq)]

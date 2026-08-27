@@ -337,6 +337,7 @@ fn resolve_type_expression(
                 scope,
             ))
         }
+        ast::TypeExpressionKind::Lambda(lambda_type_expression) => todo!(),
     }
 }
 

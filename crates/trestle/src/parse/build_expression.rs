@@ -1,5 +1,8 @@
 use super::{BuildError, Rule};
-use crate::parse::ast::{BinaryOp, Literal, TypeExpressionKind, UnaryOp};
+use crate::parse::ast::{
+    BinaryOp, LambdaTypeExpression, Literal, OptionallyNamedTypeExpression, TypeExpressionKind,
+    UnaryOp,
+};
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
 use std::collections::BTreeMap;
@@ -79,12 +82,67 @@ fn build_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError>
     match inner.as_rule() {
         Rule::record_type_expression => build_record_type_expression(inner),
         Rule::type_identifier => Ok(build_type_identifier_expression(inner)),
+        Rule::function_type_expression => Ok(build_function_type_expression(inner)?),
         rule => Err(BuildError::unexpected_rule(
             rule,
             source_span_from_pest_span(inner.as_span()),
             "a type expression",
         )),
     }
+}
+
+fn build_function_type_expression(inner: Pair<Rule>) -> Result<TypeExpression, BuildError> {
+    // The last value must be a type_identifier
+    let span = inner.as_span();
+    let mut iterator = inner.into_inner();
+    let comma_separated_type_parameters = iterator.next().ok_or_else(|| {
+        BuildError::invariant(
+            source_span_from_pest_span(span),
+            "expected comma separated type parameters",
+        )
+    })?;
+
+    let return_type = iterator
+        .next()
+        .map(build_type_expression)
+        .transpose()?
+        .ok_or_else(|| {
+            BuildError::invariant(source_span_from_pest_span(span), "Expected return type")
+        })?;
+
+    let lambda_type_expression = comma_separated_type_parameters.into_inner().fold(
+        // Start with a function of shape () -> Type
+        LambdaTypeExpression {
+            parameter: None,
+            return_type: Box::new(return_type),
+        },
+        // Then, for each parm we encounter, we need to build the lambda
+        |state, rule| match state.parameter {
+            // For the first case, we go from () -> AType to BType -> AType
+            None => LambdaTypeExpression {
+                parameter: Some(build_optionally_named_type_expression(rule)),
+                return_type: state.return_type,
+            },
+            // Otherwise we go from BType -> AType to CType -> (BType -> AType)
+            Some(_) => LambdaTypeExpression {
+                parameter: Some(build_optionally_named_type_expression(rule)),
+                return_type: Box::new(TypeExpression {
+                    kind: TypeExpressionKind::Lambda(state),
+                    span: source_span_from_pest_span(span),
+                }),
+            },
+        },
+    );
+
+    Ok(TypeExpression {
+        kind: TypeExpressionKind::Lambda(lambda_type_expression),
+        span: source_span_from_pest_span(span),
+    })
+}
+
+fn build_optionally_named_type_expression(rule: Pair<Rule>) -> OptionallyNamedTypeExpression {
+    let rule_value = rule.into_inner().next();
+    todo!()
 }
 
 fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {
