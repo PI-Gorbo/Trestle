@@ -7,7 +7,6 @@
 use miette::{Diagnostic, SourceSpan};
 use thiserror::Error;
 
-/// Name-resolution failures. Reported as a batch (`Vec`) so the user sees all problems at once.
 #[derive(Error, Diagnostic, Debug)]
 pub enum BindingResolutionError {
     #[error("`{name}` is not defined")]
@@ -18,8 +17,6 @@ pub enum BindingResolutionError {
         span: SourceSpan,
     },
 
-    /// The type-namespace twin of [`BindingResolutionError::UnboundName`]. Separate because type
-    /// names resolve against their own scope — `type X = Foo` cannot see a `let Foo`.
     #[error("`{name}` is not a defined type")]
     #[diagnostic(code(trestle::unbound_type_name))]
     UnboundTypeName {

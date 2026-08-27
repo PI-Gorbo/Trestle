@@ -1,13 +1,7 @@
-//! Final substitution pass: once inference has solved every type variable, walk the typed tree and
-//! rewrite each node's `ty` (and each lambda parameter's) to its resolved representative.
-
 use super::typed_ast::{ExpressionKind, TypeCheckedExpression};
 use super::unification::UnificationMap;
 
 pub(super) fn subsitute_in_expr(map: &UnificationMap, expr: &mut TypeCheckedExpression) {
-    // The tree shape is unchanged — only the `ty` fields get rewritten — so walk the boxed/vec
-    // children by `&mut` (deref coercion turns `&mut Box<_>` into `&mut TypeCheckedExpression`)
-    // and reuse every existing allocation.
     match &mut expr.kind {
         ExpressionKind::Literal(_) => {}
         ExpressionKind::Var(_) => {}

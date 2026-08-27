@@ -93,8 +93,6 @@ impl Scope {
         }
     }
 
-    /// A new scope with `entry` bound in the variable namespace; the type namespace is carried
-    /// through untouched. O(1) — the untouched namespace costs one `Rc` clone, not a copy.
     pub(super) fn extend_variable(&self, entry: VariableBindingScopeEntry) -> Scope {
         Scope {
             type_scope: self.type_scope.clone(),
@@ -102,7 +100,6 @@ impl Scope {
         }
     }
 
-    /// The type-namespace twin of [`Scope::extend_variable`].
     pub(super) fn extend_type(&self, entry: TypeBindingScopeEntry) -> Scope {
         Scope {
             type_scope: self.type_scope.extend(entry),
@@ -110,14 +107,10 @@ impl Scope {
         }
     }
 
-    /// Unqualified `lookup` is the *variable* namespace — the one every expression-position name
-    /// (`Var`, a call's callee) resolves against.
     pub(super) fn lookup(&self, name: &str) -> Option<BindingId> {
         self.variable_scope.lookup(name)
     }
 
-    /// The type-namespace twin of [`Scope::lookup`] — what a name in *type* position resolves
-    /// against: a builtin seeded from the prelude, or a user `type` declaration.
     pub(super) fn lookup_type(&self, name: &str) -> Option<TypeBindingId> {
         self.type_scope.lookup(name)
     }

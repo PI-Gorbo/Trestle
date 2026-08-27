@@ -1,8 +1,3 @@
-//! `trestle <file.trsl>` — parse a Trestle source file and print its AST.
-//!
-//! Phase 1 only parses; it does not yet evaluate. The path argument is
-//! required so the binary stays decoupled from any particular corpus layout.
-
 use miette::Result;
 use std::{env, fs, process};
 

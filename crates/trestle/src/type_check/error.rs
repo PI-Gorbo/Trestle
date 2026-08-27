@@ -1,15 +1,9 @@
-//! Isolated in its own module so the `#![allow(unused_assignments)]` below stays local. The
-//! `thiserror`/`miette` derives emit per-field assignments that trip `unused_assignments` on
-//! fields not yet read, and only a *module*-scoped allow suppresses it (item- and field-level
-//! allows don't, due to the derive's span hygiene).
 #![allow(unused_assignments)]
 
 use super::typed_ast::{Type, TypeVarId};
 use miette::{Diagnostic, SourceSpan};
 use thiserror::Error;
 
-/// Type-checking failures. Reported as a batch (`Vec`) so the user sees all problems at once.
-/// Representative variants — grow as you implement.
 #[derive(Error, Diagnostic, Debug)]
 pub enum TypeCheckError {
     #[error("type mismatch: expected {expected:?}, found {found:?}")]

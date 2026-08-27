@@ -1,14 +1,3 @@
-//! Type checking. Turns a [`BindingResolvedProgram`] into a [`TypeCheckedProgram`] by computing a
-//! [`Type`](typed_ast::Type) for every node and interpreting annotations.
-//!
-//! The pass is split into cohesive submodules:
-//! - [`typed_ast`] — the output IR (types + typed tree).
-//! - [`unification`] — the union-find over type variables and the core `UnificationMap::unify`.
-//! - [`inference`] — the bottom-up walk that synthesises a type per node.
-//! - [`binding_table`] — the per-binding type table and its finalisation.
-//! - [`substitution`] — the final pass that resolves every solved variable in the tree.
-//! - [`error`] — [`TypeCheckError`].
-
 mod binding_table;
 mod error;
 mod inference;
@@ -34,7 +23,6 @@ struct TypeCheckState {
     errors: Vec<TypeCheckError>,
 }
 
-/// Type-check a name-resolved program into a fully typed [`TypeCheckedProgram`].
 pub fn type_check(
     program: BindingResolvedProgram,
 ) -> Result<TypeCheckedProgram, Vec<TypeCheckError>> {
@@ -44,8 +32,6 @@ pub fn type_check(
         type_bindings,
     } = program;
 
-    // Borrow `bindings` for id lookups during the walk; it's consumed afterwards (moving each
-    // name across) to build the typed table.
     let expression_count = expressions.len();
     let final_state = expressions.into_iter().fold(
         TypeCheckState {
@@ -105,12 +91,10 @@ mod tests {
 
     use crate::parse::ast::{ExpressionKind, Literal, ParsedProgram};
 
-    /// Drive the type-check pass directly: parse, resolve names, then type-check.
     fn analyse_src(src: &str) -> Result<TypeCheckedProgram, Vec<TypeCheckError>> {
         analyse_parsed(crate::parse::parse(src).expect("test source should parse"))
     }
 
-    /// Resolve and type-check an already-parsed program, so a test can assert on the AST first.
     fn analyse_parsed(parsed: ParsedProgram) -> Result<TypeCheckedProgram, Vec<TypeCheckError>> {
         let resolved =
             crate::binding_resolution::resolve(parsed).expect("test source should resolve");
@@ -120,7 +104,6 @@ mod tests {
 
     #[test]
     fn let_annotation_mismatch_is_an_error() {
-        // Annotating a String value as `Int` must be a type error.
         let errors = analyse_src("let x: Int = \"hello\"")
             .expect_err("String value annotated Int is a type error");
         assert!(matches!(errors[0], TypeCheckError::TypeMismatch { .. }));
@@ -128,7 +111,6 @@ mod tests {
 
     #[test]
     fn accessing_an_absent_field_is_an_error() {
-        // `p` is a two-field record; `.z` names a field it does not have.
         let errors =
             analyse_src("type Point = { x: Int, y: Int }\nlet p: Point = { x: 1, y: 2 }\np.z")
                 .expect_err("a field the record lacks is a type error");
@@ -146,7 +128,6 @@ mod tests {
 
     #[test]
     fn accessing_a_field_on_a_non_record_is_an_error() {
-        // An `Int` has no fields at all.
         let errors = analyse_src("let n: Int = 1\nn.x")
             .expect_err("field access on a non-record is a type error");
         assert!(matches!(errors[0], TypeCheckError::NotARecord { .. }));
@@ -154,12 +135,8 @@ mod tests {
 
     #[test]
     fn too_many_arguments_is_an_error() {
-        // `f` takes one argument; applying two over-applies it.
         const SRC: &str = "let f = (a: Int) => a\nf(1, 2)";
 
-        // The type error hinges on the parse: newlines are insignificant (trestle.pest),
-        // so the two statements are delimited structurally. Pin that shape here — otherwise
-        // a parser that drops the call postfix shows up as a confusing `expect_err` panic.
         let parsed = crate::parse::parse(SRC).expect("test source should parse");
         assert_eq!(
             parsed.expressions.len(),

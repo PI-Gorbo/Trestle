@@ -1,4 +1,3 @@
-//! Walker for `Rule::program` → [`ParsedProgram`].
 use pest::iterators::Pair;
 
 use super::Rule;
@@ -9,10 +8,6 @@ use super::ast::ParsedProgram;
 
 pub use error::BuildError;
 
-/// Isolated in its own module so the `#![allow(unused_assignments)]` below stays local. The
-/// `thiserror`/`miette` derives emit per-field assignments that trip `unused_assignments` on
-/// fields not yet read, and only a *module*-scoped allow suppresses it (item- and field-level
-/// allows don't, due to the derive's span hygiene). Same pattern as `analyse::error`.
 mod error {
     #![allow(unused_assignments)]
 
@@ -21,11 +16,6 @@ mod error {
     use std::panic::Location;
     use thiserror::Error;
 
-    /// A structural error hit while walking the parse tree into the AST.
-    ///
-    /// This is a *lightweight* diagnostic: it carries only the offending `span`
-    /// (a `#[label]`) and `rule`, but no `#[source_code]`. The source text is
-    /// attached later, at the `parse()` boundary, via `Report::with_source_code`.
     #[derive(Error, Diagnostic, Debug)]
     pub enum BuildError {
         #[error("unexpected rule {rule:?} while building {context}")]
@@ -79,9 +69,6 @@ mod error {
             span: SourceSpan,
         },
 
-        /// The one `BuildError` a user can provoke with a *well-formed* program. The grammar
-        /// happily matches any run of digits; whether it fits in an `Int` is a question only
-        /// this walker can answer.
         #[error("integer literal `{literal}` is out of range")]
         #[diagnostic(
             code(trestle::int_literal_out_of_range),
@@ -107,12 +94,6 @@ mod error {
     }
 
     impl BuildError {
-        /// Build an `UnexpectedRule`, capturing the *Rust* call site.
-        ///
-        /// The `span` alone only says where in the *Trestle* source the walker stalled;
-        /// what you actually need to fix a grammar/walker mismatch is the match arm that
-        /// needs a new case. `#[track_caller]` gets that for free — `Location::caller()`
-        /// resolves to the constructor call rather than to this function.
         #[track_caller]
         pub fn unexpected_rule(rule: Rule, span: SourceSpan, context: &'static str) -> Self {
             Self::UnexpectedRule {
@@ -123,7 +104,6 @@ mod error {
             }
         }
 
-        /// Build an `Invariant`, capturing the Rust call site — see [`Self::unexpected_rule`].
         #[track_caller]
         pub fn invariant(span: SourceSpan, context: &'static str) -> Self {
             Self::Invariant {
@@ -135,7 +115,6 @@ mod error {
     }
 }
 
-/// Build a `ParsedProgram` from a `Rule::program` pair.
 pub fn build_program(pair: Pair<Rule>) -> Result<ParsedProgram, BuildError> {
     let expressions = pair
         .into_inner()
@@ -167,13 +146,6 @@ mod tests {
     use crate::parse::ast::{BinaryOp, Expression, ExpressionKind, Literal, UnaryOp};
     use crate::parse::parse;
 
-    /// `UnexpectedRule` and `Invariant` mean the walker and the grammar have drifted apart —
-    /// a Trestle bug, not a user error. Neither is reachable through `parse()` for any input
-    /// `pest` accepts, so they're covered by constructing them directly.
-    ///
-    /// This is the whole point of the `#[track_caller]` constructor: without it every one of
-    /// the dozen-odd sites renders an identical message and you can't tell which match arm
-    /// needs a new case.
     #[test]
     fn unexpected_rule_records_its_construction_site() {
         let expected_line = line!() + 1;
@@ -191,7 +163,6 @@ mod tests {
         }
     }
 
-    /// `Invariant` captures its call site the same way — it used to carry no context at all.
     #[test]
     fn invariant_records_its_construction_site() {
         let expected_line = line!() + 1;
@@ -209,8 +180,6 @@ mod tests {
         }
     }
 
-    /// The location has to survive into what a human actually reads — miette's `help:` line,
-    /// which is also the field `trestle-wasm` forwards to the playground's editor markers.
     #[test]
     fn the_rendered_diagnostic_names_the_rust_call_site() {
         let report = miette::Report::new(BuildError::unexpected_rule(
@@ -230,7 +199,6 @@ mod tests {
         );
     }
 
-    /// One kind per top-level expression — the program-level view `build_program` produces.
     fn program_kinds(source: &str) -> Vec<ExpressionKind> {
         parse(source)
             .expect("source parses")
@@ -240,7 +208,6 @@ mod tests {
             .collect()
     }
 
-    /// The sole top-level expression, for sources that are a single chain.
     fn only_expr(source: &str) -> Expression {
         let mut expressions = parse(source).expect("source parses").expressions;
         assert_eq!(
@@ -256,7 +223,6 @@ mod tests {
         only_expr(source).kind
     }
 
-    /// Unwrap a call into (callee kind, arguments), reporting the shape actually built.
     fn expect_call(kind: ExpressionKind) -> (ExpressionKind, Vec<Expression>) {
         match kind {
             ExpressionKind::FunctionInvocation {
@@ -267,7 +233,6 @@ mod tests {
         }
     }
 
-    /// Unwrap a field access into (target kind, field name).
     fn expect_field(kind: ExpressionKind) -> (ExpressionKind, String) {
         match kind {
             ExpressionKind::FieldAccess { target, identifier } => (target.kind, identifier),
@@ -283,7 +248,6 @@ mod tests {
         matches!(expr.kind, ExpressionKind::Literal(Literal::Int(n)) if n == value)
     }
 
-    /// The base case: an identifier followed by `(args)` is an invocation of that identifier.
     #[test]
     fn a_call_builds_an_invocation() {
         let (callee, arguments) = expect_call(only_kind("f(1)"));
@@ -295,8 +259,6 @@ mod tests {
         assert!(is_int(&arguments[0], 1));
     }
 
-    /// The synthesized node covers the base *and* its postfix, so a diagnostic on a call
-    /// underlines the whole `f(1)` rather than just the `f`.
     #[test]
     fn a_call_spans_callee_through_closing_paren() {
         let expr = only_expr("f(1)");
@@ -304,8 +266,6 @@ mod tests {
         assert_eq!(expr.span.len(), "f(1)".len());
     }
 
-    /// The fold carries the widened span forward, so each postfix in a chain covers
-    /// everything to its left — not just the previous postfix.
     #[test]
     fn a_chained_postfix_spans_the_whole_chain() {
         let expr = only_expr("f(1)(2)");
@@ -317,8 +277,6 @@ mod tests {
         assert_eq!(expr.span.len(), "a.b.c".len());
     }
 
-    /// `f(a, b)` is sugar for `f(a)(b)`, but that desugaring belongs to type inference
-    /// (`apply_arguments`), not the parser: the AST keeps one flat argument list.
     #[test]
     fn multiple_arguments_stay_a_flat_list() {
         let (callee, arguments) = expect_call(only_kind("add(3, 4)"));
@@ -332,7 +290,6 @@ mod tests {
         assert!(is_int(&arguments[1], 4));
     }
 
-    /// Zero-argument calls are real — `closure.trsl` invokes `create_closure()`.
     #[test]
     fn a_zero_argument_call_builds_an_empty_invocation() {
         let (callee, arguments) = expect_call(only_kind("f()"));
@@ -362,7 +319,6 @@ mod tests {
         ));
     }
 
-    /// The other postfix: `.name` reads a field off whatever precedes it.
     #[test]
     fn a_field_access_builds_a_field_access() {
         let (target, field) = expect_field(only_kind("p.x"));
@@ -373,8 +329,6 @@ mod tests {
         assert_eq!(field, "x");
     }
 
-    /// Repeated call postfixes nest left-to-right: `f(1)(2)` is `(f(1))(2)`, the shape
-    /// partial application relies on.
     #[test]
     fn chained_calls_nest_left_to_right() {
         let (inner, outer_arguments) = expect_call(only_kind("f(1)(2)"));
@@ -385,7 +339,6 @@ mod tests {
         assert!(is_int(&inner_arguments[0], 1));
     }
 
-    /// Likewise for field access: `a.b.c` is `(a.b).c` — the `nested-field-access` target.
     #[test]
     fn chained_field_accesses_nest_left_to_right() {
         let (inner, outer_field) = expect_field(only_kind("a.b.c"));
@@ -396,9 +349,6 @@ mod tests {
         assert_eq!(inner_field, "b");
     }
 
-    /// The two postfix kinds interleave — `a.b().c` reads a function-valued field, invokes
-    /// it, then reads a field off the result. Trestle has no methods; this is the
-    /// `field-call-chain` target.
     #[test]
     #[ignore = "needs both fixes: postfix folding and zero-argument calls"]
     fn a_call_between_field_accesses_chains() {
@@ -413,7 +363,6 @@ mod tests {
         assert_eq!(inner_field, "b");
     }
 
-    /// The mirror case: a field read off a call's result.
     #[test]
     fn a_field_access_on_a_call_result_chains() {
         let (call, field) = expect_field(only_kind("f(x).y"));
@@ -424,8 +373,6 @@ mod tests {
         assert_eq!(arguments.len(), 1);
     }
 
-    /// Postfixes attach to a `primary`, so they bind tighter than any infix operator:
-    /// `p.x + p.y` is `(p.x) + (p.y)`, never `(p.x + p).y`.
     #[test]
     fn postfix_binds_tighter_than_an_infix_operator() {
         match only_kind("p.x + p.y") {
@@ -437,8 +384,6 @@ mod tests {
         }
     }
 
-    /// Prefix operators sit outside the `primary` too, so `-f(1)` negates the call's
-    /// result rather than calling a negated `f`.
     #[test]
     fn postfix_binds_tighter_than_a_prefix_operator() {
         match only_kind("-f(1)") {
@@ -452,8 +397,6 @@ mod tests {
         }
     }
 
-    /// A postfix applies to any `primary_base`, including a parenthesized expression —
-    /// the callee needn't be a bare identifier.
     #[test]
     fn a_parenthesized_base_takes_a_postfix() {
         let (callee, arguments) = expect_call(only_kind("(g)(1)"));
@@ -461,9 +404,6 @@ mod tests {
         assert!(is_int(&arguments[0], 1));
     }
 
-    /// `build_program`'s own fold. Newlines are insignificant (see `WHITESPACE` in
-    /// trestle.pest), so the two statements are delimited structurally: the lambda body
-    /// `x` ends at `d`, which starts a fresh top-level expression.
     #[test]
     fn each_top_level_call_is_its_own_expression() {
         let kinds = program_kinds("let d = (x: Int) => x\nd(2)");

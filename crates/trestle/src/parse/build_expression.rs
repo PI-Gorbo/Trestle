@@ -94,7 +94,6 @@ fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, Buil
         let span = source_span_from_pest_span(field.as_span());
         let (key, value) = build_required_binding_target(field)?;
 
-        // Keyed by name
         if fields.insert(key.clone(), value).is_some() {
             return Err(BuildError::DuplicateRecordField { name: key, span });
         }
@@ -175,7 +174,6 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         }
     }
 
-    // Guard: a lambda must have a body.
     let Some(body_value) = body else {
         return Err(BuildError::MissingLambdaBody {
             span: source_span_from_pest_span(span),
@@ -183,10 +181,8 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     };
     let boxed_body = Box::new(body_value?);
 
-    // Fold up the params to build a curried lambda expression. Ie: (A => (B => (C => D)))
     let mut params_in_reverse = params.into_iter().rev();
 
-    // Guard: a lambda with no parameters wraps the body directly.
     let Some(last_param) = params_in_reverse.next() else {
         return Ok(spanned(
             span,
@@ -198,7 +194,6 @@ fn build_lambda(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         ));
     };
 
-    // The innermost lambda owns the real return type; outer wrappers get None.
     let most_inner_lambda = Lambda {
         parameter: Some(last_param),
         body: boxed_body,
@@ -331,10 +326,6 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let child = pair.into_inner().next().expect("literal has one child");
     let span = child.as_span();
     match child.as_rule() {
-        // Not an `expect`: the grammar matches any run of digits, so overflow is something a
-        // user can type, not an internal invariant. It also used to be silently
-        // platform-dependent — `usize` is 32-bit under `wasm32-unknown-unknown`, so the same
-        // literal parsed on a 64-bit host and trapped in the browser.
         Rule::int => {
             let raw = child.as_str();
             let value = raw.parse().map_err(|_| BuildError::IntLiteralOutOfRange {
@@ -345,10 +336,8 @@ fn build_literal(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             Ok(spanned(span, ExpressionKind::Literal(Literal::Int(value))))
         }
         Rule::string => {
-            // `as_str()` is the raw token incl. the surrounding quotes; strip them,
-            // then resolve escape sequences to their runtime characters.
             let raw = child.as_str();
-            let inner = &raw[1..raw.len() - 1]; // quotes are single-byte ASCII
+            let inner = &raw[1..raw.len() - 1];
             let value =
                 unescaper::unescape(inner).map_err(|err| BuildError::InvalidStringEscape {
                     message: err.to_string(),
@@ -383,7 +372,6 @@ fn build_record(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
     let mut inner = pair.into_inner();
 
-    // `record` flattens to identifier, expr, identifier, expr, … — walk it two at a time.
     let mut fields = std::iter::from_fn(|| Some((inner.next()?, inner.next()?)));
 
     let record_values = fields.try_fold(BTreeMap::new(), |mut state, (identifier, expr)| {
@@ -391,7 +379,6 @@ fn build_record(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         let identifier = identifier.as_str().to_string();
         let expr = build_expr(expr)?;
 
-        // Keyed by name, so a repeat would silently overwrite the first.
         if state.insert(identifier.clone(), expr).is_some() {
             return Err(BuildError::DuplicateRecordField {
                 name: identifier,
@@ -411,8 +398,6 @@ fn build_record(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let mut pairs = pair.into_inner();
 
-    // Pull the 'primary_base' off the stack of pairs, then step through it to the
-    // literal / identifier / parenthesised expr it wraps.
     let primary_base_pair = get_bindings(
         pairs.next().expect("primary has one child"),
         "primary to have a base",
@@ -424,7 +409,7 @@ fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             primary_base_span,
             ExpressionKind::Var(primary_base_pair.as_str().to_string()),
         )),
-        Rule::expr => build_expr(primary_base_pair), // parenthesized expression
+        Rule::expr => build_expr(primary_base_pair),
         rule => Err(BuildError::unexpected_rule(
             rule,
             source_span_from_pest_span(primary_base_span),
@@ -432,8 +417,6 @@ fn build_primary(pair: Pair<Rule>) -> Result<Expression, BuildError> {
         )),
     }?;
 
-    // Fold the base expr with the zero or more postfix_pairs that come through.
-    // Each fold iteration wraps the current state.
     pairs.try_fold(primary_base_expr, |expr, _primary_postfix| {
         let primary_postfix_rule = _primary_postfix.as_rule();
         let primary_postfix_span = _primary_postfix.as_span();
@@ -480,7 +463,6 @@ fn build_field_access(
             )
         })?;
 
-    // The postfix pair covers only `.name`; the synthesized node covers the target too.
     let span = merge_spans(target.span, source_span_from_pest_span(postfix_pair_span));
 
     Ok(Expression {
@@ -496,8 +478,6 @@ fn build_call_arguments(
     target: Expression,
     postfix_pair: Pair<Rule>,
 ) -> Result<Expression, BuildError> {
-    //  call_arguments has at most one element, comma_separated_list_of_expressions —
-    //  a nullary call `f()` has none.
     let postfix_pair_span = postfix_pair.as_span();
     let arguments = match postfix_pair.into_inner().next() {
         Some(list) => list
@@ -510,7 +490,6 @@ fn build_call_arguments(
         None => Vec::new(),
     };
 
-    // The postfix pair covers only `(args)`; the synthesized node covers the callee too.
     let span = merge_spans(target.span, source_span_from_pest_span(postfix_pair_span));
 
     Ok(Expression {
@@ -528,7 +507,7 @@ fn build_if_expression(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 
     let condition = build_expr(inner.next().expect("if_expression has a condition"))?;
     let true_pathway = build_expr(inner.next().expect("if_expression has a then branch"))?;
-    let false_pathway = inner.next().map(build_expr).transpose()?; // None when no `else`
+    let false_pathway = inner.next().map(build_expr).transpose()?;
 
     Ok(spanned(
         span,
@@ -544,9 +523,6 @@ fn build_if_expression(pair: Pair<Rule>) -> Result<Expression, BuildError> {
 mod tests {
     use crate::parse::parse;
 
-    /// A string literal's escape sequences are resolved to their runtime characters:
-    /// the source `"a\nb"` stores the three-character value `a<newline>b`, and the
-    /// surrounding quotes are stripped.
     #[test]
     fn string_literal_escapes_are_unescaped() {
         match only_expr_kind(r#""a\nb""#) {
@@ -555,8 +531,6 @@ mod tests {
         }
     }
 
-    /// An invalid escape sequence is rejected with a targeted diagnostic rather than
-    /// silently mangling the value or panicking.
     #[test]
     fn invalid_string_escape_reports_diagnostic() {
         let report = parse(r#""a\xZZ""#).expect_err("invalid escape must be rejected");
@@ -567,8 +541,6 @@ mod tests {
         );
     }
 
-    /// Record fields are keyed by name, so a repeated field would silently
-    /// overwrite the first. It's rejected at build time instead.
     #[test]
     fn duplicate_record_field_reports_diagnostic() {
         let report =
@@ -580,8 +552,6 @@ mod tests {
         );
     }
 
-    /// A record literal keeps every field, keyed by name, with each value built as
-    /// its own expression.
     #[test]
     fn record_literal_collects_all_fields() {
         match only_expr_kind(r#"{ x: 1, y: "a" }"#) {
@@ -599,8 +569,6 @@ mod tests {
         }
     }
 
-    /// Like record *types*, a record literal is keyed by name — a repeated field
-    /// would silently overwrite the first, so it's rejected at build time.
     #[test]
     fn duplicate_record_literal_field_reports_diagnostic() {
         let report = parse("{ x: 1, x: 2 }").expect_err("duplicate field must be rejected");
@@ -613,7 +581,6 @@ mod tests {
 
     use crate::parse::ast::{BinaryOp, ExpressionKind, Literal, UnaryOp};
 
-    /// Pull the single top-level expression's kind out of a parsed program.
     fn only_expr_kind(source: &str) -> ExpressionKind {
         let program = parse(source).expect("source parses");
         let mut expressions = program.expressions.into_iter();
@@ -622,8 +589,6 @@ mod tests {
         expr.kind
     }
 
-    /// `if (cond) then else other` maps the three exprs positionally: condition,
-    /// then-branch, else-branch.
     #[test]
     fn if_with_else_maps_all_three_branches_positionally() {
         match only_expr_kind("if (x) 1 else 2") {
@@ -647,7 +612,6 @@ mod tests {
         }
     }
 
-    /// The trailing `else` is optional; without it `false_pathway` is `None`.
     #[test]
     fn if_without_else_has_no_else_branch() {
         match only_expr_kind("if (x) 1") {
@@ -658,8 +622,6 @@ mod tests {
         }
     }
 
-    /// A prefix operator binds tighter than a binary one: `!a && b` is `(!a) && b`,
-    /// so the `Not` wraps only `a` and the whole thing is an `And`.
     #[test]
     fn logical_not_binds_tighter_than_and() {
         match only_expr_kind("!a && b") {
@@ -671,7 +633,6 @@ mod tests {
         }
     }
 
-    /// Likewise arithmetic negation binds tighter than `*`: `-a * b` is `(-a) * b`.
     #[test]
     fn negation_binds_tighter_than_multiply() {
         match only_expr_kind("-a * b") {
@@ -683,8 +644,6 @@ mod tests {
         }
     }
 
-    /// A binary condition still lands in the condition slot — position, not shape,
-    /// discriminates the branches.
     #[test]
     fn if_with_binary_condition_keeps_positional_mapping() {
         match only_expr_kind("if (a < b) 1 else 2") {

@@ -1,12 +1,3 @@
-//! The type-checked AST: the binding-resolved AST
-//! ([`BindingResolvedProgram`](crate::binding_resolution::BindingResolvedProgram)) after type
-//! checking. [`type_check`](super::type_check) produces this; [`evaluate`](crate::evaluate::evaluate)
-//! consumes it.
-//!
-//! It mirrors the binding-resolved tree, differing only where type checking changes a field: every
-//! [`Expression`](TypeCheckedExpression) carries its [`Type`]. Names and types per binding live in
-//! the side [`TypeCheckedProgram::bindings`] table so the tree itself stays ids-only.
-
 use std::collections::BTreeMap;
 
 use miette::SourceSpan;
@@ -23,7 +14,7 @@ pub enum Type {
     Unit,
     Literal(Literal),
     Var(TypeVarId),
-    Fn(Option<Box<Type>>, Box<Type>), // curried: one arg -> result
+    Fn(Option<Box<Type>>, Box<Type>),
     Record(BTreeMap<String, Box<Type>>),
 }
 
@@ -36,7 +27,6 @@ pub enum Literal {
     Unit,
 }
 
-/// Name + resolved type + definition site for each [`BindingId`].
 #[derive(Debug, PartialEq)]
 pub struct TypedBinding {
     pub name: String,
@@ -44,8 +34,6 @@ pub struct TypedBinding {
     pub span: SourceSpan,
 }
 
-/// A type-checked expression node: what it is (`kind`), where it came from (`span`), and its
-/// resolved type (`ty`, new vs the binding-resolved AST).
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeCheckedExpression {
     pub kind: ExpressionKind,
@@ -55,7 +43,6 @@ pub struct TypeCheckedExpression {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TypeCheckedLiteral {
-    /// See [`parse::ast::Literal::Int`](crate::parse::ast::Literal::Int) for why this is `i64`.
     Int(i64),
     Bool(bool),
     Float(f64),
@@ -67,7 +54,7 @@ pub enum TypeCheckedLiteral {
 #[derive(Debug, Clone, PartialEq)]
 pub enum ExpressionKind {
     Literal(TypeCheckedLiteral),
-    Var(BindingId), // was Var(String)
+    Var(BindingId),
     Binary(
         BinaryOp,
         Box<TypeCheckedExpression>,
@@ -85,7 +72,7 @@ pub enum ExpressionKind {
     },
     Lambda(Lambda),
     Let {
-        binding: BindingId, // was name: String
+        binding: BindingId,
         value: Box<TypeCheckedExpression>,
     },
     Block(Vec<TypeCheckedExpression>),
@@ -109,10 +96,8 @@ pub struct Param {
 pub struct Lambda {
     pub parameter: Option<Param>,
     pub body: Box<TypeCheckedExpression>,
-    // return_type is gone: the lambda's type is Fn(param.ty, body.ty), held in Expression::ty.
 }
 
-/// A fully type-checked program: the typed tree plus the binding table it resolves against.
 #[derive(Debug, PartialEq)]
 pub struct TypeCheckedProgram {
     pub expressions: Vec<TypeCheckedExpression>,

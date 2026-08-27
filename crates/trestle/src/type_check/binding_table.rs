@@ -1,6 +1,3 @@
-//! The per-binding type table built up during inference, and the step that freezes it into the
-//! final [`TypeCheckedBinding`] list.
-
 use std::marker::PhantomData;
 
 use crate::binding_resolution::binding_resolved::TypeBindingId;
@@ -10,8 +7,6 @@ use super::error::TypeCheckError;
 use super::typed_ast::{Type, TypedBinding};
 use super::unification::UnificationMap;
 
-/// The id type that indexes a [`GenericTypeMap`] — one impl per namespace, so a map built for
-/// values can't be read with a type-binding id (or vice versa).
 pub(super) trait Indexable {
     fn get_index(self) -> usize;
     fn new(val: usize) -> Self;
@@ -72,17 +67,6 @@ impl BindingLookup for [ResolvedBinding] {
     }
 }
 
-/// Pair each binding with the type computed for it during the walk (**moving** its name across),
-/// resolving every solved type variable through `unification_map` on the way — binding types are
-/// recorded during inference with their variables intact, so they need the same substitution the
-/// expression tree gets. A binding still untyped afterwards is an [`UntypedBindingAfterTypeCheck`]
-/// error. Consumes the binding list since it's the last reader of it.
-///
-/// Generic over the id type so both namespaces — [`BindingId`] values and [`TypeBindingId`] `type`
-/// declarations — share one implementation; the map's own parameter picks the right one at each
-/// call site.
-///
-/// [`UntypedBindingAfterTypeCheck`]: TypeCheckError::UntypedBindingAfterTypeCheck
 pub(super) fn attach_types_to_bindings<TBindingId: Indexable>(
     bindings: Vec<ResolvedBinding>,
     binding_type_map: &GenericTypeMap<TBindingId>,

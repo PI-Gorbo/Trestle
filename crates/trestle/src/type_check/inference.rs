@@ -1,7 +1,3 @@
-//! Bottom-up type inference over the binding-resolved tree: synthesise a [`Type`] for every node,
-//! unifying operands, lambda bodies, `let` values, and call arguments against what their context
-//! requires.
-
 use std::collections::BTreeMap;
 
 use miette::SourceSpan;
@@ -29,8 +25,6 @@ pub(super) struct InferenceCtx {
 }
 
 impl InferenceCtx {
-    /// The two namespaces are sized independently: each is indexed by its own arena's ids
-    /// (`BindingId` for values, `TypeBindingId` for `type` declarations).
     pub(super) fn new(binding_count: usize, type_binding_count: usize) -> InferenceCtx {
         let type_env = create_type_env_with_prelude_types(type_binding_count);
 
@@ -44,13 +38,11 @@ impl InferenceCtx {
 fn create_type_env_with_prelude_types(
     type_binding_count: usize,
 ) -> super::binding_table::GenericTypeMap<TypeBindingId> {
-    // When we create a new inference ctx, we must seed it with the basic types that already exist.
     debug_assert!(
         type_binding_count >= PRELUDE_TYPES.len(),
         "resolve seeds the prelude before any user declaration"
     );
 
-    // We expect the first N types from type_resolution to be the pre-seeded prelude types.
     let type_env = PRELUDE_TYPES.iter().enumerate().fold(
         TypeBindingToTypeMap::new(type_binding_count),
         |mut env, (index, prelude_type)| {
@@ -75,12 +67,10 @@ pub(super) fn infer_type_of_expression(
         ),
         ResolvedExpressionKind::Literal(ResolvedLiteral::Int(value)) => (
             ExpressionKind::Literal(TypeCheckedLiteral::Int(value)),
-            // An integer literal is a `Literal::Int`.
             Type::Literal(Literal::Int),
         ),
 
         ResolvedExpressionKind::Literal(ResolvedLiteral::String(value)) => (
-            // The name-resolved string moves straight through — no copy.
             ExpressionKind::Literal(TypeCheckedLiteral::String(value)),
             Type::Literal(Literal::String),
         ),
@@ -117,8 +107,6 @@ pub(super) fn infer_type_of_expression(
             )
         }
         ResolvedExpressionKind::Var(binding_id) => {
-            // The binding's type was recorded when its `let`/lambda-param was analysed.
-            // If none is known at the use site, the binding needs an annotation.
             let ty = match ctx.variable_env.get(binding_id) {
                 Some(ty) => ty.clone(),
                 None => {
@@ -134,9 +122,7 @@ pub(super) fn infer_type_of_expression(
         ResolvedExpressionKind::Binary(op, lhs, rhs) => {
             let lhs = infer_type_of_expression(*lhs, ctx, unification_map, bindings)?;
             let rhs = infer_type_of_expression(*rhs, ctx, unification_map, bindings)?;
-            // The operator fixes both the operand type and the result type. Arithmetic is
-            // `Int × Int → Int`; comparison is `Int × Int → Bool`; the boolean combinators are
-            // `Bool × Bool → Bool`. Unify each operand against the required operand type.
+
             match op {
                 BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => unify_binary_op(
                     unification_map,
@@ -171,9 +157,6 @@ pub(super) fn infer_type_of_expression(
                     Type::Literal(Literal::Bool),
                 )?,
                 BinaryOp::Pipe => {
-                    // The right-hand side is the function being piped into. A bare reference to a
-                    // let-bound function has a type *variable* as its type, so resolve it to its
-                    // representative before requiring an `Fn` shape.
                     let Type::Fn(input, output) = unification_map.representative(&rhs.ty) else {
                         return Err(TypeCheckError::NotAFunction {
                             found: rhs.ty,
@@ -199,8 +182,7 @@ pub(super) fn infer_type_of_expression(
 
         ResolvedExpressionKind::Unary(op, operand) => {
             let operand = infer_type_of_expression(*operand, ctx, unification_map, bindings)?;
-            // `-` negates an `Int` (→ `Int`); `!` inverts a `Bool` (→ `Bool`). Operand and result
-            // type coincide for both, so unify the operand against that one type.
+
             let ty = match op {
                 UnaryOp::Neg => Type::Literal(Literal::Int),
                 UnaryOp::Not => Type::Literal(Literal::Bool),
@@ -216,8 +198,6 @@ pub(super) fn infer_type_of_expression(
                 return_type,
             } = resolved_lambda;
 
-            // Resolve the parameter's annotation into a `Type`, record it in `env` (via
-            // `env.set`) so the body can see it, and build the typed `Param`.
             let parameter: Option<Param> = parameter
                 .map(|untyped_param| {
                     let type_from_type_dec =
@@ -232,7 +212,6 @@ pub(super) fn infer_type_of_expression(
                 .transpose()?;
             let param_type = parameter.as_ref().map(|p| Box::new(p.ty.clone()));
 
-            // Infer the body under the (now parameter-extended) environment.
             let body = infer_type_of_expression(*body, ctx, unification_map, bindings)?;
             let return_type = resolve_type_dec(return_type, unification_map, ctx)?;
             unification_map.unify(&body.ty, &return_type, span)?;
@@ -243,7 +222,6 @@ pub(super) fn infer_type_of_expression(
                     parameter,
                     body: Box::new(body),
                 }),
-                // The lambda's type is `Fn(param.ty, body.ty)`.
                 Type::Fn(param_type, Box::new(lambda_return_type)),
             )
         }
@@ -257,7 +235,6 @@ pub(super) fn infer_type_of_expression(
                 .map(|arg| infer_type_of_expression(arg, ctx, unification_map, bindings))
                 .collect::<Result<Vec<_>, _>>()?;
 
-            // A function invocation is valid for a callable expression.
             let typed_function =
                 infer_type_of_expression(*function, ctx, unification_map, bindings)?;
 
@@ -268,8 +245,6 @@ pub(super) fn infer_type_of_expression(
                 span,
             )?;
 
-            // Fold the args through the callee's curried `Fn(a, Fn(b, r))` type in `env`,
-            // peeling one arrow (and checking one arg) per element; the leftover is the result.
             (
                 ExpressionKind::FunctionInvocation {
                     function: Box::new(typed_function),
@@ -285,15 +260,11 @@ pub(super) fn infer_type_of_expression(
             value,
         } => {
             let value = infer_type_of_expression(*value, ctx, unification_map, bindings)?;
-            // With an annotation the binding takes the annotated type; without one it takes the
-            // value's inferred type. Record it *before* unifying so that a mismatch still leaves the
-            // binding typed — otherwise `zip_bindings_with_types` would mask the `TypeMismatch` with
-            // an `UntypedBindingAfterTypeCheck`.
+
             let bound_ty = resolve_type_dec(type_dec, unification_map, ctx)?;
 
             ctx.variable_env.set(binding, bound_ty.clone());
-            // The value's type must unify with the binding's; for an annotated `let` a differing
-            // value type is a `TypeMismatch` (expected = annotation, found = value).
+
             unification_map.unify(&value.ty, &bound_ty, span)?;
 
             (
@@ -305,8 +276,6 @@ pub(super) fn infer_type_of_expression(
             )
         }
 
-        // A block's value is its last expression's; earlier ones are typed for effect. The
-        // grammar guarantees at least one element, but fall back to `Unit` defensively.
         ResolvedExpressionKind::Block(expressions) => {
             let analysed = expressions
                 .into_iter()
@@ -322,7 +291,7 @@ pub(super) fn infer_type_of_expression(
         } => {
             let typed_condition =
                 infer_type_of_expression(*condition, ctx, unification_map, bindings)?;
-            // Unify the typed_condition value with boolean.
+
             unification_map.unify(&typed_condition.ty, &Type::Literal(Literal::Bool), span)?;
 
             let true_condition =
@@ -362,7 +331,6 @@ pub(super) fn infer_type_of_expression(
         } => {
             let evaluated_type = get_type_from_type_expression(type_expression, ctx)?;
 
-            // Bind a type to the identifier in the context.
             ctx.type_env.set(identifier, evaluated_type.clone());
 
             (
@@ -376,9 +344,6 @@ pub(super) fn infer_type_of_expression(
         ResolvedExpressionKind::FieldAccess { target, field_name } => {
             let target = infer_type_of_expression(*target, ctx, unification_map, bindings)?;
 
-            // Field access is driven by the target's *type*, not its expression shape: in `p.x`
-            // the target is a `Var`, not a record literal. A let-bound record's binding type is a
-            // type variable, so resolve it to its representative before requiring a record.
             let Type::Record(field_types) = unification_map.representative(&target.ty) else {
                 return Err(TypeCheckError::NotARecord {
                     found: target.ty,
@@ -389,14 +354,11 @@ pub(super) fn infer_type_of_expression(
             let field_type = field_types.get(&field_name).ok_or_else(|| {
                 TypeCheckError::RecordDoesNotHaveField {
                     field_name: field_name.clone(),
-                    // `BTreeMap` keys come out sorted, so the suggestion list is deterministic.
                     available: field_types.keys().cloned().collect(),
                     span,
                 }
             })?;
 
-            // `representative` is shallow: the field's own type may still be a variable, which the
-            // final substitution pass resolves.
             let ty = (**field_type).clone();
 
             (
@@ -459,22 +421,15 @@ pub(super) fn get_type_after_applying_arguments(
     arguments: &[TypeCheckedExpression],
     span: SourceSpan,
 ) -> Result<Type, TypeCheckError> {
-    // Resolve the callee to what it currently stands for: a let-bound function's binding type is
-    // a type variable, so `fn_type` here is often a `Var` whose root is a concrete `Fn`.
     let resolved = unification_map.representative(fn_type);
 
     if arguments.is_empty() {
-        // A zero-argument call `f()` is a nullary invocation: peel the single `Fn(None, R)`
-        // arrow to its result `R`. A bare/partial reference just yields the callee itself.
         if let Type::Fn(None, return_type) = resolved {
             return Ok(*return_type);
         }
         return Ok(resolved);
     }
 
-    // Before applying anything: a *concrete* non-function callee is `NotAFunction`. A `Var` callee
-    // is a not-yet-known function and is constrained during peeling; over-application is a distinct
-    // error we can only detect once we've started peeling a concrete function's arrows.
     match &resolved {
         Type::Fn(..) | Type::Var(_) => apply_arguments(unification_map, &resolved, arguments, span),
         _ => Err(TypeCheckError::NotAFunction {
@@ -484,33 +439,24 @@ pub(super) fn get_type_after_applying_arguments(
     }
 }
 
-/// Fold `arguments` through the callee's curried `Fn(a, Fn(b, r))` type, peeling (and checking)
-/// one argument per arrow. A still-unknown callee (a type variable) is constrained to
-/// `Fn(arg, fresh_result)` and application continues through the fresh result.
 fn apply_arguments(
     unification_map: &mut UnificationMap,
     fn_type: &Type,
     arguments: &[TypeCheckedExpression],
     span: SourceSpan,
 ) -> Result<Type, TypeCheckError> {
-    // No arguments left — the remaining type is the call's result (a fully-applied function's
-    // return type, or the function itself for a bare/partial reference).
     let Some(arg) = arguments.first() else {
         return Ok(fn_type.clone());
     };
 
     match unification_map.representative(fn_type) {
-        // Peel one arrow: the argument must unify with the parameter.
         Type::Fn(Some(param_type), return_type) => {
             unification_map.unify(&param_type, &arg.ty, span)?;
             apply_arguments(unification_map, &return_type, &arguments[1..], span)
         }
 
-        // The function is nullary but was handed an argument.
         Type::Fn(None, _) => Err(TypeCheckError::ArgumentsToArgumentlessFunction { span }),
 
-        // The callee is a not-yet-known function: constrain its variable to `Fn(arg, result)`
-        // and continue with the fresh result variable.
         callee @ Type::Var(_) => {
             let result = Type::Var(unification_map.mint_new_type_var());
             let fn_shape = Type::Fn(Some(Box::new(arg.ty.clone())), Box::new(result.clone()));
@@ -518,14 +464,10 @@ fn apply_arguments(
             apply_arguments(unification_map, &result, &arguments[1..], span)
         }
 
-        // Started from a function (guaranteed by the entry check) but ran out of arrows to peel:
-        // the caller over-applied.
         _ => Err(TypeCheckError::TooManyArguments { span }),
     }
 }
 
-// /// Interpret a raw type annotation into a concrete [`Type`]
-// /// (`"Int"`/`"Bool"`/`"String"` → [`Literal`]; unknown → an error).
 fn resolve_type_dec(
     dec: Option<ResolvedTypeExpression>,
     unification_map: &mut UnificationMap,
@@ -546,7 +488,6 @@ mod tests {
     use super::*;
     use crate::type_check::typed_ast::Literal;
 
-    /// A dummy `Int` literal argument for driving `get_type_after_applying_arguments` directly.
     fn int_arg() -> TypeCheckedExpression {
         TypeCheckedExpression {
             kind: ExpressionKind::Literal(TypeCheckedLiteral::Int(0)),
@@ -557,8 +498,6 @@ mod tests {
 
     #[test]
     fn arguments_to_argumentless_function_is_an_error() {
-        // Nullary functions can't be written in source yet (the grammar requires a parameter),
-        // so drive the checker directly with a `Fn(None, _)` type given one argument.
         let fn_type = Type::Fn(None, Box::new(Type::Unit));
         let err = get_type_after_applying_arguments(
             &mut UnificationMap::new(),
@@ -575,7 +514,6 @@ mod tests {
 
     #[test]
     fn applying_correct_arguments_returns_result_type() {
-        // `Fn(Int, Int)` applied to one argument yields its result type.
         let fn_type = Type::Fn(
             Some(Box::new(Type::Literal(Literal::Int))),
             Box::new(Type::Literal(Literal::Int)),

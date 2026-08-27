@@ -8,14 +8,6 @@ use miette::{Diagnostic, SourceSpan};
 use std::panic::Location;
 use thiserror::Error;
 
-/// Runtime failures. Evaluation fails fast at the first fault, so this is reported singly rather
-/// than batched like the analysis errors.
-///
-/// Every variant so far records a guarantee `analyse` was supposed to have established — a
-/// well-typed program should never reach one. They are errors rather than panics so that a bug in
-/// the type checker surfaces as a diagnostic pointing at the offending expression instead of
-/// aborting the process. Later tiers (overflow, effects) will add variants that a *correct*
-/// program can hit.
 #[derive(Error, Diagnostic, Debug)]
 pub enum EvalError {
     #[error("internal trestle error: {context}")]
@@ -30,7 +22,6 @@ pub enum EvalError {
         span: SourceSpan,
     },
 
-    /// The first variant a *correct* program can reach: `1 / 0` type-checks perfectly well.
     #[error("division by zero")]
     #[diagnostic(
         code(trestle::division_by_zero),
@@ -41,9 +32,6 @@ pub enum EvalError {
         span: SourceSpan,
     },
 
-    /// Also reachable from a well-typed program. Raised rather than allowed to wrap, because
-    /// wrapping is what `--release` would silently do while a debug build panicked — a
-    /// difference between the tested build and the shipped one.
     #[error("arithmetic overflow evaluating `{operator}`")]
     #[diagnostic(
         code(trestle::arithmetic_overflow),
@@ -59,12 +47,6 @@ pub enum EvalError {
 }
 
 impl EvalError {
-    /// Build an `InvariantDueToTypeCheck`, capturing the *Rust* call site.
-    ///
-    /// The `span` alone only says where in the *Trestle* program the walker faulted; what you
-    /// actually need to fix a checker/evaluator mismatch is the arm that trusted the wrong
-    /// guarantee. `#[track_caller]` gets that for free — `Location::caller()` resolves to the
-    /// constructor call rather than to this function. Same pattern as `BuildError::invariant`.
     #[track_caller]
     pub fn invariant_due_to_type_check(span: SourceSpan, context: &'static str) -> Self {
         Self::InvariantDueToTypeCheck {
