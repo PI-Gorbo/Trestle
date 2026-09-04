@@ -1,0 +1,19 @@
+crates/trestle/src/parse/trestle.pest
+  s_5a6be74002759f::t_cd5d9782bd02ee 75-77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "218579718f4242885774ed3c66da517ae7630dc8",
+  "prompts": {},
+  "sessions": {
+    "s_5a6be74002759f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ddd73a51-eca4-4668-b5dd-09c873130e3b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "SamGorbatov <samgorbatov@propertyme.com>"
+    }
+  }
+}
