@@ -72,8 +72,8 @@ expr = { type_declaration_expression | let_expression | list_of_expressions | la
 comma_separated_list_of_type_expressions = _{ identifier_with_type_declaration ~ ("," ~ identifier_with_type_declaration)* }
 record_type_expression                   =  { "{" ~ comma_separated_list_of_type_expressions? ~ "}" }
 
-type_identifier_with_optional_identifier                  = { (identifier ~ ":")? ~ type_identifier }
-comma_separated_type_identifiers_with_optional_identifier = { (type_identifier_with_optional_identifier ~ ("," ~ type_identifier_with_optional_identifier)*)? }
-function_type_expression                                  = { "(" ~ comma_separated_type_identifiers_with_optional_identifier ~ ")" ~ "=>" ~ type_identifier }
+type_expr_with_optional_identifier                  = { (identifier ~ ":")? ~ type_expression }
+comma_separated_type_expr_with_optional_identifier = { (type_expr_with_optional_identifier ~ ("," ~ type_expr_with_optional_identifier)*)? }
+function_type_expression                                  = { "(" ~ comma_separated_type_expr_with_optional_identifier ~ ")" ~ "=>" ~ type_expression }
 type_identifier                                           = { identifier }
 type_expression                                           = { record_type_expression | function_type_expression | type_identifier }
