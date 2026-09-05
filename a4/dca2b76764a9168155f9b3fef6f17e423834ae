@@ -1,0 +1,18 @@
+crates/trestle/src/binding_resolution/binding_resolved.rs
+  h_9c8ae26587d24c 10-22,27
+crates/trestle/src/parse/build_expression.rs
+  h_9c8ae26587d24c 113,122-123,125,127-128,133,135,143-166
+crates/trestle/tests/programs/00-basics/type-declarations/function-type/function-type.ast.snap
+  h_9c8ae26587d24c 1-468
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "a4dca2b76764a9168155f9b3fef6f17e423834ae",
+  "prompts": {},
+  "humans": {
+    "h_9c8ae26587d24c": {
+      "author": "SamGorbatov <samgorbatov@propertyme.com>"
+    }
+  }
+}
