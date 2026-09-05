@@ -110,7 +110,7 @@ fn build_function_type_expression(inner: Pair<Rule>) -> Result<TypeExpression, B
             BuildError::invariant(source_span_from_pest_span(span), "Expected return type")
         })?;
 
-    let lambda_type_expression = comma_separated_type_parameters.into_inner().fold(
+    let lambda_type_expression = comma_separated_type_parameters.into_inner().try_fold(
         // Start with a function of shape () -> Type
         LambdaTypeExpression {
             parameter: None,
@@ -119,20 +119,20 @@ fn build_function_type_expression(inner: Pair<Rule>) -> Result<TypeExpression, B
         // Then, for each parm we encounter, we need to build the lambda
         |state, rule| match state.parameter {
             // For the first case, we go from () -> AType to BType -> AType
-            None => LambdaTypeExpression {
-                parameter: Some(build_optionally_named_type_expression(rule)),
+            None => Ok(LambdaTypeExpression {
+                parameter: Some(build_type_expr_with_optional_identifier(rule)?),
                 return_type: state.return_type,
-            },
+            }),
             // Otherwise we go from BType -> AType to CType -> (BType -> AType)
-            Some(_) => LambdaTypeExpression {
-                parameter: Some(build_optionally_named_type_expression(rule)),
+            Some(_) => Ok(LambdaTypeExpression {
+                parameter: Some(build_type_expr_with_optional_identifier(rule)?),
                 return_type: Box::new(TypeExpression {
                     kind: TypeExpressionKind::Lambda(state),
                     span: source_span_from_pest_span(span),
                 }),
-            },
+            }),
         },
-    );
+    )?;
 
     Ok(TypeExpression {
         kind: TypeExpressionKind::Lambda(lambda_type_expression),
@@ -140,9 +140,30 @@ fn build_function_type_expression(inner: Pair<Rule>) -> Result<TypeExpression, B
     })
 }
 
-fn build_optionally_named_type_expression(rule: Pair<Rule>) -> OptionallyNamedTypeExpression {
-    let rule_value = rule.into_inner().next();
-    todo!()
+struct OptionallyNamedTypeExpressionBuilder {
+    type_dec: Option<Box<TypeExpression>>,
+    name: Option<String>,
+}
+fn build_type_expr_with_optional_identifier(rule: Pair<Rule>) -> Result<OptionallyNamedTypeExpression, BuildError> {
+    let span = rule.as_span();
+    let rule_value = rule.into_inner()
+        .try_fold(OptionallyNamedTypeExpressionBuilder {
+            name: None,
+            type_dec: None
+        }, |state, rule| {
+            let span = rule.as_span();    
+
+            match rule.as_rule() {
+                Rule::identifier => Ok(OptionallyNamedTypeExpressionBuilder {name: Some(rule.as_str().to_string()), ..state}),
+                Rule::type_expression => Ok(OptionallyNamedTypeExpressionBuilder {type_dec: Some(build_type_expression(rule).map(Box::new)?), ..state}),
+                _ => Err(BuildError::unexpected_rule(rule.as_rule(), source_span_from_pest_span(span), "a type expr with optional identifier"))
+            }
+        }
+    )?;
+
+    let type_dec = rule_value.type_dec.ok_or_else(|| BuildError::invariant(source_span_from_pest_span(span), "a type expr is expected"))?;
+
+    Ok(OptionallyNamedTypeExpression { type_dec, name: rule_value.name })
 }
 
 fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {

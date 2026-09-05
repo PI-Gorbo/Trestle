@@ -1,0 +1,468 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Transform",
+                type_expression: TypeExpression {
+                    kind: Lambda(
+                        LambdaTypeExpression {
+                            parameter: Some(
+                                OptionallyNamedTypeExpression {
+                                    type_dec: TypeExpression {
+                                        kind: Named(
+                                            "Int",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                611,
+                                            ),
+                                            length: 3,
+                                        },
+                                    },
+                                    name: Some(
+                                        "n",
+                                    ),
+                                },
+                            ),
+                            return_type: TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        619,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            607,
+                        ),
+                        length: 15,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    590,
+                ),
+                length: 32,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Transform2",
+                type_expression: TypeExpression {
+                    kind: Lambda(
+                        LambdaTypeExpression {
+                            parameter: Some(
+                                OptionallyNamedTypeExpression {
+                                    type_dec: TypeExpression {
+                                        kind: Named(
+                                            "Int",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                642,
+                                            ),
+                                            length: 3,
+                                        },
+                                    },
+                                    name: None,
+                                },
+                            ),
+                            return_type: TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        650,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            641,
+                        ),
+                        length: 12,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    623,
+                ),
+                length: 30,
+            },
+        },
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Thunk",
+                type_expression: TypeExpression {
+                    kind: Lambda(
+                        LambdaTypeExpression {
+                            parameter: None,
+                            return_type: TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        673,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            667,
+                        ),
+                        length: 9,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    654,
+                ),
+                length: 22,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "double",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Transform",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                688,
+                            ),
+                            length: 11,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "n",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Binary(
+                                    Mul,
+                                    Expression {
+                                        kind: Var(
+                                            "n",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                709,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                713,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        709,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            702,
+                        ),
+                        length: 12,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    678,
+                ),
+                length: 36,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "triple",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Transform2",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                725,
+                            ),
+                            length: 12,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "n",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Binary(
+                                    Mul,
+                                    Expression {
+                                        kind: Var(
+                                            "n",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                747,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                3,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                751,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        747,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            740,
+                        ),
+                        length: 12,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    715,
+                ),
+                length: 37,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "answer",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Thunk",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                763,
+                            ),
+                            length: 7,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: None,
+                            return_type: None,
+                            body: Expression {
+                                kind: Literal(
+                                    Int(
+                                        42,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        779,
+                                    ),
+                                    length: 2,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            773,
+                        ),
+                        length: 10,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    753,
+                ),
+                length: 30,
+            },
+        },
+        Expression {
+            kind: Binary(
+                Add,
+                Expression {
+                    kind: Binary(
+                        Add,
+                        Expression {
+                            kind: FunctionInvocation {
+                                function: Expression {
+                                    kind: Var(
+                                        "double",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            783,
+                                        ),
+                                        length: 6,
+                                    },
+                                },
+                                arguments: [
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                21,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                790,
+                                            ),
+                                            length: 2,
+                                        },
+                                    },
+                                ],
+                            },
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    783,
+                                ),
+                                length: 10,
+                            },
+                        },
+                        Expression {
+                            kind: FunctionInvocation {
+                                function: Expression {
+                                    kind: Var(
+                                        "triple",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            796,
+                                        ),
+                                        length: 6,
+                                    },
+                                },
+                                arguments: [
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                0,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                803,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                ],
+                            },
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    796,
+                                ),
+                                length: 9,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            783,
+                        ),
+                        length: 22,
+                    },
+                },
+                Expression {
+                    kind: FunctionInvocation {
+                        function: Expression {
+                            kind: Var(
+                                "answer",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    808,
+                                ),
+                                length: 6,
+                            },
+                        },
+                        arguments: [],
+                    },
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            808,
+                        ),
+                        length: 8,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    783,
+                ),
+                length: 33,
+            },
+        },
+    ],
+}
