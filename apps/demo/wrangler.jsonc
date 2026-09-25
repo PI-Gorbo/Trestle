@@ -7,7 +7,28 @@
   // but new platform features land on Workers, and this project has nothing invested in Pages.
   "name": "trestle-web",
   "compatibility_date": "2026-08-25",
+
+  // Kept true until the apex handover is finished — it is the fallback URL if anything
+  // goes wrong mid-migration. Set to false in the same commit that drops `samstack.org`
+  // below.
   "workers_dev": true,
+
+  // ⚠️ This list is the COMPLETE set of Custom Domains for `trestle-web`. `wrangler deploy`
+  // sends it with `replace_state=true`, so a hostname attached to this script but absent
+  // here is REMOVED — DNS record and all. It is not additive.
+  //
+  // `samstack.org` is therefore listed deliberately, even though the apex is moving to the
+  // blog. Dropping it before `samstack-web` has claimed it would take the apex to NXDOMAIN,
+  // and Cloudflare's SOA negative-cache TTL is 30 minutes — the outage would outlast the fix.
+  //
+  // STEP 2 of the handover: once the blog Worker has taken `samstack.org` (it can do so in
+  // place, because CI is non-TTY and wrangler sets `override_existing_origin` there), delete
+  // the apex line below and set `workers_dev` to false. Until that lands, any deploy of this
+  // repo silently takes the apex back.
+  "routes": [
+    { "pattern": "samstack.org", "custom_domain": true },
+    { "pattern": "trestle.samstack.org", "custom_domain": true }
+  ],
 
   "assets": {
     "directory": "./.output/public",

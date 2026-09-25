@@ -1,6 +1,6 @@
 # Trestle — Deployment
 
-_Last updated: 2026-08-25_
+_Last updated: 2026-09-25_
 
 The playground at `apps/demo` is the only deployable thing in this repository. It ships to
 Cloudflare as an assets-only Worker, built and published on every push to `main` by
@@ -19,6 +19,7 @@ That makes the deployment target unusually simple. `apps/demo/wrangler.jsonc` de
 ```jsonc
 {
   "name": "trestle-web",
+  "routes": [{ "pattern": "trestle.samstack.org", "custom_domain": true }],
   "assets": {
     "directory": "./.output/public",
     "not_found_handling": "single-page-application"
@@ -39,6 +40,51 @@ There is a great deal of headroom:
 
 Requests for static assets are neither billed nor counted, and stored assets cost nothing,
 so the running cost of the playground is zero.
+
+## Where it lives
+
+The playground is served from **`trestle.samstack.org`**.
+
+Until 2026-09-25 it was on the apex, `samstack.org`, attached as a Custom Domain through the
+Cloudflare dashboard — which meant the single most important fact about the deployment,
+where it answers, was recorded nowhere in this repository. The apex now serves a blog from
+a different repository, and the playground moved down a level.
+
+The hostname is declared in `wrangler.jsonc` under `routes`, so a change of address shows up
+in a diff.
+
+### That list is a replacement, not an addition
+
+Worth internalising, because getting it wrong takes the site down rather than merely failing.
+
+`wrangler deploy` only touches Custom Domains at all if the config declares at least one —
+which is why the dashboard-attached apex survived months of deploys from a config with no
+`routes` block. But the moment one is declared, wrangler sends the whole list with
+`replace_state=true`. **Any Custom Domain attached to `trestle-web` but missing from this
+file is removed, DNS record included.** Cloudflare's own wording: *"If you change your routes
+in the dashboard, Wrangler will override them in the next deploy."*
+
+The apex handover was sequenced around that:
+
+1. List **both** `samstack.org` and `trestle.samstack.org` here, and deploy. The subdomain is
+   created; the apex is untouched because it is still in the list.
+2. Deploy the blog Worker with `samstack.org` in *its* routes. In CI this reassigns the
+   existing record in place — a GitHub runner has no TTY, so wrangler sets
+   `override_existing_origin` and `override_existing_dns_record` instead of prompting. No
+   delete, no NXDOMAIN window, no new certificate.
+3. Only then remove `samstack.org` from this file.
+
+Between steps 2 and 3, any deploy of this repository silently takes the apex back. Keep that
+window to minutes.
+
+Had the order been reversed — dropping the apex here before the blog claimed it — the record
+would have been deleted outright. Cloudflare's SOA negative-cache TTL is 1800 seconds, so a
+resolver that asked during the gap would keep answering NXDOMAIN for up to half an hour after
+the fix landed.
+
+Retiring a hostname for good is still a dashboard action if it is the last one on a script,
+and the Advanced Certificate Cloudflare issued for it is never auto-deleted — check
+**SSL/TLS → Edge Certificates** afterwards.
 
 ## Why Workers, not Pages
 
@@ -88,15 +134,19 @@ Token**:
 
 | Setting | Value |
 |---|---|
-| Permission | Account → Workers Scripts → Edit |
-| Permission | Account → Account Settings → Read |
+| Permission policy | **Edit Cloudflare Workers** (the built-in template) |
 | Account resources | Include → the account |
+| Zone resources | Include → `samstack.org` |
 | TTL | Optional, but a start and end date is cheap insurance |
 
-Those two permissions are all an assets-only deploy needs. The *Edit Cloudflare Workers*
-template also works and is what most tutorials reach for, but it additionally grants KV, R2
-and zone-wide route editing. A token scoped to *Cloudflare Pages → Edit* does **not** work —
-that is a different permission, and it fails with error 10000.
+An assets-only deploy with no `routes` needs only *Account → Workers Scripts → Edit* plus
+*Account → Account Settings → Read*, and that is what this repository used until
+2026-09-25. Declaring a Custom Domain in `wrangler.jsonc` asks for more: wrangler has to
+create a DNS record and a certificate in the zone. The *Edit Cloudflare Workers* template
+covers that, which is also what Cloudflare's own CI guidance recommends.
+
+A token scoped to *Cloudflare Pages → Edit* does **not** work — that is a different
+permission, and it fails with error 10000.
 
 Both values then go in as repository secrets, under **Settings → Secrets and variables →
 Actions**, or:
