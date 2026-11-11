@@ -64,17 +64,17 @@ ParsedProgram {
                                 OptionallyNamedTypeExpression {
                                     type_dec: TypeExpression {
                                         kind: Named(
-                                            "Int",
+                                            "IntOp",
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                498,
+                                                488,
                                             ),
-                                            length: 3,
+                                            length: 5,
                                         },
                                     },
                                     name: Some(
-                                        "x",
+                                        "f",
                                     ),
                                 },
                             ),
@@ -85,17 +85,17 @@ ParsedProgram {
                                             OptionallyNamedTypeExpression {
                                                 type_dec: TypeExpression {
                                                     kind: Named(
-                                                        "IntOp",
+                                                        "Int",
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            488,
+                                                            498,
                                                         ),
-                                                        length: 5,
+                                                        length: 3,
                                                     },
                                                 },
                                                 name: Some(
-                                                    "f",
+                                                    "x",
                                                 ),
                                             },
                                         ),
@@ -145,18 +145,46 @@ ParsedProgram {
                             parameter: Some(
                                 OptionallyNamedTypeExpression {
                                     type_dec: TypeExpression {
-                                        kind: Named(
-                                            "Int",
+                                        kind: Lambda(
+                                            LambdaTypeExpression {
+                                                parameter: Some(
+                                                    OptionallyNamedTypeExpression {
+                                                        type_dec: TypeExpression {
+                                                            kind: Named(
+                                                                "Int",
+                                                            ),
+                                                            span: SourceSpan {
+                                                                offset: SourceOffset(
+                                                                    529,
+                                                                ),
+                                                                length: 3,
+                                                            },
+                                                        },
+                                                        name: None,
+                                                    },
+                                                ),
+                                                return_type: TypeExpression {
+                                                    kind: Named(
+                                                        "Int",
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            537,
+                                                        ),
+                                                        length: 3,
+                                                    },
+                                                },
+                                            },
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                545,
+                                                528,
                                             ),
-                                            length: 3,
+                                            length: 12,
                                         },
                                     },
                                     name: Some(
-                                        "x",
+                                        "f",
                                     ),
                                 },
                             ),
@@ -166,46 +194,18 @@ ParsedProgram {
                                         parameter: Some(
                                             OptionallyNamedTypeExpression {
                                                 type_dec: TypeExpression {
-                                                    kind: Lambda(
-                                                        LambdaTypeExpression {
-                                                            parameter: Some(
-                                                                OptionallyNamedTypeExpression {
-                                                                    type_dec: TypeExpression {
-                                                                        kind: Named(
-                                                                            "Int",
-                                                                        ),
-                                                                        span: SourceSpan {
-                                                                            offset: SourceOffset(
-                                                                                529,
-                                                                            ),
-                                                                            length: 3,
-                                                                        },
-                                                                    },
-                                                                    name: None,
-                                                                },
-                                                            ),
-                                                            return_type: TypeExpression {
-                                                                kind: Named(
-                                                                    "Int",
-                                                                ),
-                                                                span: SourceSpan {
-                                                                    offset: SourceOffset(
-                                                                        537,
-                                                                    ),
-                                                                    length: 3,
-                                                                },
-                                                            },
-                                                        },
+                                                    kind: Named(
+                                                        "Int",
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            528,
+                                                            545,
                                                         ),
-                                                        length: 12,
+                                                        length: 3,
                                                     },
                                                 },
                                                 name: Some(
-                                                    "f",
+                                                    "x",
                                                 ),
                                             },
                                         ),

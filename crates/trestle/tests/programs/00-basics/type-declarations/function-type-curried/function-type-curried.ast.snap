@@ -18,13 +18,13 @@ ParsedProgram {
                                         ),
                                         span: SourceSpan {
                                             offset: SourceOffset(
-                                                647,
+                                                639,
                                             ),
                                             length: 3,
                                         },
                                     },
                                     name: Some(
-                                        "b",
+                                        "a",
                                     ),
                                 },
                             ),
@@ -39,13 +39,13 @@ ParsedProgram {
                                                     ),
                                                     span: SourceSpan {
                                                         offset: SourceOffset(
-                                                            639,
+                                                            647,
                                                         ),
                                                         length: 3,
                                                     },
                                                 },
                                                 name: Some(
-                                                    "a",
+                                                    "b",
                                                 ),
                                             },
                                         ),
