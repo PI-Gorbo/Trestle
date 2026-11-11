@@ -10,7 +10,10 @@ use miette::SourceSpan;
 use crate::{
     binding_resolution::{
         binding_arena::TypeBindingArea,
-        binding_resolved::{ResolvedTypeExpression, ResolvedTypeExpressionKind},
+        binding_resolved::{
+            ResolvedLambdaTypeExpression, ResolvedOptionallyNamedTypeExpression,
+            ResolvedTypeExpression, ResolvedTypeExpressionKind,
+        },
         scope::{Scope, TypeBindingScopeEntry, VariableBindingScopeEntry},
     },
     parse::ast::{self, Expression, ExpressionKind, Literal, Param},
@@ -337,7 +340,41 @@ fn resolve_type_expression(
                 scope,
             ))
         }
-        ast::TypeExpressionKind::Lambda(lambda_type_expression) => todo!(),
+        ast::TypeExpressionKind::Lambda(lambda_type_expression) => {
+            let (param, optional_updated_scoped) = lambda_type_expression
+                .parameter
+                .map(|optionally_named_type_expr| {
+                    resolve_type_expression(*optionally_named_type_expr.type_dec, scope, ctx).map(
+                        |(resolved_type_expr, new_scope)| {
+                            (
+                                ResolvedOptionallyNamedTypeExpression {
+                                    name: optionally_named_type_expr.name,
+                                    type_dec: Box::new(resolved_type_expr),
+                                },
+                                new_scope,
+                            )
+                        },
+                    )
+                })
+                .transpose()?
+                .unzip();
+
+            let updated_scope = optional_updated_scoped.unwrap_or(scope.clone());
+
+            let (resolved_return_type, final_scope) =
+                resolve_type_expression(*lambda_type_expression.return_type, &updated_scope, ctx)?;
+
+            Ok((
+                ResolvedTypeExpression {
+                    kind: ResolvedTypeExpressionKind::Lambda(ResolvedLambdaTypeExpression {
+                        parameter: param,
+                        return_type: Box::new(resolved_return_type),
+                    }),
+                    span: type_expression.span,
+                },
+                final_scope,
+            ))
+        }
     }
 }
 
