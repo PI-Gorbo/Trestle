@@ -8,8 +8,8 @@ TypeCheck(
             var: TypeVarId(
                 0,
             ),
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Record(
                         {
                             "inner": Var(
@@ -20,12 +20,12 @@ TypeCheck(
                         },
                     ),
                 ),
-                Var(
+                return_type: Var(
                     TypeVarId(
                         1,
                     ),
                 ),
-            ),
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     608,

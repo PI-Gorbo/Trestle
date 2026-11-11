@@ -84,16 +84,16 @@ TypeCheckedProgram {
                             ),
                             length: 27,
                         },
-                        ty: Fn(
-                            Some(
+                        ty: Fn {
+                            parameter: Some(
                                 Literal(
                                     Int,
                                 ),
                             ),
-                            Literal(
+                            return_type: Literal(
                                 Int,
                             ),
-                        ),
+                        },
                     },
                 },
             ),
@@ -103,23 +103,23 @@ TypeCheckedProgram {
                 ),
                 length: 27,
             },
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         Int,
                     ),
                 ),
-                Fn(
-                    Some(
+                return_type: Fn {
+                    parameter: Some(
                         Literal(
                             Int,
                         ),
                     ),
-                    Literal(
+                    return_type: Literal(
                         Int,
                     ),
-                ),
-            ),
+                },
+            },
         },
     ],
     bindings: [

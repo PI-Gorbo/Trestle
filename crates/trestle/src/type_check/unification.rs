@@ -115,10 +115,13 @@ impl UnificationMap {
                 Some((root_id, RootUnionNode::FreeTypeVariable)) => Type::Var(root_id),
                 None => ty.clone(),
             },
-            Type::Fn(param, result) => Type::Fn(
-                param.as_ref().map(|param| Box::new(self.subsitute(param))),
-                Box::new(self.subsitute(result)),
-            ),
+            Type::Fn {
+                parameter: param,
+                return_type: result,
+            } => Type::Fn {
+                parameter: param.as_ref().map(|param| Box::new(self.subsitute(param))),
+                return_type: Box::new(self.subsitute(result)),
+            },
             Type::Record(btree_map) => Type::Record(
                 btree_map
                     .iter()
@@ -157,10 +160,25 @@ impl UnificationMap {
                 })),
             },
 
-            (Type::Fn(expected_param, expected_body), Type::Fn(found_param, found_body)) => {
+            (
+                Type::Fn {
+                    parameter: expected_param,
+                    return_type: expected_body,
+                },
+                Type::Fn {
+                    parameter: found_param,
+                    return_type: found_body,
+                },
+            ) => {
                 let shape_mismatch = || TypeMismatch {
-                    expected: Type::Fn(expected_param.clone(), expected_body.clone()),
-                    found: Type::Fn(found_param.clone(), found_body.clone()),
+                    expected: Type::Fn {
+                        parameter: expected_param.clone(),
+                        return_type: expected_body.clone(),
+                    },
+                    found: Type::Fn {
+                        parameter: found_param.clone(),
+                        return_type: found_body.clone(),
+                    },
                 };
 
                 let param_unification = match (&expected_param, &found_param) {
@@ -256,7 +274,10 @@ impl UnificationMap {
                     root == root2 || self.root_occurs_in_type(root, declared_type)
                 }
             },
-            Type::Fn(param, body) => {
+            Type::Fn {
+                parameter: param,
+                return_type: body,
+            } => {
                 param
                     .as_ref()
                     .is_some_and(|p| self.root_occurs_in_type(root, p))
@@ -382,11 +403,14 @@ mod tests {
 
     #[test]
     fn function_parameter_presence_mismatch_is_an_error() {
-        let nullary = Type::Fn(None, Box::new(Type::Unit));
-        let unary = Type::Fn(
-            Some(Box::new(Type::Literal(Literal::Int))),
-            Box::new(Type::Unit),
-        );
+        let nullary = Type::Fn {
+            parameter: None,
+            return_type: Box::new(Type::Unit),
+        };
+        let unary = Type::Fn {
+            parameter: Some(Box::new(Type::Literal(Literal::Int))),
+            return_type: Box::new(Type::Unit),
+        };
         let mut map = UnificationMap::new();
         let err = map
             .unify(&nullary, &unary, SourceSpan::from((0, 0)))
@@ -404,18 +428,18 @@ mod tests {
         let v1 = Type::Var(unification_map.mint_new_type_var());
         let span = SourceSpan::from((0, 0));
 
-        let partially_known = Type::Fn(
-            Some(Box::new(v1.clone())),
-            Box::new(Type::Literal(Literal::Int)),
-        );
+        let partially_known = Type::Fn {
+            parameter: Some(Box::new(v1.clone())),
+            return_type: Box::new(Type::Literal(Literal::Int)),
+        };
         unification_map
             .unify(&partially_known, &v0, span)
             .expect("binding a fresh variable to a concrete type succeeds");
 
-        let fully_known = Type::Fn(
-            Some(Box::new(Type::Literal(Literal::Int))),
-            Box::new(Type::Literal(Literal::Int)),
-        );
+        let fully_known = Type::Fn {
+            parameter: Some(Box::new(Type::Literal(Literal::Int))),
+            return_type: Box::new(Type::Literal(Literal::Int)),
+        };
         unification_map
             .unify(&fully_known, &v0, span)
             .expect("a solved variable unifies structurally with a compatible function");
@@ -433,7 +457,10 @@ mod tests {
         let v0 = Type::Var(unification_map.mint_new_type_var());
         let span = SourceSpan::from((0, 0));
 
-        let recursive = Type::Fn(Some(Box::new(v0.clone())), Box::new(Type::Unit));
+        let recursive = Type::Fn {
+            parameter: Some(Box::new(v0.clone())),
+            return_type: Box::new(Type::Unit),
+        };
         let err = unification_map
             .unify(&recursive, &v0, span)
             .expect_err("binding a variable into a type containing it is an infinite type");
@@ -465,7 +492,10 @@ mod tests {
             .unify(&v0, &v1, span)
             .expect("unioning two free variables succeeds");
 
-        let recursive = Type::Fn(Some(Box::new(v0.clone())), Box::new(Type::Unit));
+        let recursive = Type::Fn {
+            parameter: Some(Box::new(v0.clone())),
+            return_type: Box::new(Type::Unit),
+        };
         let err = unification_map
             .unify(&recursive, &v1, span)
             .expect_err("v1 := Fn(v0, Unit) is a cycle because v0 and v1 share a root");

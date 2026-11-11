@@ -76,16 +76,16 @@ TypeCheckedProgram {
                         ),
                         length: 12,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 Int,
                             ),
                         ),
-                        Literal(
+                        return_type: Literal(
                             Int,
                         ),
-                    ),
+                    },
                 },
             },
             span: SourceSpan {
@@ -110,16 +110,16 @@ TypeCheckedProgram {
                         ),
                         length: 4,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 Int,
                             ),
                         ),
-                        Literal(
+                        return_type: Literal(
                             Int,
                         ),
-                    ),
+                    },
                 },
                 arguments: [
                     TypeCheckedExpression {
@@ -166,16 +166,16 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "add3",
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         Int,
                     ),
                 ),
-                Literal(
+                return_type: Literal(
                     Int,
                 ),
-            ),
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     0,
