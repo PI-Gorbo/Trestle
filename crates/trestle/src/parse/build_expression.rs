@@ -111,29 +111,32 @@ fn build_function_type_expression(inner: Pair<Rule>) -> Result<TypeExpression, B
             BuildError::invariant(source_span_from_pest_span(span), "Expected return type")
         })?;
 
-    let lambda_type_expression = comma_separated_type_parameters.into_inner().try_fold(
-        // Start with a function of shape () -> Type
-        LambdaTypeExpression {
-            parameter: None,
-            return_type: Box::new(return_type),
-        },
-        // Then, for each parm we encounter, we need to build the lambda
-        |state, rule| match state.parameter {
-            // For the first case, we go from () -> AType to BType -> AType
-            None => Ok(LambdaTypeExpression {
-                parameter: Some(build_type_expr_with_optional_identifier(rule)?),
-                return_type: state.return_type,
-            }),
-            // Otherwise we go from BType -> AType to CType -> (BType -> AType)
-            Some(_) => Ok(LambdaTypeExpression {
-                parameter: Some(build_type_expr_with_optional_identifier(rule)?),
-                return_type: Box::new(TypeExpression {
-                    kind: TypeExpressionKind::Lambda(state),
-                    span: source_span_from_pest_span(span),
+    let lambda_type_expression = comma_separated_type_parameters
+        .into_inner()
+        .rev()
+        .try_fold(
+            // Start with a function of shape () -> Type
+            LambdaTypeExpression {
+                parameter: None,
+                return_type: Box::new(return_type),
+            },
+            // Then, for each parm we encounter, we need to build the lambda
+            |state, rule| match state.parameter {
+                // For the first case, we go from () -> AType to BType -> AType
+                None => Ok(LambdaTypeExpression {
+                    parameter: Some(build_type_expr_with_optional_identifier(rule)?),
+                    return_type: state.return_type,
                 }),
-            }),
-        },
-    )?;
+                // Otherwise we go from BType -> AType to CType -> (BType -> AType)
+                Some(_) => Ok(LambdaTypeExpression {
+                    parameter: Some(build_type_expr_with_optional_identifier(rule)?),
+                    return_type: Box::new(TypeExpression {
+                        kind: TypeExpressionKind::Lambda(state),
+                        span: source_span_from_pest_span(span),
+                    }),
+                }),
+            },
+        )?;
 
     Ok(TypeExpression {
         kind: TypeExpressionKind::Lambda(lambda_type_expression),
