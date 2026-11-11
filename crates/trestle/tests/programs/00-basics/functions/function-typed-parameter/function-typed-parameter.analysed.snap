@@ -1,0 +1,480 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+TypeCheckedProgram {
+    expressions: [
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    1,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        0,
+                                    ),
+                                    ty: Literal(
+                                        String,
+                                    ),
+                                },
+                            ),
+                            body: TypeCheckedExpression {
+                                kind: Literal(
+                                    Int(
+                                        0,
+                                    ),
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        224,
+                                    ),
+                                    length: 1,
+                                },
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            206,
+                        ),
+                        length: 21,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Literal(
+                                String,
+                            ),
+                        ),
+                        return_type: Literal(
+                            Int,
+                        ),
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    193,
+                ),
+                length: 34,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    4,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        2,
+                                    ),
+                                    ty: Literal(
+                                        String,
+                                    ),
+                                },
+                            ),
+                            body: TypeCheckedExpression {
+                                kind: Lambda(
+                                    Lambda {
+                                        parameter: Some(
+                                            Param {
+                                                binding: BindingId(
+                                                    3,
+                                                ),
+                                                ty: Fn {
+                                                    parameter: Some(
+                                                        Literal(
+                                                            String,
+                                                        ),
+                                                    ),
+                                                    return_type: Literal(
+                                                        Int,
+                                                    ),
+                                                },
+                                            },
+                                        ),
+                                        body: TypeCheckedExpression {
+                                            kind: FunctionInvocation {
+                                                function: TypeCheckedExpression {
+                                                    kind: Var(
+                                                        BindingId(
+                                                            3,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            299,
+                                                        ),
+                                                        length: 10,
+                                                    },
+                                                    ty: Fn {
+                                                        parameter: Some(
+                                                            Literal(
+                                                                String,
+                                                            ),
+                                                        ),
+                                                        return_type: Literal(
+                                                            Int,
+                                                        ),
+                                                    },
+                                                },
+                                                arguments: [
+                                                    TypeCheckedExpression {
+                                                        kind: Var(
+                                                            BindingId(
+                                                                2,
+                                                            ),
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                310,
+                                                            ),
+                                                            length: 5,
+                                                        },
+                                                        ty: Literal(
+                                                            String,
+                                                        ),
+                                                    },
+                                                ],
+                                            },
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    299,
+                                                ),
+                                                length: 17,
+                                            },
+                                            ty: Literal(
+                                                Int,
+                                            ),
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        245,
+                                    ),
+                                    length: 73,
+                                },
+                                ty: Fn {
+                                    parameter: Some(
+                                        Fn {
+                                            parameter: Some(
+                                                Literal(
+                                                    String,
+                                                ),
+                                            ),
+                                            return_type: Literal(
+                                                Int,
+                                            ),
+                                        },
+                                    ),
+                                    return_type: Literal(
+                                        Int,
+                                    ),
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            245,
+                        ),
+                        length: 73,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Literal(
+                                String,
+                            ),
+                        ),
+                        return_type: Fn {
+                            parameter: Some(
+                                Fn {
+                                    parameter: Some(
+                                        Literal(
+                                            String,
+                                        ),
+                                    ),
+                                    return_type: Literal(
+                                        Int,
+                                    ),
+                                },
+                            ),
+                            return_type: Literal(
+                                Int,
+                            ),
+                        },
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    227,
+                ),
+                length: 91,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: FunctionInvocation {
+                function: TypeCheckedExpression {
+                    kind: Var(
+                        BindingId(
+                            4,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            318,
+                        ),
+                        length: 11,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Literal(
+                                String,
+                            ),
+                        ),
+                        return_type: Fn {
+                            parameter: Some(
+                                Fn {
+                                    parameter: Some(
+                                        Literal(
+                                            String,
+                                        ),
+                                    ),
+                                    return_type: Literal(
+                                        Int,
+                                    ),
+                                },
+                            ),
+                            return_type: Literal(
+                                Int,
+                            ),
+                        },
+                    },
+                },
+                arguments: [
+                    TypeCheckedExpression {
+                        kind: Literal(
+                            String(
+                                "Test",
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                330,
+                            ),
+                            length: 6,
+                        },
+                        ty: Literal(
+                            String,
+                        ),
+                    },
+                    TypeCheckedExpression {
+                        kind: Var(
+                            BindingId(
+                                1,
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                338,
+                            ),
+                            length: 6,
+                        },
+                        ty: Fn {
+                            parameter: Some(
+                                Literal(
+                                    String,
+                                ),
+                            ),
+                            return_type: Literal(
+                                Int,
+                            ),
+                        },
+                    },
+                ],
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    318,
+                ),
+                length: 27,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
+    ],
+    bindings: [
+        TypedBinding {
+            name: "name",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    206,
+                ),
+                length: 21,
+            },
+        },
+        TypedBinding {
+            name: "length",
+            ty: Fn {
+                parameter: Some(
+                    Literal(
+                        String,
+                    ),
+                ),
+                return_type: Literal(
+                    Int,
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    193,
+                ),
+                length: 34,
+            },
+        },
+        TypedBinding {
+            name: "value",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    245,
+                ),
+                length: 73,
+            },
+        },
+        TypedBinding {
+            name: "lengthFunc",
+            ty: Fn {
+                parameter: Some(
+                    Literal(
+                        String,
+                    ),
+                ),
+                return_type: Literal(
+                    Int,
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    245,
+                ),
+                length: 73,
+            },
+        },
+        TypedBinding {
+            name: "applyLength",
+            ty: Fn {
+                parameter: Some(
+                    Literal(
+                        String,
+                    ),
+                ),
+                return_type: Fn {
+                    parameter: Some(
+                        Fn {
+                            parameter: Some(
+                                Literal(
+                                    String,
+                                ),
+                            ),
+                            return_type: Literal(
+                                Int,
+                            ),
+                        },
+                    ),
+                    return_type: Literal(
+                        Int,
+                    ),
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    227,
+                ),
+                length: 91,
+            },
+        },
+    ],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+    ],
+}

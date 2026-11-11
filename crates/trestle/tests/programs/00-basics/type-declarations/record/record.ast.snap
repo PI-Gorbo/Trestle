@@ -16,9 +16,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        44,
+                                        46,
                                     ),
-                                    length: 8,
+                                    length: 6,
                                 },
                             },
                             "x": TypeExpression {
@@ -27,9 +27,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        16,
+                                        18,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                             "y": TypeExpression {
@@ -38,9 +38,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        24,
+                                        26,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                             "z": TypeExpression {
@@ -49,9 +49,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        32,
+                                        34,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                         },
@@ -83,9 +83,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        137,
+                                        139,
                                     ),
-                                    length: 8,
+                                    length: 6,
                                 },
                             },
                             "x": TypeExpression {
@@ -94,9 +94,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        82,
+                                        84,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                             "y": TypeExpression {
@@ -105,9 +105,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        99,
+                                        101,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                             "z": TypeExpression {
@@ -116,9 +116,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        116,
+                                        118,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                         },

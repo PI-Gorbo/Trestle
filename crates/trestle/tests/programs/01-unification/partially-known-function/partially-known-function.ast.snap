@@ -21,9 +21,9 @@ ParsedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    655,
+                                                    657,
                                                 ),
-                                                length: 5,
+                                                length: 3,
                                             },
                                         },
                                     ),

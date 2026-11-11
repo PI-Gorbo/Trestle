@@ -3,6 +3,7 @@ use crate::parse::ast::{
     BinaryOp, LambdaTypeExpression, Literal, OptionallyNamedTypeExpression, TypeExpressionKind,
     UnaryOp,
 };
+use miette::Context;
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
 use std::collections::BTreeMap;
@@ -82,7 +83,7 @@ fn build_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError>
     match inner.as_rule() {
         Rule::record_type_expression => build_record_type_expression(inner),
         Rule::type_identifier => Ok(build_type_identifier_expression(inner)),
-        Rule::function_type_expression => Ok(build_function_type_expression(inner)?),
+        Rule::function_type_expression => build_function_type_expression(inner),
         rule => Err(BuildError::unexpected_rule(
             rule,
             source_span_from_pest_span(inner.as_span()),
@@ -144,26 +145,44 @@ struct OptionallyNamedTypeExpressionBuilder {
     type_dec: Option<Box<TypeExpression>>,
     name: Option<String>,
 }
-fn build_type_expr_with_optional_identifier(rule: Pair<Rule>) -> Result<OptionallyNamedTypeExpression, BuildError> {
+fn build_type_expr_with_optional_identifier(
+    rule: Pair<Rule>,
+) -> Result<OptionallyNamedTypeExpression, BuildError> {
     let span = rule.as_span();
-    let rule_value = rule.into_inner()
-        .try_fold(OptionallyNamedTypeExpressionBuilder {
+    let rule_value = rule.into_inner().try_fold(
+        OptionallyNamedTypeExpressionBuilder {
             name: None,
-            type_dec: None
-        }, |state, rule| {
-            let span = rule.as_span();    
+            type_dec: None,
+        },
+        |state, rule| {
+            let span = rule.as_span();
 
             match rule.as_rule() {
-                Rule::identifier => Ok(OptionallyNamedTypeExpressionBuilder {name: Some(rule.as_str().to_string()), ..state}),
-                Rule::type_expression => Ok(OptionallyNamedTypeExpressionBuilder {type_dec: Some(build_type_expression(rule).map(Box::new)?), ..state}),
-                _ => Err(BuildError::unexpected_rule(rule.as_rule(), source_span_from_pest_span(span), "a type expr with optional identifier"))
+                Rule::identifier => Ok(OptionallyNamedTypeExpressionBuilder {
+                    name: Some(rule.as_str().to_string()),
+                    ..state
+                }),
+                Rule::type_expression => Ok(OptionallyNamedTypeExpressionBuilder {
+                    type_dec: Some(build_type_expression(rule).map(Box::new)?),
+                    ..state
+                }),
+                _ => Err(BuildError::unexpected_rule(
+                    rule.as_rule(),
+                    source_span_from_pest_span(span),
+                    "a type expr with optional identifier",
+                )),
             }
-        }
+        },
     )?;
 
-    let type_dec = rule_value.type_dec.ok_or_else(|| BuildError::invariant(source_span_from_pest_span(span), "a type expr is expected"))?;
+    let type_dec = rule_value.type_dec.ok_or_else(|| {
+        BuildError::invariant(source_span_from_pest_span(span), "a type expr is expected")
+    })?;
 
-    Ok(OptionallyNamedTypeExpression { type_dec, name: rule_value.name })
+    Ok(OptionallyNamedTypeExpression {
+        type_dec,
+        name: rule_value.name,
+    })
 }
 
 fn build_record_type_expression(pair: Pair<Rule>) -> Result<TypeExpression, BuildError> {
@@ -297,7 +316,13 @@ fn build_binding_target(pair: Pair<Rule>) -> Result<(String, Option<TypeExpressi
         .try_fold((String::new(), None), |(mut name, mut type_dec), p| {
             match p.as_rule() {
                 Rule::identifier => name = p.as_str().to_string(),
-                Rule::type_declaration => type_dec = Some(build_type_identifier_expression(p)),
+                Rule::type_declaration => {
+                    let span = source_span_from_pest_span(p.as_span());
+                    let type_expression = p.into_inner().next().ok_or_else(|| {
+                        BuildError::invariant(span, "type_declaration to have a type expression")
+                    })?;
+                    type_dec = Some(build_type_expression(type_expression)?);
+                }
                 rule => {
                     return Err(BuildError::unexpected_rule(
                         rule,

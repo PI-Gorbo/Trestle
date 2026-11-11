@@ -16,9 +16,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        16,
+                                        18,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                             "y": TypeExpression {
@@ -27,9 +27,9 @@ ParsedProgram {
                                 ),
                                 span: SourceSpan {
                                     offset: SourceOffset(
-                                        24,
+                                        26,
                                     ),
-                                    length: 5,
+                                    length: 3,
                                 },
                             },
                         },
@@ -59,9 +59,9 @@ ParsedProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                44,
+                                46,
                             ),
-                            length: 7,
+                            length: 5,
                         },
                     },
                 ),
@@ -123,9 +123,9 @@ ParsedProgram {
                         ),
                         span: SourceSpan {
                             offset: SourceOffset(
-                                80,
+                                82,
                             ),
-                            length: 7,
+                            length: 5,
                         },
                     },
                 ),

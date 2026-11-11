@@ -487,7 +487,7 @@ trsl_test!(
 trsl_test!(
     basics_functions_function_typed_parameter,
     "00-basics/functions/function-typed-parameter/function-typed-parameter.trsl",
-    ignore = "needs function type expressions in annotations"
+    [ast, analyse, eval]
 );
 
 // ── conditionals ──────────────────────────────────────────
@@ -618,12 +618,12 @@ trsl_test!(
 trsl_test!(
     basics_type_declarations_function_type_curried,
     "00-basics/type-declarations/function-type-curried/function-type-curried.trsl",
-    ignore = "needs function type expressions"
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_type_declarations_function_type_higher_order,
     "00-basics/type-declarations/function-type-higher-order/function-type-higher-order.trsl",
-    ignore = "needs function type expressions"
+    [ast, analyse, eval]
 );
 
 // ══ 01 pipelines ══════════════════════════════════════════
@@ -731,7 +731,7 @@ trsl_test!(
 trsl_test!(
     records_record_function_field,
     "03-records-and-adts/record-function-field/record-function-field.trsl",
-    ignore = "needs function type expressions in annotations"
+    [ast, analyse, eval]
 );
 trsl_test!(
     records_field_call_chain,
