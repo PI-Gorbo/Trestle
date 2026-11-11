@@ -89,16 +89,16 @@ TypeCheckedProgram {
                                     ),
                                     length: 25,
                                 },
-                                ty: Fn(
-                                    Some(
+                                ty: Fn {
+                                    parameter: Some(
                                         Literal(
                                             Int,
                                         ),
                                     ),
-                                    Literal(
+                                    return_type: Literal(
                                         Int,
                                     ),
-                                ),
+                                },
                             },
                         },
                     ),
@@ -108,23 +108,23 @@ TypeCheckedProgram {
                         ),
                         length: 25,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 Int,
                             ),
                         ),
-                        Fn(
-                            Some(
+                        return_type: Fn {
+                            parameter: Some(
                                 Literal(
                                     Int,
                                 ),
                             ),
-                            Literal(
+                            return_type: Literal(
                                 Int,
                             ),
-                        ),
-                    ),
+                        },
+                    },
                 },
             },
             span: SourceSpan {
@@ -177,16 +177,16 @@ TypeCheckedProgram {
                         ),
                         length: 23,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 Int,
                             ),
                         ),
-                        Literal(
+                        return_type: Literal(
                             Int,
                         ),
-                    ),
+                    },
                 },
             },
             span: SourceSpan {
@@ -241,23 +241,23 @@ TypeCheckedProgram {
                                                         ),
                                                         length: 3,
                                                     },
-                                                    ty: Fn(
-                                                        Some(
+                                                    ty: Fn {
+                                                        parameter: Some(
                                                             Literal(
                                                                 Int,
                                                             ),
                                                         ),
-                                                        Fn(
-                                                            Some(
+                                                        return_type: Fn {
+                                                            parameter: Some(
                                                                 Literal(
                                                                     Int,
                                                                 ),
                                                             ),
-                                                            Literal(
+                                                            return_type: Literal(
                                                                 Int,
                                                             ),
-                                                        ),
-                                                    ),
+                                                        },
+                                                    },
                                                 },
                                                 arguments: [
                                                     TypeCheckedExpression {
@@ -284,16 +284,16 @@ TypeCheckedProgram {
                                                 ),
                                                 length: 6,
                                             },
-                                            ty: Fn(
-                                                Some(
+                                            ty: Fn {
+                                                parameter: Some(
                                                     Literal(
                                                         Int,
                                                     ),
                                                 ),
-                                                Literal(
+                                                return_type: Literal(
                                                     Int,
                                                 ),
-                                            ),
+                                            },
                                         },
                                     ),
                                     span: SourceSpan {
@@ -373,16 +373,16 @@ TypeCheckedProgram {
                                         ),
                                         length: 25,
                                     },
-                                    ty: Fn(
-                                        Some(
+                                    ty: Fn {
+                                        parameter: Some(
                                             Literal(
                                                 Int,
                                             ),
                                         ),
-                                        Literal(
+                                        return_type: Literal(
                                             Int,
                                         ),
-                                    ),
+                                    },
                                 },
                             ),
                             span: SourceSpan {
@@ -407,16 +407,16 @@ TypeCheckedProgram {
                                 ),
                                 length: 5,
                             },
-                            ty: Fn(
-                                Some(
+                            ty: Fn {
+                                parameter: Some(
                                     Literal(
                                         Int,
                                     ),
                                 ),
-                                Literal(
+                                return_type: Literal(
                                     Int,
                                 ),
-                            ),
+                            },
                         },
                     ),
                     span: SourceSpan {
@@ -482,23 +482,23 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "add",
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         Int,
                     ),
                 ),
-                Fn(
-                    Some(
+                return_type: Fn {
+                    parameter: Some(
                         Literal(
                             Int,
                         ),
                     ),
-                    Literal(
+                    return_type: Literal(
                         Int,
                     ),
-                ),
-            ),
+                },
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     261,
@@ -520,16 +520,16 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "print",
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         Int,
                     ),
                 ),
-                Literal(
+                return_type: Literal(
                     Int,
                 ),
-            ),
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     297,

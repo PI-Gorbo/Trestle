@@ -157,7 +157,11 @@ pub(super) fn infer_type_of_expression(
                     Type::Literal(Literal::Bool),
                 )?,
                 BinaryOp::Pipe => {
-                    let Type::Fn(input, output) = unification_map.representative(&rhs.ty) else {
+                    let Type::Fn {
+                        parameter: input,
+                        return_type: output,
+                    } = unification_map.representative(&rhs.ty)
+                    else {
                         return Err(TypeCheckError::NotAFunction {
                             found: rhs.ty,
                             span,
@@ -222,7 +226,10 @@ pub(super) fn infer_type_of_expression(
                     parameter,
                     body: Box::new(body),
                 }),
-                Type::Fn(param_type, Box::new(lambda_return_type)),
+                Type::Fn {
+                    parameter: param_type,
+                    return_type: Box::new(lambda_return_type),
+                },
             )
         }
 
@@ -394,6 +401,17 @@ fn get_type_from_type_expression(
                 .map(|(key, value)| Ok((key, Box::new(get_type_from_type_expression(value, ctx)?))))
                 .collect::<Result<_, TypeCheckError>>()?,
         )),
+        ResolvedTypeExpressionKind::Lambda(resolved_lambda_type_expression) => Ok(Type::Fn {
+            parameter: resolved_lambda_type_expression
+                .parameter
+                .map(|param| get_type_from_type_expression(*param.type_dec, ctx))
+                .transpose()?
+                .map(Box::new),
+            return_type: Box::new(get_type_from_type_expression(
+                *resolved_lambda_type_expression.return_type,
+                ctx,
+            )?),
+        }),
     }
 }
 
@@ -424,14 +442,20 @@ pub(super) fn get_type_after_applying_arguments(
     let resolved = unification_map.representative(fn_type);
 
     if arguments.is_empty() {
-        if let Type::Fn(None, return_type) = resolved {
+        if let Type::Fn {
+            parameter: None,
+            return_type,
+        } = resolved
+        {
             return Ok(*return_type);
         }
         return Ok(resolved);
     }
 
     match &resolved {
-        Type::Fn(..) | Type::Var(_) => apply_arguments(unification_map, &resolved, arguments, span),
+        Type::Fn { .. } | Type::Var(_) => {
+            apply_arguments(unification_map, &resolved, arguments, span)
+        }
         _ => Err(TypeCheckError::NotAFunction {
             found: resolved,
             span,
@@ -450,16 +474,25 @@ fn apply_arguments(
     };
 
     match unification_map.representative(fn_type) {
-        Type::Fn(Some(param_type), return_type) => {
+        Type::Fn {
+            parameter: Some(param_type),
+            return_type,
+        } => {
             unification_map.unify(&param_type, &arg.ty, span)?;
             apply_arguments(unification_map, &return_type, &arguments[1..], span)
         }
 
-        Type::Fn(None, _) => Err(TypeCheckError::ArgumentsToArgumentlessFunction { span }),
+        Type::Fn {
+            parameter: None,
+            return_type: _,
+        } => Err(TypeCheckError::ArgumentsToArgumentlessFunction { span }),
 
         callee @ Type::Var(_) => {
             let result = Type::Var(unification_map.mint_new_type_var());
-            let fn_shape = Type::Fn(Some(Box::new(arg.ty.clone())), Box::new(result.clone()));
+            let fn_shape = Type::Fn {
+                parameter: Some(Box::new(arg.ty.clone())),
+                return_type: Box::new(result.clone()),
+            };
             unification_map.unify(&callee, &fn_shape, span)?;
             apply_arguments(unification_map, &result, &arguments[1..], span)
         }
@@ -498,7 +531,10 @@ mod tests {
 
     #[test]
     fn arguments_to_argumentless_function_is_an_error() {
-        let fn_type = Type::Fn(None, Box::new(Type::Unit));
+        let fn_type = Type::Fn {
+            parameter: None,
+            return_type: Box::new(Type::Unit),
+        };
         let err = get_type_after_applying_arguments(
             &mut UnificationMap::new(),
             &fn_type,
@@ -514,10 +550,10 @@ mod tests {
 
     #[test]
     fn applying_correct_arguments_returns_result_type() {
-        let fn_type = Type::Fn(
-            Some(Box::new(Type::Literal(Literal::Int))),
-            Box::new(Type::Literal(Literal::Int)),
-        );
+        let fn_type = Type::Fn {
+            parameter: Some(Box::new(Type::Literal(Literal::Int))),
+            return_type: Box::new(Type::Literal(Literal::Int)),
+        };
         let result = get_type_after_applying_arguments(
             &mut UnificationMap::new(),
             &fn_type,

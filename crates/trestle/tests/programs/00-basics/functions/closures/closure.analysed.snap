@@ -74,12 +74,12 @@ TypeCheckedProgram {
                                                 ),
                                                 length: 15,
                                             },
-                                            ty: Fn(
-                                                None,
-                                                Literal(
+                                            ty: Fn {
+                                                parameter: None,
+                                                return_type: Literal(
                                                     Int,
                                                 ),
-                                            ),
+                                            },
                                         },
                                     ],
                                 ),
@@ -89,12 +89,12 @@ TypeCheckedProgram {
                                     ),
                                     length: 44,
                                 },
-                                ty: Fn(
-                                    None,
-                                    Literal(
+                                ty: Fn {
+                                    parameter: None,
+                                    return_type: Literal(
                                         Int,
                                     ),
-                                ),
+                                },
                             },
                         },
                     ),
@@ -104,15 +104,15 @@ TypeCheckedProgram {
                         ),
                         length: 50,
                     },
-                    ty: Fn(
-                        None,
-                        Fn(
-                            None,
-                            Literal(
+                    ty: Fn {
+                        parameter: None,
+                        return_type: Fn {
+                            parameter: None,
+                            return_type: Literal(
                                 Int,
                             ),
-                        ),
-                    ),
+                        },
+                    },
                 },
             },
             span: SourceSpan {
@@ -142,15 +142,15 @@ TypeCheckedProgram {
                                 ),
                                 length: 14,
                             },
-                            ty: Fn(
-                                None,
-                                Fn(
-                                    None,
-                                    Literal(
+                            ty: Fn {
+                                parameter: None,
+                                return_type: Fn {
+                                    parameter: None,
+                                    return_type: Literal(
                                         Int,
                                     ),
-                                ),
-                            ),
+                                },
+                            },
                         },
                         arguments: [],
                     },
@@ -160,12 +160,12 @@ TypeCheckedProgram {
                         ),
                         length: 16,
                     },
-                    ty: Fn(
-                        None,
-                        Literal(
+                    ty: Fn {
+                        parameter: None,
+                        return_type: Literal(
                             Int,
                         ),
-                    ),
+                    },
                 },
             },
             span: SourceSpan {
@@ -190,12 +190,12 @@ TypeCheckedProgram {
                         ),
                         length: 7,
                     },
-                    ty: Fn(
-                        None,
-                        Literal(
+                    ty: Fn {
+                        parameter: None,
+                        return_type: Literal(
                             Int,
                         ),
-                    ),
+                    },
                 },
                 arguments: [],
             },
@@ -225,15 +225,15 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "create_closure",
-            ty: Fn(
-                None,
-                Fn(
-                    None,
-                    Literal(
+            ty: Fn {
+                parameter: None,
+                return_type: Fn {
+                    parameter: None,
+                    return_type: Literal(
                         Int,
                     ),
-                ),
-            ),
+                },
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     0,
@@ -243,12 +243,12 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "closure",
-            ty: Fn(
-                None,
-                Literal(
+            ty: Fn {
+                parameter: None,
+                return_type: Literal(
                     Int,
                 ),
-            ),
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     73,

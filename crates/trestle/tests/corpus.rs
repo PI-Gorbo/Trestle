@@ -613,7 +613,7 @@ trsl_test!(
 trsl_test!(
     basics_type_declarations_function_type,
     "00-basics/type-declarations/function-type/function-type.trsl",
-    ignore = "needs function type expressions"
+    [ast, analyse, eval]
 );
 trsl_test!(
     basics_type_declarations_function_type_curried,
@@ -655,6 +655,7 @@ trsl_test!(
     "01-unification/partially-known-function/partially-known-function.trsl",
     [ast, analyse, eval]
 );
+
 // Self-application `x(x)` constrains x's variable to a function type containing itself. The
 // occurs check has to reject it; the `error` stage pins the `InfiniteType` diagnostic, and the
 // test terminating at all is the point — the cycle would make `subsitute` non-terminating.

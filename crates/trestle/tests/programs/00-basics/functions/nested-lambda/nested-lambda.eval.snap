@@ -81,16 +81,16 @@ Closure {
                 ),
                 length: 17,
             },
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         Int,
                     ),
                 ),
-                Literal(
+                return_type: Literal(
                     Int,
                 ),
-            ),
+            },
         },
     },
     env: Environment(

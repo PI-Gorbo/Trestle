@@ -14,7 +14,10 @@ pub enum Type {
     Unit,
     Literal(Literal),
     Var(TypeVarId),
-    Fn(Option<Box<Type>>, Box<Type>),
+    Fn {
+        parameter: Option<Box<Type>>,
+        return_type: Box<Type>,
+    },
     Record(BTreeMap<String, Box<Type>>),
 }
 

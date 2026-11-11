@@ -32,12 +32,12 @@ TypeCheckedProgram {
                 ),
                 length: 9,
             },
-            ty: Fn(
-                None,
-                Literal(
+            ty: Fn {
+                parameter: None,
+                return_type: Literal(
                     Int,
                 ),
-            ),
+            },
         },
     ],
     bindings: [],

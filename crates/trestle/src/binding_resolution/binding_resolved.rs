@@ -7,10 +7,24 @@ use crate::parse::ast::{BinaryOp, UnaryOp};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TypeBindingId(pub usize);
 
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResolvedOptionallyNamedTypeExpression {
+    pub type_dec: Box<ResolvedTypeExpression>,
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResolvedLambdaTypeExpression {
+    pub parameter: Option<ResolvedOptionallyNamedTypeExpression>,
+    pub return_type: Box<ResolvedTypeExpression>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResolvedTypeExpressionKind {
     Named(TypeBindingId),
     Record(BTreeMap<String, ResolvedTypeExpression>),
+    Lambda(ResolvedLambdaTypeExpression),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

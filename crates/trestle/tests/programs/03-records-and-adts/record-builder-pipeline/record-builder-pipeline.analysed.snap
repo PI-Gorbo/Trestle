@@ -562,8 +562,8 @@ TypeCheckedProgram {
                                     ),
                                     length: 108,
                                 },
-                                ty: Fn(
-                                    Some(
+                                ty: Fn {
+                                    parameter: Some(
                                         Record(
                                             {
                                                 "address": Record(
@@ -592,7 +592,7 @@ TypeCheckedProgram {
                                             },
                                         ),
                                     ),
-                                    Record(
+                                    return_type: Record(
                                         {
                                             "address": Record(
                                                 {
@@ -619,7 +619,7 @@ TypeCheckedProgram {
                                             ),
                                         },
                                     ),
-                                ),
+                                },
                             },
                         },
                     ),
@@ -629,14 +629,14 @@ TypeCheckedProgram {
                         ),
                         length: 108,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 String,
                             ),
                         ),
-                        Fn(
-                            Some(
+                        return_type: Fn {
+                            parameter: Some(
                                 Record(
                                     {
                                         "address": Record(
@@ -665,7 +665,7 @@ TypeCheckedProgram {
                                     },
                                 ),
                             ),
-                            Record(
+                            return_type: Record(
                                 {
                                     "address": Record(
                                         {
@@ -692,8 +692,8 @@ TypeCheckedProgram {
                                     ),
                                 },
                             ),
-                        ),
-                    ),
+                        },
+                    },
                 },
             },
             span: SourceSpan {
@@ -992,8 +992,8 @@ TypeCheckedProgram {
                                                 ),
                                                 length: 138,
                                             },
-                                            ty: Fn(
-                                                Some(
+                                            ty: Fn {
+                                                parameter: Some(
                                                     Record(
                                                         {
                                                             "address": Record(
@@ -1022,7 +1022,7 @@ TypeCheckedProgram {
                                                         },
                                                     ),
                                                 ),
-                                                Record(
+                                                return_type: Record(
                                                     {
                                                         "address": Record(
                                                             {
@@ -1049,7 +1049,7 @@ TypeCheckedProgram {
                                                         ),
                                                     },
                                                 ),
-                                            ),
+                                            },
                                         },
                                     },
                                 ),
@@ -1059,14 +1059,14 @@ TypeCheckedProgram {
                                     ),
                                     length: 138,
                                 },
-                                ty: Fn(
-                                    Some(
+                                ty: Fn {
+                                    parameter: Some(
                                         Literal(
                                             Int,
                                         ),
                                     ),
-                                    Fn(
-                                        Some(
+                                    return_type: Fn {
+                                        parameter: Some(
                                             Record(
                                                 {
                                                     "address": Record(
@@ -1095,7 +1095,7 @@ TypeCheckedProgram {
                                                 },
                                             ),
                                         ),
-                                        Record(
+                                        return_type: Record(
                                             {
                                                 "address": Record(
                                                     {
@@ -1122,8 +1122,8 @@ TypeCheckedProgram {
                                                 ),
                                             },
                                         ),
-                                    ),
-                                ),
+                                    },
+                                },
                             },
                         },
                     ),
@@ -1133,20 +1133,20 @@ TypeCheckedProgram {
                         ),
                         length: 138,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 String,
                             ),
                         ),
-                        Fn(
-                            Some(
+                        return_type: Fn {
+                            parameter: Some(
                                 Literal(
                                     Int,
                                 ),
                             ),
-                            Fn(
-                                Some(
+                            return_type: Fn {
+                                parameter: Some(
                                     Record(
                                         {
                                             "address": Record(
@@ -1175,7 +1175,7 @@ TypeCheckedProgram {
                                         },
                                     ),
                                 ),
-                                Record(
+                                return_type: Record(
                                     {
                                         "address": Record(
                                             {
@@ -1202,9 +1202,9 @@ TypeCheckedProgram {
                                         ),
                                     },
                                 ),
-                            ),
-                        ),
-                    ),
+                            },
+                        },
+                    },
                 },
             },
             span: SourceSpan {
@@ -1503,8 +1503,8 @@ TypeCheckedProgram {
                                                 ),
                                                 length: 341,
                                             },
-                                            ty: Fn(
-                                                Some(
+                                            ty: Fn {
+                                                parameter: Some(
                                                     Record(
                                                         {
                                                             "address": Record(
@@ -1533,7 +1533,7 @@ TypeCheckedProgram {
                                                         },
                                                     ),
                                                 ),
-                                                Record(
+                                                return_type: Record(
                                                     {
                                                         "address": Record(
                                                             {
@@ -1560,7 +1560,7 @@ TypeCheckedProgram {
                                                         ),
                                                     },
                                                 ),
-                                            ),
+                                            },
                                         },
                                     },
                                 ),
@@ -1570,14 +1570,14 @@ TypeCheckedProgram {
                                     ),
                                     length: 341,
                                 },
-                                ty: Fn(
-                                    Some(
+                                ty: Fn {
+                                    parameter: Some(
                                         Literal(
                                             Int,
                                         ),
                                     ),
-                                    Fn(
-                                        Some(
+                                    return_type: Fn {
+                                        parameter: Some(
                                             Record(
                                                 {
                                                     "address": Record(
@@ -1606,7 +1606,7 @@ TypeCheckedProgram {
                                                 },
                                             ),
                                         ),
-                                        Record(
+                                        return_type: Record(
                                             {
                                                 "address": Record(
                                                     {
@@ -1633,8 +1633,8 @@ TypeCheckedProgram {
                                                 ),
                                             },
                                         ),
-                                    ),
-                                ),
+                                    },
+                                },
                             },
                         },
                     ),
@@ -1644,20 +1644,20 @@ TypeCheckedProgram {
                         ),
                         length: 341,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 Int,
                             ),
                         ),
-                        Fn(
-                            Some(
+                        return_type: Fn {
+                            parameter: Some(
                                 Literal(
                                     Int,
                                 ),
                             ),
-                            Fn(
-                                Some(
+                            return_type: Fn {
+                                parameter: Some(
                                     Record(
                                         {
                                             "address": Record(
@@ -1686,7 +1686,7 @@ TypeCheckedProgram {
                                         },
                                     ),
                                 ),
-                                Record(
+                                return_type: Record(
                                     {
                                         "address": Record(
                                             {
@@ -1713,9 +1713,9 @@ TypeCheckedProgram {
                                         ),
                                     },
                                 ),
-                            ),
-                        ),
-                    ),
+                            },
+                        },
+                    },
                 },
             },
             span: SourceSpan {
@@ -2149,8 +2149,8 @@ TypeCheckedProgram {
                                     ),
                                     length: 165,
                                 },
-                                ty: Fn(
-                                    Some(
+                                ty: Fn {
+                                    parameter: Some(
                                         Record(
                                             {
                                                 "address": Record(
@@ -2179,7 +2179,7 @@ TypeCheckedProgram {
                                             },
                                         ),
                                     ),
-                                    Record(
+                                    return_type: Record(
                                         {
                                             "address": Record(
                                                 {
@@ -2206,7 +2206,7 @@ TypeCheckedProgram {
                                             ),
                                         },
                                     ),
-                                ),
+                                },
                             },
                         },
                     ),
@@ -2216,14 +2216,14 @@ TypeCheckedProgram {
                         ),
                         length: 165,
                     },
-                    ty: Fn(
-                        Some(
+                    ty: Fn {
+                        parameter: Some(
                             Literal(
                                 Int,
                             ),
                         ),
-                        Fn(
-                            Some(
+                        return_type: Fn {
+                            parameter: Some(
                                 Record(
                                     {
                                         "address": Record(
@@ -2252,7 +2252,7 @@ TypeCheckedProgram {
                                     },
                                 ),
                             ),
-                            Record(
+                            return_type: Record(
                                 {
                                     "address": Record(
                                         {
@@ -2279,8 +2279,8 @@ TypeCheckedProgram {
                                     ),
                                 },
                             ),
-                        ),
-                    ),
+                        },
+                    },
                 },
             },
             span: SourceSpan {
@@ -2362,14 +2362,14 @@ TypeCheckedProgram {
                                                                 ),
                                                                 length: 8,
                                                             },
-                                                            ty: Fn(
-                                                                Some(
+                                                            ty: Fn {
+                                                                parameter: Some(
                                                                     Literal(
                                                                         String,
                                                                     ),
                                                                 ),
-                                                                Fn(
-                                                                    Some(
+                                                                return_type: Fn {
+                                                                    parameter: Some(
                                                                         Record(
                                                                             {
                                                                                 "address": Record(
@@ -2398,7 +2398,7 @@ TypeCheckedProgram {
                                                                             },
                                                                         ),
                                                                     ),
-                                                                    Record(
+                                                                    return_type: Record(
                                                                         {
                                                                             "address": Record(
                                                                                 {
@@ -2425,8 +2425,8 @@ TypeCheckedProgram {
                                                                             ),
                                                                         },
                                                                     ),
-                                                                ),
-                                                            ),
+                                                                },
+                                                            },
                                                         },
                                                         arguments: [
                                                             TypeCheckedExpression {
@@ -2453,8 +2453,8 @@ TypeCheckedProgram {
                                                         ),
                                                         length: 15,
                                                     },
-                                                    ty: Fn(
-                                                        Some(
+                                                    ty: Fn {
+                                                        parameter: Some(
                                                             Record(
                                                                 {
                                                                     "address": Record(
@@ -2483,7 +2483,7 @@ TypeCheckedProgram {
                                                                 },
                                                             ),
                                                         ),
-                                                        Record(
+                                                        return_type: Record(
                                                             {
                                                                 "address": Record(
                                                                     {
@@ -2510,7 +2510,7 @@ TypeCheckedProgram {
                                                                 ),
                                                             },
                                                         ),
-                                                    ),
+                                                    },
                                                 },
                                             ),
                                             span: SourceSpan {
@@ -2561,20 +2561,20 @@ TypeCheckedProgram {
                                                         ),
                                                         length: 11,
                                                     },
-                                                    ty: Fn(
-                                                        Some(
+                                                    ty: Fn {
+                                                        parameter: Some(
                                                             Literal(
                                                                 String,
                                                             ),
                                                         ),
-                                                        Fn(
-                                                            Some(
+                                                        return_type: Fn {
+                                                            parameter: Some(
                                                                 Literal(
                                                                     Int,
                                                                 ),
                                                             ),
-                                                            Fn(
-                                                                Some(
+                                                            return_type: Fn {
+                                                                parameter: Some(
                                                                     Record(
                                                                         {
                                                                             "address": Record(
@@ -2603,7 +2603,7 @@ TypeCheckedProgram {
                                                                         },
                                                                     ),
                                                                 ),
-                                                                Record(
+                                                                return_type: Record(
                                                                     {
                                                                         "address": Record(
                                                                             {
@@ -2630,9 +2630,9 @@ TypeCheckedProgram {
                                                                         ),
                                                                     },
                                                                 ),
-                                                            ),
-                                                        ),
-                                                    ),
+                                                            },
+                                                        },
+                                                    },
                                                 },
                                                 arguments: [
                                                     TypeCheckedExpression {
@@ -2675,8 +2675,8 @@ TypeCheckedProgram {
                                                 ),
                                                 length: 28,
                                             },
-                                            ty: Fn(
-                                                Some(
+                                            ty: Fn {
+                                                parameter: Some(
                                                     Record(
                                                         {
                                                             "address": Record(
@@ -2705,7 +2705,7 @@ TypeCheckedProgram {
                                                         },
                                                     ),
                                                 ),
-                                                Record(
+                                                return_type: Record(
                                                     {
                                                         "address": Record(
                                                             {
@@ -2732,7 +2732,7 @@ TypeCheckedProgram {
                                                         ),
                                                     },
                                                 ),
-                                            ),
+                                            },
                                         },
                                     ),
                                     span: SourceSpan {
@@ -2783,20 +2783,20 @@ TypeCheckedProgram {
                                                 ),
                                                 length: 9,
                                             },
-                                            ty: Fn(
-                                                Some(
+                                            ty: Fn {
+                                                parameter: Some(
                                                     Literal(
                                                         Int,
                                                     ),
                                                 ),
-                                                Fn(
-                                                    Some(
+                                                return_type: Fn {
+                                                    parameter: Some(
                                                         Literal(
                                                             Int,
                                                         ),
                                                     ),
-                                                    Fn(
-                                                        Some(
+                                                    return_type: Fn {
+                                                        parameter: Some(
                                                             Record(
                                                                 {
                                                                     "address": Record(
@@ -2825,7 +2825,7 @@ TypeCheckedProgram {
                                                                 },
                                                             ),
                                                         ),
-                                                        Record(
+                                                        return_type: Record(
                                                             {
                                                                 "address": Record(
                                                                     {
@@ -2852,9 +2852,9 @@ TypeCheckedProgram {
                                                                 ),
                                                             },
                                                         ),
-                                                    ),
-                                                ),
-                                            ),
+                                                    },
+                                                },
+                                            },
                                         },
                                         arguments: [
                                             TypeCheckedExpression {
@@ -2897,8 +2897,8 @@ TypeCheckedProgram {
                                         ),
                                         length: 17,
                                     },
-                                    ty: Fn(
-                                        Some(
+                                    ty: Fn {
+                                        parameter: Some(
                                             Record(
                                                 {
                                                     "address": Record(
@@ -2927,7 +2927,7 @@ TypeCheckedProgram {
                                                 },
                                             ),
                                         ),
-                                        Record(
+                                        return_type: Record(
                                             {
                                                 "address": Record(
                                                     {
@@ -2954,7 +2954,7 @@ TypeCheckedProgram {
                                                 ),
                                             },
                                         ),
-                                    ),
+                                    },
                                 },
                             ),
                             span: SourceSpan {
@@ -3005,14 +3005,14 @@ TypeCheckedProgram {
                                         ),
                                         length: 9,
                                     },
-                                    ty: Fn(
-                                        Some(
+                                    ty: Fn {
+                                        parameter: Some(
                                             Literal(
                                                 Int,
                                             ),
                                         ),
-                                        Fn(
-                                            Some(
+                                        return_type: Fn {
+                                            parameter: Some(
                                                 Record(
                                                     {
                                                         "address": Record(
@@ -3041,7 +3041,7 @@ TypeCheckedProgram {
                                                     },
                                                 ),
                                             ),
-                                            Record(
+                                            return_type: Record(
                                                 {
                                                     "address": Record(
                                                         {
@@ -3068,8 +3068,8 @@ TypeCheckedProgram {
                                                     ),
                                                 },
                                             ),
-                                        ),
-                                    ),
+                                        },
+                                    },
                                 },
                                 arguments: [
                                     TypeCheckedExpression {
@@ -3096,8 +3096,8 @@ TypeCheckedProgram {
                                 ),
                                 length: 13,
                             },
-                            ty: Fn(
-                                Some(
+                            ty: Fn {
+                                parameter: Some(
                                     Record(
                                         {
                                             "address": Record(
@@ -3126,7 +3126,7 @@ TypeCheckedProgram {
                                         },
                                     ),
                                 ),
-                                Record(
+                                return_type: Record(
                                     {
                                         "address": Record(
                                             {
@@ -3153,7 +3153,7 @@ TypeCheckedProgram {
                                         ),
                                     },
                                 ),
-                            ),
+                            },
                         },
                     ),
                     span: SourceSpan {
@@ -3327,14 +3327,14 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "withName",
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         String,
                     ),
                 ),
-                Fn(
-                    Some(
+                return_type: Fn {
+                    parameter: Some(
                         Record(
                             {
                                 "address": Record(
@@ -3363,7 +3363,7 @@ TypeCheckedProgram {
                             },
                         ),
                     ),
-                    Record(
+                    return_type: Record(
                         {
                             "address": Record(
                                 {
@@ -3390,8 +3390,8 @@ TypeCheckedProgram {
                             ),
                         },
                     ),
-                ),
-            ),
+                },
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     854,
@@ -3461,20 +3461,20 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "withAddress",
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         String,
                     ),
                 ),
-                Fn(
-                    Some(
+                return_type: Fn {
+                    parameter: Some(
                         Literal(
                             Int,
                         ),
                     ),
-                    Fn(
-                        Some(
+                    return_type: Fn {
+                        parameter: Some(
                             Record(
                                 {
                                     "address": Record(
@@ -3503,7 +3503,7 @@ TypeCheckedProgram {
                                 },
                             ),
                         ),
-                        Record(
+                        return_type: Record(
                             {
                                 "address": Record(
                                     {
@@ -3530,9 +3530,9 @@ TypeCheckedProgram {
                                 ),
                             },
                         ),
-                    ),
-                ),
-            ),
+                    },
+                },
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     977,
@@ -3602,20 +3602,20 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "withRetry",
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         Int,
                     ),
                 ),
-                Fn(
-                    Some(
+                return_type: Fn {
+                    parameter: Some(
                         Literal(
                             Int,
                         ),
                     ),
-                    Fn(
-                        Some(
+                    return_type: Fn {
+                        parameter: Some(
                             Record(
                                 {
                                     "address": Record(
@@ -3644,7 +3644,7 @@ TypeCheckedProgram {
                                 },
                             ),
                         ),
-                        Record(
+                        return_type: Record(
                             {
                                 "address": Record(
                                     {
@@ -3671,9 +3671,9 @@ TypeCheckedProgram {
                                 ),
                             },
                         ),
-                    ),
-                ),
-            ),
+                    },
+                },
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     1133,
@@ -3731,14 +3731,14 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "shiftPort",
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Literal(
                         Int,
                     ),
                 ),
-                Fn(
-                    Some(
+                return_type: Fn {
+                    parameter: Some(
                         Record(
                             {
                                 "address": Record(
@@ -3767,7 +3767,7 @@ TypeCheckedProgram {
                             },
                         ),
                     ),
-                    Record(
+                    return_type: Record(
                         {
                             "address": Record(
                                 {
@@ -3794,8 +3794,8 @@ TypeCheckedProgram {
                             ),
                         },
                     ),
-                ),
-            ),
+                },
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     1490,

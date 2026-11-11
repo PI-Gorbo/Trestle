@@ -86,7 +86,10 @@ fn write_type(out: &mut String, ty: &Type, parenthesise_function: bool) {
         Type::Var(var) => {
             let _ = write!(out, "_{}", var.0);
         }
-        Type::Fn(parameter, result) => {
+        Type::Fn {
+            parameter,
+            return_type: result,
+        } => {
             if parenthesise_function {
                 out.push('(');
             }
@@ -174,25 +177,37 @@ mod tests {
 
     #[test]
     fn curried_functions_need_no_parentheses() {
-        let curried = Type::Fn(
-            Some(Box::new(int())),
-            Box::new(Type::Fn(Some(Box::new(int())), Box::new(int()))),
-        );
+        let curried = Type::Fn {
+            parameter: Some(Box::new(int())),
+            return_type: Box::new(Type::Fn {
+                parameter: Some(Box::new(int())),
+                return_type: Box::new(int()),
+            }),
+        };
         assert_eq!(format_type(&curried), "Int -> Int -> Int");
     }
 
     #[test]
     fn a_function_parameter_is_parenthesised() {
-        let higher_order = Type::Fn(
-            Some(Box::new(Type::Fn(Some(Box::new(int())), Box::new(int())))),
-            Box::new(int()),
-        );
+        let higher_order = Type::Fn {
+            parameter: Some(Box::new(Type::Fn {
+                parameter: Some(Box::new(int())),
+                return_type: Box::new(int()),
+            })),
+            return_type: Box::new(int()),
+        };
         assert_eq!(format_type(&higher_order), "(Int -> Int) -> Int");
     }
 
     #[test]
     fn a_parameterless_function_prints_empty_parentheses() {
-        assert_eq!(format_type(&Type::Fn(None, Box::new(int()))), "() -> Int");
+        assert_eq!(
+            format_type(&Type::Fn {
+                parameter: None,
+                return_type: Box::new(int())
+            }),
+            "() -> Int"
+        );
     }
 
     #[test]
@@ -248,7 +263,10 @@ mod tests {
     /// closure's own type does not.
     #[test]
     fn a_closure_parameter_is_parenthesised() {
-        let parameter = Type::Fn(Some(Box::new(int())), Box::new(int()));
+        let parameter = Type::Fn {
+            parameter: Some(Box::new(int())),
+            return_type: Box::new(int()),
+        };
         assert_eq!(
             format_value(&closure(Some(parameter), int())),
             "<closure: (Int -> Int) -> Int>"

@@ -8,20 +8,20 @@ TypeCheck(
             var: TypeVarId(
                 0,
             ),
-            ty: Fn(
-                Some(
+            ty: Fn {
+                parameter: Some(
                     Var(
                         TypeVarId(
                             0,
                         ),
                     ),
                 ),
-                Var(
+                return_type: Var(
                     TypeVarId(
                         1,
                     ),
                 ),
-            ),
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     558,
