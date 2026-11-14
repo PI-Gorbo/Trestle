@@ -11,14 +11,12 @@ pub use typed_ast::TypeCheckedProgram;
 use crate::binding_resolution::BindingResolvedProgram;
 
 use binding_table::attach_types_to_bindings;
-use inference::{InferenceCtx, infer_type_of_expression};
+use inference::InferenceCtx;
 use substitution::substitute_in_expr;
 use typed_ast::TypeCheckedExpression;
-use unification::UnificationMap;
 
-struct TypeCheckState {
-    inference_ctx: InferenceCtx,
-    unification_map: UnificationMap,
+struct TypeCheckState<'a> {
+    inference_ctx: InferenceCtx<'a>,
     expressions: Vec<TypeCheckedExpression>,
     errors: Vec<TypeCheckError>,
 }
@@ -32,21 +30,16 @@ pub fn type_check(
         type_bindings,
     } = program;
 
+    // Part 1, fold over all expressions, infer their type and collect all errors.
     let expression_count = expressions.len();
     let final_state = expressions.into_iter().fold(
         TypeCheckState {
             expressions: Vec::with_capacity(expression_count),
             errors: Vec::new(),
-            inference_ctx: InferenceCtx::new(bindings.len(), type_bindings.len()),
-            unification_map: UnificationMap::new(),
+            inference_ctx: InferenceCtx::new(&bindings, type_bindings.len()),
         },
         |mut state, untyped_expression| {
-            match infer_type_of_expression(
-                untyped_expression,
-                &mut state.inference_ctx,
-                &mut state.unification_map,
-                &bindings,
-            ) {
+            match state.inference_ctx.infer(untyped_expression) {
                 Ok(expression) => state.expressions.push(expression),
                 Err(error) => state.errors.push(error),
             }
@@ -55,31 +48,42 @@ pub fn type_check(
         },
     );
 
-    if !final_state.errors.is_empty() {
-        return Err(final_state.errors);
+    let TypeCheckState {
+        inference_ctx,
+        expressions,
+        errors,
+    } = final_state;
+
+    if !errors.is_empty() {
+        return Err(errors);
     }
 
-    let variable_bindings_with_types = attach_types_to_bindings(
-        bindings,
-        &final_state.inference_ctx.variable_env,
-        &final_state.unification_map,
-    )
-    .map_err(|err| vec![err])?;
+    // Map the result of the inference to a type checked program.
+    let InferenceCtx {
+        variable_env,
+        type_env,
+        unification_map,
+        ..
+    } = inference_ctx;
 
-    let type_bindings_with_types = attach_types_to_bindings(
-        type_bindings,
-        &final_state.inference_ctx.type_env,
-        &final_state.unification_map,
-    )
-    .map_err(|err| vec![err])?;
+    let variable_bindings_with_types =
+        attach_types_to_bindings(bindings, &variable_env, &unification_map)
+            .map_err(|err| vec![err])?;
 
-    let mut subsituted_expressions = final_state.expressions;
-    subsituted_expressions
-        .iter_mut()
-        .for_each(|expr| substitute_in_expr(&final_state.unification_map, expr));
+    let type_bindings_with_types =
+        attach_types_to_bindings(type_bindings, &type_env, &unification_map)
+            .map_err(|err| vec![err])?;
+
+    let substituted_expressions = expressions
+        .into_iter()
+        .map(|mut expr| {
+            substitute_in_expr(&unification_map, &mut expr);
+            expr
+        })
+        .collect();
 
     Ok(TypeCheckedProgram {
-        expressions: subsituted_expressions,
+        expressions: substituted_expressions,
         bindings: variable_bindings_with_types,
         type_bindings: type_bindings_with_types,
     })

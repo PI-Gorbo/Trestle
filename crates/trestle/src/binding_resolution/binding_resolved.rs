@@ -7,7 +7,6 @@ use crate::parse::ast::{BinaryOp, UnaryOp};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct TypeBindingId(pub usize);
 
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ResolvedOptionallyNamedTypeExpression {
     pub type_dec: Box<ResolvedTypeExpression>,
@@ -53,26 +52,41 @@ pub enum ResolvedLiteral {
 }
 
 #[derive(Debug, PartialEq)]
+pub struct ResolvedBinaryExpression(
+    pub BinaryOp,
+    pub Box<ResolvedExpression>,
+    pub Box<ResolvedExpression>,
+);
+
+#[derive(Debug, PartialEq)]
+pub struct ResolvedUnaryExpression(pub UnaryOp, pub Box<ResolvedExpression>);
+
+#[derive(Debug, PartialEq)]
+pub struct ResolvedFunctionInvocationExpression {
+    pub function: Box<ResolvedExpression>,
+    pub arguments: Vec<ResolvedExpression>,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct ResolvedLetExpression {
+    pub binding: BindingId,
+    pub type_dec: Option<ResolvedTypeExpression>,
+    pub value: Box<ResolvedExpression>,
+}
+
+#[derive(Debug, PartialEq)]
 pub enum ResolvedExpressionKind {
     Literal(ResolvedLiteral),
-    Var(BindingId), // was Var(String)
-    Binary(BinaryOp, Box<ResolvedExpression>, Box<ResolvedExpression>),
-    Unary(UnaryOp, Box<ResolvedExpression>),
+    Var(BindingId),
+    Binary(ResolvedBinaryExpression),
+    Unary(ResolvedUnaryExpression),
     Lambda(ResolvedLambda),
-    FunctionInvocation {
-        function: Box<ResolvedExpression>,
-        arguments: Vec<ResolvedExpression>,
-    },
+    FunctionInvocation(ResolvedFunctionInvocationExpression),
     FieldAccess {
         target: Box<ResolvedExpression>,
         field_name: String,
     },
-    Let {
-        binding: BindingId, // was name: String
-
-        type_dec: Option<ResolvedTypeExpression>,
-        value: Box<ResolvedExpression>,
-    },
+    Let(ResolvedLetExpression),
     Block(Vec<ResolvedExpression>),
     If {
         condition: Box<ResolvedExpression>,

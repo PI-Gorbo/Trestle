@@ -3,13 +3,15 @@ use std::collections::BTreeMap;
 use miette::SourceSpan;
 
 use crate::binding_resolution::binding_resolved::{
-    ResolvedTypeExpression, ResolvedTypeExpressionKind, TypeBindingId,
+    ResolvedBinaryExpression, ResolvedFunctionInvocationExpression, ResolvedLetExpression,
+    ResolvedTypeExpression, ResolvedTypeExpressionKind, ResolvedUnaryExpression, TypeBindingId,
 };
 use crate::binding_resolution::{
-    ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda, ResolvedLiteral,
+    BindingId, ResolvedBinding, ResolvedExpression, ResolvedExpressionKind, ResolvedLambda,
+    ResolvedLiteral,
 };
 use crate::parse::ast::{BinaryOp, UnaryOp};
-use crate::type_check::binding_table::TypeBindingToTypeMap;
+use crate::type_check::binding_table::{Scheme, TypeBindingToTypeMap};
 
 use super::binding_table::{BindingLookup, BindingToTypeMap};
 use super::error::TypeCheckError;
@@ -19,25 +21,444 @@ use super::typed_ast::{
 use super::unification::UnificationMap;
 use crate::prelude::PRELUDE_TYPES;
 
-pub(super) struct InferenceCtx {
-    pub(super) variable_env: BindingToTypeMap,
-    pub(super) type_env: TypeBindingToTypeMap,
+struct LetGeneralisationLevel(usize);
+impl LetGeneralisationLevel {
+    pub fn new() -> LetGeneralisationLevel {
+        LetGeneralisationLevel(0)
+    }
 }
 
-impl InferenceCtx {
-    pub(super) fn new(binding_count: usize, type_binding_count: usize) -> InferenceCtx {
-        let type_env = create_type_env_with_prelude_types(type_binding_count);
+pub(super) struct InferenceCtx<'a> {
+    pub(super) variable_env: BindingToTypeMap,
+    pub(super) type_env: TypeBindingToTypeMap,
+    pub(super) unification_map: UnificationMap,
+    let_level: LetGeneralisationLevel,
+    bindings: &'a [ResolvedBinding],
+}
 
+impl<'a> InferenceCtx<'a> {
+    pub(super) fn new(bindings: &'a [ResolvedBinding], type_binding_count: usize) -> Self {
         InferenceCtx {
-            variable_env: BindingToTypeMap::new(binding_count),
-            type_env,
+            bindings,
+            variable_env: BindingToTypeMap::new(bindings.len()),
+            type_env: create_type_env_with_prelude_types(type_binding_count),
+            unification_map: UnificationMap::new(),
+            let_level: LetGeneralisationLevel::new(),
         }
+    }
+
+    pub(super) fn infer(
+        &mut self,
+        untyped_expression: ResolvedExpression,
+    ) -> Result<TypeCheckedExpression, TypeCheckError> {
+        let span = untyped_expression.span;
+
+        let (kind, ty) = match untyped_expression.kind {
+            ResolvedExpressionKind::Literal(lit) => self.infer_literal(lit),
+            ResolvedExpressionKind::Var(binding_id) => self.infer_var(binding_id, span),
+            ResolvedExpressionKind::Binary(binary) => self.infer_binary_operation(binary, span),
+            ResolvedExpressionKind::Unary(unary) => self.infer_unary_operation(unary),
+            ResolvedExpressionKind::Lambda(resolved_lambda) => {
+                self.infer_lambda(resolved_lambda, span)
+            }
+            ResolvedExpressionKind::FunctionInvocation(function_invocation) => {
+                self.infer_function_invocation(function_invocation, span)
+            }
+
+            ResolvedExpressionKind::Let(let_expression) => {
+                self.infer_let_expression(let_expression, span)
+            }
+
+            ResolvedExpressionKind::Block(expressions) => self.infer_block(expressions),
+            ResolvedExpressionKind::If {
+                condition,
+                true_condition,
+                false_condition,
+            } => self.infer_if(condition, true_condition, false_condition, span),
+            ResolvedExpressionKind::TypeDeclaration {
+                identifier,
+                type_expression,
+            } => self.infer_type_declaration(identifier, type_expression),
+            ResolvedExpressionKind::FieldAccess { target, field_name } => {
+                self.infer_field_access(target, field_name, span)
+            }
+        }?;
+
+        Ok(TypeCheckedExpression { kind, span, ty })
+    }
+
+    fn infer_block(
+        &mut self,
+        expressions: Vec<ResolvedExpression>,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let analysed = expressions
+            .into_iter()
+            .map(|e| self.infer(e))
+            .collect::<Result<Vec<_>, _>>()?;
+        let ty = analysed.last().map_or(Type::Unit, |e| e.ty.clone());
+        Ok((ExpressionKind::Block(analysed), ty))
+    }
+
+    fn infer_if(
+        &mut self,
+        condition: Box<ResolvedExpression>,
+        true_condition: Box<ResolvedExpression>,
+        false_condition: Option<Box<ResolvedExpression>>,
+        span: SourceSpan,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let typed_condition = self.infer(*condition)?;
+
+        self.unification_map
+            .unify(&typed_condition.ty, &Type::Literal(Literal::Bool), span)?;
+
+        let true_condition = self.infer(*true_condition)?;
+        let true_condition_type = true_condition.ty.clone();
+
+        match false_condition {
+            None => Ok((
+                ExpressionKind::If {
+                    condition: Box::new(typed_condition),
+                    then_branch: Box::new(true_condition),
+                    else_branch: None,
+                },
+                true_condition_type,
+            )),
+            Some(false_condition) => {
+                let false_condition = self.infer(*false_condition)?;
+
+                self.unification_map
+                    .unify(&false_condition.ty, &true_condition.ty, span)?;
+
+                Ok((
+                    ExpressionKind::If {
+                        condition: Box::new(typed_condition),
+                        then_branch: Box::new(true_condition),
+                        else_branch: Some(Box::new(false_condition)),
+                    },
+                    true_condition_type,
+                ))
+            }
+        }
+    }
+
+    fn infer_type_declaration(
+        &mut self,
+        identifier: TypeBindingId,
+        type_expression: ResolvedTypeExpression,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let evaluated_type = get_type_from_type_expression(type_expression, self)?;
+
+        self.type_env.set(identifier, evaluated_type.clone());
+
+        Ok((
+            ExpressionKind::TypeDeclaration {
+                identifier,
+                type_expression: evaluated_type.clone(),
+            },
+            evaluated_type,
+        ))
+    }
+
+    fn infer_field_access(
+        &mut self,
+        target: Box<ResolvedExpression>,
+        field_name: String,
+        span: SourceSpan,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let target = self.infer(*target)?;
+
+        let Type::Record(field_types) = self.unification_map.representative(&target.ty) else {
+            return Err(TypeCheckError::NotARecord {
+                found: target.ty,
+                span,
+            });
+        };
+
+        let field_type =
+            field_types
+                .get(&field_name)
+                .ok_or_else(|| TypeCheckError::RecordDoesNotHaveField {
+                    field_name: field_name.clone(),
+                    available: field_types.keys().cloned().collect(),
+                    span,
+                })?;
+
+        let ty = (**field_type).clone();
+
+        Ok((
+            ExpressionKind::FieldAccess {
+                target: Box::new(target),
+                field_name,
+            },
+            ty,
+        ))
+    }
+
+    fn infer_unary_operation(
+        &mut self,
+        ResolvedUnaryExpression(op, expr): ResolvedUnaryExpression,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let operand = self.infer(*expr)?;
+
+        let ty = match op {
+            UnaryOp::Neg => Type::Literal(Literal::Int),
+            UnaryOp::Not => Type::Literal(Literal::Bool),
+        };
+
+        self.unification_map.unify(&operand.ty, &ty, operand.span)?;
+
+        Ok((ExpressionKind::Unary(op, Box::new(operand)), ty))
+    }
+
+    fn infer_binary_operation(
+        &mut self,
+        ResolvedBinaryExpression(op, lhs, rhs): ResolvedBinaryExpression,
+        span: SourceSpan,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let lhs = self.infer(*lhs)?;
+        let rhs = self.infer(*rhs)?;
+
+        match op {
+            BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => unify_binary_op(
+                &mut self.unification_map,
+                op,
+                lhs,
+                Type::Literal(Literal::Int),
+                rhs,
+                Type::Literal(Literal::Int),
+                Type::Literal(Literal::Int),
+            ),
+            BinaryOp::Lt
+            | BinaryOp::Gt
+            | BinaryOp::Le
+            | BinaryOp::Ge
+            | BinaryOp::Eq
+            | BinaryOp::Neq => unify_binary_op(
+                &mut self.unification_map,
+                op,
+                lhs,
+                Type::Literal(Literal::Int),
+                rhs,
+                Type::Literal(Literal::Int),
+                Type::Literal(Literal::Bool),
+            ),
+            BinaryOp::And | BinaryOp::Or => unify_binary_op(
+                &mut self.unification_map,
+                op,
+                lhs,
+                Type::Literal(Literal::Bool),
+                rhs,
+                Type::Literal(Literal::Bool),
+                Type::Literal(Literal::Bool),
+            ),
+            BinaryOp::Pipe => {
+                let Type::Fn {
+                    parameter: input,
+                    return_type: output,
+                } = self.unification_map.representative(&rhs.ty)
+                else {
+                    return Err(TypeCheckError::NotAFunction {
+                        found: rhs.ty,
+                        span,
+                    });
+                };
+
+                let Some(input) = input else {
+                    return Err(TypeCheckError::PipeIntoArgumentlessFunction { span: rhs.span });
+                };
+
+                self.unification_map.unify(&lhs.ty, &input, span)?;
+
+                Ok((
+                    ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
+                    *output,
+                ))
+            }
+        }
+    }
+
+    fn infer_var(
+        &mut self,
+        variable_binding_id: BindingId,
+        span: SourceSpan,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let ty = match self.variable_env.get(variable_binding_id) {
+            Some(ty) => ty.clone(),
+            None => {
+                return Err(TypeCheckError::MissingAnnotation {
+                    name: self.bindings.lookup(variable_binding_id).name.clone(),
+                    span,
+                });
+            }
+        };
+
+        Ok((ExpressionKind::Var(variable_binding_id), ty))
+    }
+
+    fn infer_literal(
+        &mut self,
+        literal: ResolvedLiteral,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let value = match literal {
+            ResolvedLiteral::Unit => (
+                ExpressionKind::Literal(TypeCheckedLiteral::Unit),
+                Type::Literal(Literal::Unit),
+            ),
+            ResolvedLiteral::Int(value) => (
+                ExpressionKind::Literal(TypeCheckedLiteral::Int(value)),
+                Type::Literal(Literal::Int),
+            ),
+
+            ResolvedLiteral::String(value) => (
+                ExpressionKind::Literal(TypeCheckedLiteral::String(value)),
+                Type::Literal(Literal::String),
+            ),
+
+            ResolvedLiteral::Bool(value) => (
+                ExpressionKind::Literal(TypeCheckedLiteral::Bool(value)),
+                Type::Literal(Literal::Bool),
+            ),
+
+            ResolvedLiteral::Float(value) => (
+                ExpressionKind::Literal(TypeCheckedLiteral::Float(value)),
+                Type::Literal(Literal::Float),
+            ),
+
+            ResolvedLiteral::Record(record) => {
+                let fields: BTreeMap<String, TypeCheckedExpression> = record
+                    .into_iter()
+                    .map(|(key, value)| {
+                        let value = self.infer(value)?;
+                        Ok((key, value))
+                    })
+                    .collect::<Result<BTreeMap<_, _>, TypeCheckError>>()?;
+
+                let ty = Type::Record(
+                    fields
+                        .iter()
+                        .map(|(key, field)| (key.clone(), Box::new(field.ty.clone())))
+                        .collect(),
+                );
+
+                (
+                    ExpressionKind::Literal(TypeCheckedLiteral::Record(fields)),
+                    ty,
+                )
+            }
+        };
+
+        Ok(value)
+    }
+
+    fn infer_lambda(
+        &mut self,
+        resolved_lambda: ResolvedLambda,
+        span: SourceSpan,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let ResolvedLambda {
+            parameter,
+            body,
+            return_type,
+        } = resolved_lambda;
+
+        let parameter: Option<Param> = parameter
+            .map(|untyped_param| {
+                let type_from_type_dec = resolve_type_dec(untyped_param.type_dec, self)?;
+
+                self.variable_env
+                    .set(untyped_param.binding, type_from_type_dec.clone());
+
+                Ok(Param {
+                    binding: untyped_param.binding,
+                    ty: type_from_type_dec,
+                })
+            })
+            .transpose()?;
+        let param_type = parameter.as_ref().map(|p| Box::new(p.ty.clone()));
+
+        let body = self.infer(*body)?;
+        let return_type = resolve_type_dec(return_type, self)?;
+        self.unification_map.unify(&body.ty, &return_type, span)?;
+
+        let lambda_return_type = body.ty.clone();
+
+        Ok((
+            ExpressionKind::Lambda(Lambda {
+                parameter,
+                body: Box::new(body),
+            }),
+            Type::Fn {
+                parameter: param_type,
+                return_type: Box::new(lambda_return_type),
+            },
+        ))
+    }
+
+    fn infer_function_invocation(
+        &mut self,
+        ResolvedFunctionInvocationExpression {
+            arguments,
+            function,
+        }: ResolvedFunctionInvocationExpression,
+        span: SourceSpan,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let analysed_args = arguments
+            .into_iter()
+            .map(|arg| self.infer(arg))
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let typed_function = self.infer(*function)?;
+
+        let output_type = get_type_after_applying_arguments(
+            &mut self.unification_map,
+            &typed_function.ty,
+            &analysed_args,
+            span,
+        )?;
+
+        Ok((
+            ExpressionKind::FunctionInvocation {
+                function: Box::new(typed_function),
+                arguments: analysed_args,
+            },
+            output_type,
+        ))
+    }
+
+    fn infer_let_expression(
+        &mut self,
+        ResolvedLetExpression {
+            binding,
+            type_dec,
+            value,
+        }: ResolvedLetExpression,
+        span: SourceSpan,
+    ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        let inferred_type = self.infer(*value)?;
+
+        let bound_type_from_declaration = resolve_type_dec(type_dec, self)?;
+
+        // We try to unify the inferred type with the bound type.
+        self.unification_map
+            .unify(&inferred_type.ty, &bound_type_from_declaration, span)?;
+
+        // let scheme = generalise(&bound_type_from_declaration, ctx, unification_map);
+        self.variable_env
+            .set(binding, bound_type_from_declaration.clone());
+
+        Ok((
+            ExpressionKind::Let {
+                binding,
+                value: Box::new(inferred_type),
+            },
+            Type::Unit,
+        ))
     }
 }
 
 fn create_type_env_with_prelude_types(
     type_binding_count: usize,
-) -> super::binding_table::GenericTypeMap<TypeBindingId> {
+) -> super::binding_table::GenericTypeMap<TypeBindingId, Type> {
     debug_assert!(
         type_binding_count >= PRELUDE_TYPES.len(),
         "resolve seeds the prelude before any user declaration"
@@ -53,333 +474,17 @@ fn create_type_env_with_prelude_types(
     type_env
 }
 
-pub(super) fn infer_type_of_expression(
-    untyped_expression: ResolvedExpression,
-    ctx: &mut InferenceCtx,
-    unification_map: &mut UnificationMap,
-    bindings: &[ResolvedBinding],
-) -> Result<TypeCheckedExpression, TypeCheckError> {
-    let span = untyped_expression.span;
-    let (kind, ty) = match untyped_expression.kind {
-        ResolvedExpressionKind::Literal(ResolvedLiteral::Unit) => (
-            ExpressionKind::Literal(TypeCheckedLiteral::Unit),
-            Type::Literal(Literal::Unit),
-        ),
-        ResolvedExpressionKind::Literal(ResolvedLiteral::Int(value)) => (
-            ExpressionKind::Literal(TypeCheckedLiteral::Int(value)),
-            Type::Literal(Literal::Int),
-        ),
+// fn generalise(
+//     bound_type_from_declaration: &Type,
+//     ctx: &mut InferenceCtx,
+//     unification_map: &mut UnificationMap,
+// ) -> Scheme {
+//     // We need to find any free type variables recorded in the type
+//     // and record them in the scheme to generalise them.
+//     let root_type = unification_map.subsitute(bound_type_from_declaration);
 
-        ResolvedExpressionKind::Literal(ResolvedLiteral::String(value)) => (
-            ExpressionKind::Literal(TypeCheckedLiteral::String(value)),
-            Type::Literal(Literal::String),
-        ),
-
-        ResolvedExpressionKind::Literal(ResolvedLiteral::Bool(value)) => (
-            ExpressionKind::Literal(TypeCheckedLiteral::Bool(value)),
-            Type::Literal(Literal::Bool),
-        ),
-
-        ResolvedExpressionKind::Literal(ResolvedLiteral::Float(value)) => (
-            ExpressionKind::Literal(TypeCheckedLiteral::Float(value)),
-            Type::Literal(Literal::Float),
-        ),
-
-        ResolvedExpressionKind::Literal(ResolvedLiteral::Record(record)) => {
-            let fields = record
-                .into_iter()
-                .map(|(key, value)| {
-                    let value = infer_type_of_expression(value, ctx, unification_map, bindings)?;
-                    Ok((key, value))
-                })
-                .collect::<Result<BTreeMap<_, _>, TypeCheckError>>()?;
-
-            let ty = Type::Record(
-                fields
-                    .iter()
-                    .map(|(key, field)| (key.clone(), Box::new(field.ty.clone())))
-                    .collect(),
-            );
-
-            (
-                ExpressionKind::Literal(TypeCheckedLiteral::Record(fields)),
-                ty,
-            )
-        }
-        ResolvedExpressionKind::Var(binding_id) => {
-            let ty = match ctx.variable_env.get(binding_id) {
-                Some(ty) => ty.clone(),
-                None => {
-                    return Err(TypeCheckError::MissingAnnotation {
-                        name: bindings.lookup(binding_id).name.clone(),
-                        span,
-                    });
-                }
-            };
-            (ExpressionKind::Var(binding_id), ty)
-        }
-
-        ResolvedExpressionKind::Binary(op, lhs, rhs) => {
-            let lhs = infer_type_of_expression(*lhs, ctx, unification_map, bindings)?;
-            let rhs = infer_type_of_expression(*rhs, ctx, unification_map, bindings)?;
-
-            match op {
-                BinaryOp::Add | BinaryOp::Sub | BinaryOp::Mul | BinaryOp::Div => unify_binary_op(
-                    unification_map,
-                    op,
-                    lhs,
-                    Type::Literal(Literal::Int),
-                    rhs,
-                    Type::Literal(Literal::Int),
-                    Type::Literal(Literal::Int),
-                )?,
-                BinaryOp::Lt
-                | BinaryOp::Gt
-                | BinaryOp::Le
-                | BinaryOp::Ge
-                | BinaryOp::Eq
-                | BinaryOp::Neq => unify_binary_op(
-                    unification_map,
-                    op,
-                    lhs,
-                    Type::Literal(Literal::Int),
-                    rhs,
-                    Type::Literal(Literal::Int),
-                    Type::Literal(Literal::Bool),
-                )?,
-                BinaryOp::And | BinaryOp::Or => unify_binary_op(
-                    unification_map,
-                    op,
-                    lhs,
-                    Type::Literal(Literal::Bool),
-                    rhs,
-                    Type::Literal(Literal::Bool),
-                    Type::Literal(Literal::Bool),
-                )?,
-                BinaryOp::Pipe => {
-                    let Type::Fn {
-                        parameter: input,
-                        return_type: output,
-                    } = unification_map.representative(&rhs.ty)
-                    else {
-                        return Err(TypeCheckError::NotAFunction {
-                            found: rhs.ty,
-                            span,
-                        });
-                    };
-
-                    let Some(input) = input else {
-                        return Err(TypeCheckError::PipeIntoArgumentlessFunction {
-                            span: rhs.span,
-                        });
-                    };
-
-                    unification_map.unify(&lhs.ty, &input, span)?;
-
-                    (
-                        ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
-                        *output,
-                    )
-                }
-            }
-        }
-
-        ResolvedExpressionKind::Unary(op, operand) => {
-            let operand = infer_type_of_expression(*operand, ctx, unification_map, bindings)?;
-
-            let ty = match op {
-                UnaryOp::Neg => Type::Literal(Literal::Int),
-                UnaryOp::Not => Type::Literal(Literal::Bool),
-            };
-            unification_map.unify(&operand.ty, &ty, operand.span)?;
-            (ExpressionKind::Unary(op, Box::new(operand)), ty)
-        }
-
-        ResolvedExpressionKind::Lambda(resolved_lambda) => {
-            let ResolvedLambda {
-                parameter,
-                body,
-                return_type,
-            } = resolved_lambda;
-
-            let parameter: Option<Param> = parameter
-                .map(|untyped_param| {
-                    let type_from_type_dec =
-                        resolve_type_dec(untyped_param.type_dec, unification_map, ctx)?;
-                    ctx.variable_env
-                        .set(untyped_param.binding, type_from_type_dec.clone());
-                    Ok(Param {
-                        binding: untyped_param.binding,
-                        ty: type_from_type_dec,
-                    })
-                })
-                .transpose()?;
-            let param_type = parameter.as_ref().map(|p| Box::new(p.ty.clone()));
-
-            let body = infer_type_of_expression(*body, ctx, unification_map, bindings)?;
-            let return_type = resolve_type_dec(return_type, unification_map, ctx)?;
-            unification_map.unify(&body.ty, &return_type, span)?;
-            let lambda_return_type = body.ty.clone();
-
-            (
-                ExpressionKind::Lambda(Lambda {
-                    parameter,
-                    body: Box::new(body),
-                }),
-                Type::Fn {
-                    parameter: param_type,
-                    return_type: Box::new(lambda_return_type),
-                },
-            )
-        }
-
-        ResolvedExpressionKind::FunctionInvocation {
-            function,
-            arguments,
-        } => {
-            let analysed_args = arguments
-                .into_iter()
-                .map(|arg| infer_type_of_expression(arg, ctx, unification_map, bindings))
-                .collect::<Result<Vec<_>, _>>()?;
-
-            let typed_function =
-                infer_type_of_expression(*function, ctx, unification_map, bindings)?;
-
-            let output_type = get_type_after_applying_arguments(
-                unification_map,
-                &typed_function.ty,
-                &analysed_args,
-                span,
-            )?;
-
-            (
-                ExpressionKind::FunctionInvocation {
-                    function: Box::new(typed_function),
-                    arguments: analysed_args,
-                },
-                output_type,
-            )
-        }
-
-        ResolvedExpressionKind::Let {
-            binding,
-            type_dec,
-            value,
-        } => {
-            let value = infer_type_of_expression(*value, ctx, unification_map, bindings)?;
-
-            let bound_ty = resolve_type_dec(type_dec, unification_map, ctx)?;
-
-            ctx.variable_env.set(binding, bound_ty.clone());
-
-            unification_map.unify(&value.ty, &bound_ty, span)?;
-
-            (
-                ExpressionKind::Let {
-                    binding,
-                    value: Box::new(value),
-                },
-                Type::Unit,
-            )
-        }
-
-        ResolvedExpressionKind::Block(expressions) => {
-            let analysed = expressions
-                .into_iter()
-                .map(|e| infer_type_of_expression(e, ctx, unification_map, bindings))
-                .collect::<Result<Vec<_>, _>>()?;
-            let ty = analysed.last().map_or(Type::Unit, |e| e.ty.clone());
-            (ExpressionKind::Block(analysed), ty)
-        }
-        ResolvedExpressionKind::If {
-            condition,
-            true_condition,
-            false_condition,
-        } => {
-            let typed_condition =
-                infer_type_of_expression(*condition, ctx, unification_map, bindings)?;
-
-            unification_map.unify(&typed_condition.ty, &Type::Literal(Literal::Bool), span)?;
-
-            let true_condition =
-                infer_type_of_expression(*true_condition, ctx, unification_map, bindings)?;
-            let true_condition_type = true_condition.ty.clone();
-
-            match false_condition {
-                None => (
-                    ExpressionKind::If {
-                        condition: Box::new(typed_condition),
-                        then_branch: Box::new(true_condition),
-                        else_branch: None,
-                    },
-                    true_condition_type,
-                ),
-                Some(false_condition) => {
-                    let false_condition =
-                        infer_type_of_expression(*false_condition, ctx, unification_map, bindings)?;
-
-                    unification_map.unify(&false_condition.ty, &true_condition.ty, span)?;
-
-                    (
-                        ExpressionKind::If {
-                            condition: Box::new(typed_condition),
-                            then_branch: Box::new(true_condition),
-                            else_branch: Some(Box::new(false_condition)),
-                        },
-                        true_condition_type,
-                    )
-                }
-            }
-        }
-
-        ResolvedExpressionKind::TypeDeclaration {
-            identifier,
-            type_expression,
-        } => {
-            let evaluated_type = get_type_from_type_expression(type_expression, ctx)?;
-
-            ctx.type_env.set(identifier, evaluated_type.clone());
-
-            (
-                ExpressionKind::TypeDeclaration {
-                    identifier,
-                    type_expression: evaluated_type.clone(),
-                },
-                evaluated_type,
-            )
-        }
-        ResolvedExpressionKind::FieldAccess { target, field_name } => {
-            let target = infer_type_of_expression(*target, ctx, unification_map, bindings)?;
-
-            let Type::Record(field_types) = unification_map.representative(&target.ty) else {
-                return Err(TypeCheckError::NotARecord {
-                    found: target.ty,
-                    span,
-                });
-            };
-
-            let field_type = field_types.get(&field_name).ok_or_else(|| {
-                TypeCheckError::RecordDoesNotHaveField {
-                    field_name: field_name.clone(),
-                    available: field_types.keys().cloned().collect(),
-                    span,
-                }
-            })?;
-
-            let ty = (**field_type).clone();
-
-            (
-                ExpressionKind::FieldAccess {
-                    target: Box::new(target),
-                    field_name,
-                },
-                ty,
-            )
-        }
-    };
-
-    Ok(TypeCheckedExpression { kind, span, ty })
-}
+//     // Collect type variables that are not
+// }
 
 fn get_type_from_type_expression(
     type_expression: ResolvedTypeExpression,
@@ -503,7 +608,6 @@ fn apply_arguments(
 
 fn resolve_type_dec(
     dec: Option<ResolvedTypeExpression>,
-    unification_map: &mut UnificationMap,
     ctx: &mut InferenceCtx,
 ) -> Result<Type, TypeCheckError> {
     match dec {
@@ -512,7 +616,7 @@ fn resolve_type_dec(
 
             Ok(evaluated_type)
         }
-        None => Ok(Type::Var(unification_map.mint_new_type_var())),
+        None => Ok(Type::Var(ctx.unification_map.mint_new_type_var())),
     }
 }
 

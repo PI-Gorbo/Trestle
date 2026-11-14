@@ -20,6 +20,7 @@ impl ArenaId for TypeBindingId {
     }
 }
 
+// An area for allocating static ids to a name.
 pub(super) struct GenericArena<TItem, TArenaId> {
     entries: Vec<TItem>,
 
@@ -27,15 +28,15 @@ pub(super) struct GenericArena<TItem, TArenaId> {
     marker: PhantomData<fn() -> TArenaId>,
 }
 
-impl<TItem, TAreanaId: ArenaId> GenericArena<TItem, TAreanaId> {
-    pub(super) fn new() -> GenericArena<TItem, TAreanaId> {
+impl<TItem, TArenaId: ArenaId> GenericArena<TItem, TArenaId> {
+    pub(super) fn new() -> GenericArena<TItem, TArenaId> {
         GenericArena {
             entries: Vec::new(),
             marker: PhantomData,
         }
     }
 
-    pub(super) fn extend(&mut self, item: TItem) -> TAreanaId {
+    pub(super) fn extend(&mut self, item: TItem) -> TArenaId {
         let new_id = ArenaId::from_index(self.entries.len());
 
         self.entries.push(item);

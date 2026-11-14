@@ -105,6 +105,7 @@ impl UnificationMap {
         new_type_var
     }
 
+    /// Replaces all Type::Vars with their most 'root' type in the substitution tree.
     pub(super) fn subsitute(&self, ty: &Type) -> Type {
         match ty {
             Type::Unit => ty.clone(),

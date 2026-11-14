@@ -11,8 +11,10 @@ use crate::{
     binding_resolution::{
         binding_arena::TypeBindingArea,
         binding_resolved::{
-            ResolvedLambdaTypeExpression, ResolvedOptionallyNamedTypeExpression,
-            ResolvedTypeExpression, ResolvedTypeExpressionKind,
+            ResolvedBinaryExpression, ResolvedFunctionInvocationExpression,
+            ResolvedLambdaTypeExpression, ResolvedLetExpression,
+            ResolvedOptionallyNamedTypeExpression, ResolvedTypeExpression,
+            ResolvedTypeExpressionKind, ResolvedUnaryExpression,
         },
         scope::{Scope, TypeBindingScopeEntry, VariableBindingScopeEntry},
     },
@@ -160,12 +162,16 @@ fn resolve_expression(
         ExpressionKind::Binary(op, lhs, rhs) => {
             let (lhs, _) = resolve_expression(*lhs, scope, ctx)?;
             let (rhs, _) = resolve_expression(*rhs, scope, ctx)?;
-            ResolvedExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs))
+            ResolvedExpressionKind::Binary(ResolvedBinaryExpression(
+                op,
+                Box::new(lhs),
+                Box::new(rhs),
+            ))
         }
 
         ExpressionKind::Unary(op, operand) => {
             let (operand, _) = resolve_expression(*operand, scope, ctx)?;
-            ResolvedExpressionKind::Unary(op, Box::new(operand))
+            ResolvedExpressionKind::Unary(ResolvedUnaryExpression(op, Box::new(operand)))
         }
         ExpressionKind::Lambda(lambda) => {
             let (parameter, updated_scope) = match lambda.parameter {
@@ -205,10 +211,10 @@ fn resolve_expression(
                 },
             )?;
 
-            ResolvedExpressionKind::FunctionInvocation {
+            ResolvedExpressionKind::FunctionInvocation(ResolvedFunctionInvocationExpression {
                 function: Box::new(resolved_function),
                 arguments: resolved_args,
-            }
+            })
         }
         ExpressionKind::Let {
             name,
@@ -223,11 +229,11 @@ fn resolve_expression(
             let (value, _) = resolve_expression(*value, &updated_scope, ctx)?;
             let (binding, updated_scope) = bind_let(name, span, &updated_scope, ctx);
             outgoing_scope = updated_scope;
-            ResolvedExpressionKind::Let {
+            ResolvedExpressionKind::Let(ResolvedLetExpression {
                 binding,
                 type_dec: optional_resolved_type_dec,
                 value: Box::new(value),
-            }
+            })
         }
 
         ExpressionKind::Block(expressions) => {
@@ -429,7 +435,9 @@ mod tests {
         let resolved = resolve_src("let x = 1\nlet f = (x:Int) => x")
             .expect("cross-scope shadowing is allowed");
 
-        let ResolvedExpressionKind::Let { value, .. } = &resolved.expressions[1].kind else {
+        let ResolvedExpressionKind::Let(ResolvedLetExpression { value, .. }) =
+            &resolved.expressions[1].kind
+        else {
             panic!("expected the second top-level expression to be a let");
         };
         let ResolvedExpressionKind::Lambda(lambda) = &value.kind else {

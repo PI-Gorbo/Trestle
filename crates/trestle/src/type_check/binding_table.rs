@@ -2,6 +2,7 @@ use std::marker::PhantomData;
 
 use crate::binding_resolution::binding_resolved::TypeBindingId;
 use crate::binding_resolution::{BindingId, ResolvedBinding};
+use crate::type_check::typed_ast::TypeVarId;
 
 use super::error::TypeCheckError;
 use super::typed_ast::{Type, TypedBinding};
@@ -32,30 +33,37 @@ impl Indexable for TypeBindingId {
     }
 }
 
-pub(super) struct GenericTypeMap<TBindingId> {
-    types: Vec<Option<Type>>,
+pub(super) struct GenericTypeMap<TBindingId, TType> {
+    types: Vec<Option<TType>>,
     marker: PhantomData<fn() -> TBindingId>,
 }
 
-impl<TBindingId: Indexable> GenericTypeMap<TBindingId> {
-    pub(super) fn new(binding_count: usize) -> GenericTypeMap<TBindingId> {
+impl<TBindingId: Indexable, TType> GenericTypeMap<TBindingId, TType> {
+    pub(super) fn new(binding_count: usize) -> GenericTypeMap<TBindingId, TType> {
         GenericTypeMap {
-            types: vec![None; binding_count],
+            types: std::iter::repeat_with(|| None)
+                .take(binding_count)
+                .collect(),
             marker: PhantomData,
         }
     }
 
-    pub(super) fn set(&mut self, id: TBindingId, ty: Type) {
+    pub(super) fn set(&mut self, id: TBindingId, ty: TType) {
         self.types[Indexable::get_index(id)] = Some(ty);
     }
 
-    pub(super) fn get(&self, id: TBindingId) -> Option<&Type> {
+    pub(super) fn get(&self, id: TBindingId) -> Option<&TType> {
         self.types[Indexable::get_index(id)].as_ref()
     }
 }
 
-pub(super) type BindingToTypeMap = GenericTypeMap<BindingId>;
-pub(super) type TypeBindingToTypeMap = GenericTypeMap<TypeBindingId>;
+pub struct Scheme {
+    pub generalised_type_variables: Vec<TypeVarId>,
+    pub ty: Type,
+}
+
+pub(super) type BindingToTypeMap = GenericTypeMap<BindingId, Type>;
+pub(super) type TypeBindingToTypeMap = GenericTypeMap<TypeBindingId, Type>;
 
 pub(super) trait BindingLookup {
     fn lookup(&self, id: BindingId) -> &ResolvedBinding;
@@ -67,9 +75,22 @@ impl BindingLookup for [ResolvedBinding] {
     }
 }
 
-pub(super) fn attach_types_to_bindings<TBindingId: Indexable>(
+// AsRef is standard Rust.
+impl AsRef<Type> for Type {
+    fn as_ref(&self) -> &Type {
+        self
+    }
+}
+
+impl AsRef<Type> for Scheme {
+    fn as_ref(&self) -> &Type {
+        &self.ty
+    }
+}
+
+pub(super) fn attach_types_to_bindings<TBindingId: Indexable, TType: AsRef<Type>>(
     bindings: Vec<ResolvedBinding>,
-    binding_type_map: &GenericTypeMap<TBindingId>,
+    binding_type_map: &GenericTypeMap<TBindingId, TType>,
     unification_map: &UnificationMap,
 ) -> Result<Vec<TypedBinding>, TypeCheckError> {
     assert_eq!(bindings.len(), binding_type_map.types.len());
@@ -81,7 +102,7 @@ pub(super) fn attach_types_to_bindings<TBindingId: Indexable>(
             |(index, binding)| match binding_type_map.get(TBindingId::new(index)) {
                 Some(ty) => Ok(TypedBinding {
                     name: binding.name,
-                    ty: unification_map.subsitute(ty),
+                    ty: unification_map.subsitute(ty.as_ref()),
                     span: binding.span,
                 }),
                 None => Err(TypeCheckError::UntypedBindingAfterTypeCheck {
