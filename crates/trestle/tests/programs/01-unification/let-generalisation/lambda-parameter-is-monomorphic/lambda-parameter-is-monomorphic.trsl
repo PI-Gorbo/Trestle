@@ -1,0 +1,10 @@
+// Only `let` bindings are generalised. A lambda parameter is monomorphic, so `g`
+// cannot be called with an Int and then a String.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let useTwice = (g) => {
+    g(1)
+    g("a")
+}
+0

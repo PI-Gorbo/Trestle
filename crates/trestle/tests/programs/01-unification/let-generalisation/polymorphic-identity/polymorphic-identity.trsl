@@ -1,0 +1,9 @@
+// Let generalisation: `id` is generalised to `(a) -> a`, so it can be used at two
+// different types in the same scope.
+//
+// Should analyse cleanly and evaluate to `"a"`.
+
+let id = (x) => x
+let n: Int = id(1)
+let s: String = id("a")
+s

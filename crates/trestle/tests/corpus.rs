@@ -673,6 +673,28 @@ trsl_test!(
     "01-unification/infinite-type/record-self-reference.trsl",
     [ast, error]
 );
+// Let generalisation: a `let`-bound function is generalised, so each use instantiates
+// fresh variables. Lambda parameters and variables captured from an enclosing level are not.
+trsl_test!(
+    unification_let_generalisation_polymorphic_apply,
+    "01-unification/let-generalisation/polymorphic-apply/polymorphic-apply.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_let_generalisation_polymorphic_identity,
+    "01-unification/let-generalisation/polymorphic-identity/polymorphic-identity.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_let_generalisation_lambda_parameter_is_monomorphic,
+    "01-unification/let-generalisation/lambda-parameter-is-monomorphic/lambda-parameter-is-monomorphic.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_let_generalisation_captured_variable_is_not_generalised,
+    "01-unification/let-generalisation/captured-variable-is-not-generalised/captured-variable-is-not-generalised.trsl",
+    [ast, error]
+);
 
 // ══ 02 control flow ═══════════════════════════════════════
 trsl_test!(

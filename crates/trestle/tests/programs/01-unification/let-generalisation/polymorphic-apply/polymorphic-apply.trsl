@@ -1,0 +1,10 @@
+// Let generalisation: `apply` is generalised to `((a) -> b, a) -> b`, so each call
+// instantiates fresh variables — once at Int, once at String — without conflict.
+//
+// Should analyse cleanly and evaluate to `"5"`.
+
+let apply = (f, x) => f(x)
+let double = (x) => x * 2
+let stringIdentity = (x: String) => x
+apply(double, 4)
+apply(stringIdentity, "5")

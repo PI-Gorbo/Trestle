@@ -1,0 +1,306 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "apply",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "f",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Lambda(
+                                    Lambda {
+                                        parameter: Some(
+                                            Param {
+                                                name: "x",
+                                                type_dec: None,
+                                            },
+                                        ),
+                                        return_type: None,
+                                        body: Expression {
+                                            kind: FunctionInvocation {
+                                                function: Expression {
+                                                    kind: Var(
+                                                        "f",
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            245,
+                                                        ),
+                                                        length: 1,
+                                                    },
+                                                },
+                                                arguments: [
+                                                    Expression {
+                                                        kind: Var(
+                                                            "x",
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                247,
+                                                            ),
+                                                            length: 1,
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    245,
+                                                ),
+                                                length: 4,
+                                            },
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        235,
+                                    ),
+                                    length: 15,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            235,
+                        ),
+                        length: 15,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    223,
+                ),
+                length: 27,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "double",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "x",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Binary(
+                                    Mul,
+                                    Expression {
+                                        kind: Var(
+                                            "x",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                270,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                274,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        270,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            263,
+                        ),
+                        length: 12,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    250,
+                ),
+                length: 25,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "stringIdentity",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "x",
+                                    type_dec: Some(
+                                        TypeExpression {
+                                            kind: Named(
+                                                "String",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    301,
+                                                ),
+                                                length: 6,
+                                            },
+                                        },
+                                    ),
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Var(
+                                    "x",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        312,
+                                    ),
+                                    length: 1,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            297,
+                        ),
+                        length: 17,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    276,
+                ),
+                length: 38,
+            },
+        },
+        Expression {
+            kind: FunctionInvocation {
+                function: Expression {
+                    kind: Var(
+                        "apply",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            314,
+                        ),
+                        length: 5,
+                    },
+                },
+                arguments: [
+                    Expression {
+                        kind: Var(
+                            "double",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                320,
+                            ),
+                            length: 6,
+                        },
+                    },
+                    Expression {
+                        kind: Literal(
+                            Int(
+                                4,
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                328,
+                            ),
+                            length: 1,
+                        },
+                    },
+                ],
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    314,
+                ),
+                length: 16,
+            },
+        },
+        Expression {
+            kind: FunctionInvocation {
+                function: Expression {
+                    kind: Var(
+                        "apply",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            331,
+                        ),
+                        length: 5,
+                    },
+                },
+                arguments: [
+                    Expression {
+                        kind: Var(
+                            "stringIdentity",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                337,
+                            ),
+                            length: 14,
+                        },
+                    },
+                    Expression {
+                        kind: Literal(
+                            String(
+                                "5",
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                353,
+                            ),
+                            length: 3,
+                        },
+                    },
+                ],
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    331,
+                ),
+                length: 26,
+            },
+        },
+    ],
+}

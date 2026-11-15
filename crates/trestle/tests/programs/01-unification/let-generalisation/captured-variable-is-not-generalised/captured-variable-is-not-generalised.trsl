@@ -1,0 +1,14 @@
+// Levels: `constant`'s return type is `y`'s variable, which belongs to the enclosing
+// lambda's level. Generalising `constant` must leave it alone — only `x` is free to
+// generalise — so `y` cannot be both Int and String.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let outer = (y) => {
+    let constant = (x) => y
+    let a: Int = constant(1)
+    let b: String = constant(2)
+    
+    a
+}
+0
