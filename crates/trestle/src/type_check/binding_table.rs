@@ -62,7 +62,16 @@ pub struct Scheme {
     pub ty: Type,
 }
 
-pub(super) type BindingToTypeMap = GenericTypeMap<BindingId, Type>;
+impl Scheme {
+    pub fn monomorphic(ty: Type) -> Scheme {
+        Scheme {
+            generalised_type_variables: vec![],
+            ty,
+        }
+    }
+}
+
+pub(super) type BindingToTypeMap = GenericTypeMap<BindingId, Scheme>;
 pub(super) type TypeBindingToTypeMap = GenericTypeMap<TypeBindingId, Type>;
 
 pub(super) trait BindingLookup {
@@ -102,7 +111,7 @@ pub(super) fn attach_types_to_bindings<TBindingId: Indexable, TType: AsRef<Type>
             |(index, binding)| match binding_type_map.get(TBindingId::new(index)) {
                 Some(ty) => Ok(TypedBinding {
                     name: binding.name,
-                    ty: unification_map.subsitute(ty.as_ref()),
+                    ty: unification_map.resolve(ty.as_ref()),
                     span: binding.span,
                 }),
                 None => Err(TypeCheckError::UntypedBindingAfterTypeCheck {

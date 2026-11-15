@@ -3,7 +3,6 @@ use crate::parse::ast::{
     BinaryOp, LambdaTypeExpression, Literal, OptionallyNamedTypeExpression, TypeExpressionKind,
     UnaryOp,
 };
-use miette::Context;
 use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::{Span, iterators::Pair};
 use std::collections::BTreeMap;

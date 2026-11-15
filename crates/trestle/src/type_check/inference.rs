@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use miette::SourceSpan;
 
@@ -12,6 +12,7 @@ use crate::binding_resolution::{
 };
 use crate::parse::ast::{BinaryOp, UnaryOp};
 use crate::type_check::binding_table::{Scheme, TypeBindingToTypeMap};
+use crate::type_check::typed_ast::TypeVarId;
 
 use super::binding_table::{BindingLookup, BindingToTypeMap};
 use super::error::TypeCheckError;
@@ -21,7 +22,8 @@ use super::typed_ast::{
 use super::unification::UnificationMap;
 use crate::prelude::PRELUDE_TYPES;
 
-struct LetGeneralisationLevel(usize);
+#[derive(Debug, Clone, PartialEq, Copy, PartialOrd, Ord, Eq)]
+pub struct LetGeneralisationLevel(usize);
 impl LetGeneralisationLevel {
     pub fn new() -> LetGeneralisationLevel {
         LetGeneralisationLevel(0)
@@ -167,7 +169,7 @@ impl<'a> InferenceCtx<'a> {
     ) -> Result<(ExpressionKind, Type), TypeCheckError> {
         let target = self.infer(*target)?;
 
-        let Type::Record(field_types) = self.unification_map.representative(&target.ty) else {
+        let Type::Record(field_types) = self.unification_map.resolve_shallow(&target.ty) else {
             return Err(TypeCheckError::NotARecord {
                 found: target.ty,
                 span,
@@ -255,7 +257,7 @@ impl<'a> InferenceCtx<'a> {
                 let Type::Fn {
                     parameter: input,
                     return_type: output,
-                } = self.unification_map.representative(&rhs.ty)
+                } = self.unification_map.resolve_shallow(&rhs.ty)
                 else {
                     return Err(TypeCheckError::NotAFunction {
                         found: rhs.ty,
@@ -282,17 +284,20 @@ impl<'a> InferenceCtx<'a> {
         variable_binding_id: BindingId,
         span: SourceSpan,
     ) -> Result<(ExpressionKind, Type), TypeCheckError> {
-        let ty = match self.variable_env.get(variable_binding_id) {
-            Some(ty) => ty.clone(),
-            None => {
-                return Err(TypeCheckError::MissingAnnotation {
-                    name: self.bindings.lookup(variable_binding_id).name.clone(),
-                    span,
-                });
-            }
+        let Some(scheme) = self.variable_env.get(variable_binding_id) else {
+            return Err(TypeCheckError::MissingAnnotation {
+                name: self.bindings.lookup(variable_binding_id).name.clone(),
+                span,
+            });
         };
 
-        Ok((ExpressionKind::Var(variable_binding_id), ty))
+        let instantiated_scheme =
+            instantiate_scheme(&mut self.unification_map, self.let_level, scheme);
+
+        Ok((
+            ExpressionKind::Var(variable_binding_id),
+            instantiated_scheme,
+        ))
     }
 
     fn infer_literal(
@@ -365,8 +370,10 @@ impl<'a> InferenceCtx<'a> {
             .map(|untyped_param| {
                 let type_from_type_dec = resolve_type_dec(untyped_param.type_dec, self)?;
 
-                self.variable_env
-                    .set(untyped_param.binding, type_from_type_dec.clone());
+                self.variable_env.set(
+                    untyped_param.binding,
+                    Scheme::monomorphic(type_from_type_dec.clone()),
+                );
 
                 Ok(Param {
                     binding: untyped_param.binding,
@@ -411,6 +418,7 @@ impl<'a> InferenceCtx<'a> {
 
         let output_type = get_type_after_applying_arguments(
             &mut self.unification_map,
+            self.let_level,
             &typed_function.ty,
             &analysed_args,
             span,
@@ -434,6 +442,8 @@ impl<'a> InferenceCtx<'a> {
         }: ResolvedLetExpression,
         span: SourceSpan,
     ) -> Result<(ExpressionKind, Type), TypeCheckError> {
+        self.increment_let_level();
+
         let inferred_type = self.infer(*value)?;
 
         let bound_type_from_declaration = resolve_type_dec(type_dec, self)?;
@@ -442,9 +452,11 @@ impl<'a> InferenceCtx<'a> {
         self.unification_map
             .unify(&inferred_type.ty, &bound_type_from_declaration, span)?;
 
-        // let scheme = generalise(&bound_type_from_declaration, ctx, unification_map);
-        self.variable_env
-            .set(binding, bound_type_from_declaration.clone());
+        let scheme = self.generalise(bound_type_from_declaration);
+
+        self.variable_env.set(binding, scheme);
+
+        self.decrement_let_level();
 
         Ok((
             ExpressionKind::Let {
@@ -454,6 +466,63 @@ impl<'a> InferenceCtx<'a> {
             Type::Unit,
         ))
     }
+
+    /// Resolves all type variables in the given type that are at
+    /// or below the current let-generalisation level.
+    fn generalise(&mut self, ty: Type) -> Scheme {
+        let most_root_type_representation = self.unification_map.resolve(&ty);
+
+        let free_type_vars: BTreeSet<TypeVarId> = most_root_type_representation
+            .fold_free_type_variables(
+                &mut |free_type_variable, mut agg: BTreeSet<TypeVarId>| {
+                    let opt_level = self
+                        .unification_map
+                        .get_let_generalisation_level(*free_type_variable);
+
+                    if let Some(level) = opt_level {
+                        if level >= self.let_level {
+                            agg.insert(*free_type_variable);
+                        }
+                    }
+
+                    agg
+                },
+                BTreeSet::new(),
+            );
+
+        Scheme {
+            generalised_type_variables: free_type_vars.into_iter().collect(),
+            ty: most_root_type_representation,
+        }
+    }
+
+    fn increment_let_level(&mut self) {
+        self.let_level = LetGeneralisationLevel(self.let_level.0 + 1);
+    }
+
+    fn decrement_let_level(&mut self) {
+        self.let_level = LetGeneralisationLevel(self.let_level.0 - 1);
+    }
+}
+
+fn instantiate_scheme(
+    unification_map: &mut UnificationMap,
+    let_level: LetGeneralisationLevel,
+    scheme: &Scheme,
+) -> Type {
+    // Iterate through all the values in the scheme, and instantiate a new type variable for each one.
+    let mapped: BTreeMap<&TypeVarId, TypeVarId> = scheme
+        .generalised_type_variables
+        .iter()
+        .map(|id| (id, unification_map.mint_new_type_var(let_level)))
+        .collect();
+
+    scheme
+        .ty
+        .map_free_type_variables(&mut |type_var| match mapped.get(type_var) {
+            None => Type::Var(*type_var),
+            Some(mapped_id) => Type::Var(*mapped_id),
+        })
 }
 
 fn create_type_env_with_prelude_types(
@@ -540,11 +609,12 @@ fn unify_binary_op(
 
 pub(super) fn get_type_after_applying_arguments(
     unification_map: &mut UnificationMap,
+    level: LetGeneralisationLevel,
     fn_type: &Type,
     arguments: &[TypeCheckedExpression],
     span: SourceSpan,
 ) -> Result<Type, TypeCheckError> {
-    let resolved = unification_map.representative(fn_type);
+    let resolved = unification_map.resolve_shallow(fn_type);
 
     if arguments.is_empty() {
         if let Type::Fn {
@@ -554,12 +624,13 @@ pub(super) fn get_type_after_applying_arguments(
         {
             return Ok(*return_type);
         }
+
         return Ok(resolved);
     }
 
     match &resolved {
         Type::Fn { .. } | Type::Var(_) => {
-            apply_arguments(unification_map, &resolved, arguments, span)
+            apply_arguments(unification_map, level, &resolved, arguments, span)
         }
         _ => Err(TypeCheckError::NotAFunction {
             found: resolved,
@@ -570,6 +641,7 @@ pub(super) fn get_type_after_applying_arguments(
 
 fn apply_arguments(
     unification_map: &mut UnificationMap,
+    level: LetGeneralisationLevel,
     fn_type: &Type,
     arguments: &[TypeCheckedExpression],
     span: SourceSpan,
@@ -578,13 +650,13 @@ fn apply_arguments(
         return Ok(fn_type.clone());
     };
 
-    match unification_map.representative(fn_type) {
+    match unification_map.resolve_shallow(fn_type) {
         Type::Fn {
             parameter: Some(param_type),
             return_type,
         } => {
             unification_map.unify(&param_type, &arg.ty, span)?;
-            apply_arguments(unification_map, &return_type, &arguments[1..], span)
+            apply_arguments(unification_map, level, &return_type, &arguments[1..], span)
         }
 
         Type::Fn {
@@ -593,13 +665,13 @@ fn apply_arguments(
         } => Err(TypeCheckError::ArgumentsToArgumentlessFunction { span }),
 
         callee @ Type::Var(_) => {
-            let result = Type::Var(unification_map.mint_new_type_var());
+            let result = Type::Var(unification_map.mint_new_type_var(level));
             let fn_shape = Type::Fn {
                 parameter: Some(Box::new(arg.ty.clone())),
                 return_type: Box::new(result.clone()),
             };
             unification_map.unify(&callee, &fn_shape, span)?;
-            apply_arguments(unification_map, &result, &arguments[1..], span)
+            apply_arguments(unification_map, level, &result, &arguments[1..], span)
         }
 
         _ => Err(TypeCheckError::TooManyArguments { span }),
@@ -616,7 +688,9 @@ fn resolve_type_dec(
 
             Ok(evaluated_type)
         }
-        None => Ok(Type::Var(ctx.unification_map.mint_new_type_var())),
+        None => Ok(Type::Var(
+            ctx.unification_map.mint_new_type_var(ctx.let_level),
+        )),
     }
 }
 
@@ -641,6 +715,7 @@ mod tests {
         };
         let err = get_type_after_applying_arguments(
             &mut UnificationMap::new(),
+            LetGeneralisationLevel::new(),
             &fn_type,
             &[int_arg()],
             SourceSpan::from((0, 0)),
@@ -660,6 +735,7 @@ mod tests {
         };
         let result = get_type_after_applying_arguments(
             &mut UnificationMap::new(),
+            LetGeneralisationLevel::new(),
             &fn_type,
             &[int_arg()],
             SourceSpan::from((0, 0)),

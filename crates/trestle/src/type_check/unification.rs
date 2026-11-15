@@ -1,4 +1,8 @@
+use std::cmp::min;
+
 use miette::SourceSpan;
+
+use crate::type_check::inference::LetGeneralisationLevel;
 
 use super::error::TypeCheckError;
 use super::typed_ast::{Type, TypeVarId};
@@ -9,7 +13,7 @@ enum UnionNode {
 }
 
 enum RootUnionNode {
-    FreeTypeVariable,
+    FreeTypeVariable(LetGeneralisationLevel),
     Concrete(Type),
 }
 
@@ -97,53 +101,59 @@ impl UnificationMap {
         UnificationMap { map: Vec::new() }
     }
 
-    pub(super) fn mint_new_type_var(&mut self) -> TypeVarId {
+    pub(super) fn mint_new_type_var(&mut self, level: LetGeneralisationLevel) -> TypeVarId {
         let new_type_var = TypeVarId(self.map.len());
         self.map
-            .push(UnionNode::RootUnionNode(RootUnionNode::FreeTypeVariable));
+            .push(UnionNode::RootUnionNode(RootUnionNode::FreeTypeVariable(
+                level,
+            )));
 
         new_type_var
     }
 
-    /// Replaces all Type::Vars with their most 'root' type in the substitution tree.
-    pub(super) fn subsitute(&self, ty: &Type) -> Type {
-        match ty {
-            Type::Unit => ty.clone(),
-            Type::Literal(_) => ty.clone(),
-            Type::Var(type_var_id) => match self.find_root(*type_var_id) {
-                Some((_, RootUnionNode::Concrete(concrete))) => self.subsitute(concrete),
-
-                Some((root_id, RootUnionNode::FreeTypeVariable)) => Type::Var(root_id),
-                None => ty.clone(),
-            },
-            Type::Fn {
-                parameter: param,
-                return_type: result,
-            } => Type::Fn {
-                parameter: param.as_ref().map(|param| Box::new(self.subsitute(param))),
-                return_type: Box::new(self.subsitute(result)),
-            },
-            Type::Record(btree_map) => Type::Record(
-                btree_map
-                    .iter()
-                    .map(|(name, field)| (name.clone(), Box::new(self.subsitute(field))))
-                    .collect(),
-            ),
+    pub(super) fn get_let_generalisation_level(
+        &self,
+        id: TypeVarId,
+    ) -> Option<LetGeneralisationLevel> {
+        match self.find_root(id)? {
+            (_, RootUnionNode::FreeTypeVariable(level)) => Some(*level),
+            (_, RootUnionNode::Concrete(_)) => None,
         }
     }
 
+    /// Walks through a given type as a tree, and resolves all type vars
+    /// to the root type
+    pub(super) fn resolve(&self, ty: &Type) -> Type {
+        ty.map_free_type_variables(&mut |type_var_id| match self.find_root(*type_var_id) {
+            Some((_, RootUnionNode::Concrete(concrete))) => self.resolve(concrete),
+            Some((root_id, RootUnionNode::FreeTypeVariable(_))) => Type::Var(root_id),
+            None => ty.clone(),
+        })
+    }
+
+    /// If a type variable, resolves to the root of representation of that type
+    /// Otherwise, just returns the type
+    pub(super) fn resolve_shallow(&self, ty: &Type) -> Type {
+        ty.map_free_type_variables(&mut |id| match self.find_root(*id) {
+            Some((_, RootUnionNode::Concrete(concrete))) => concrete.clone(),
+            Some((root_id, RootUnionNode::FreeTypeVariable(_))) => Type::Var(root_id),
+            None => ty.clone(),
+        })
+    }
+
+    /// Records that the first type is equivalent to the second type.
     pub(super) fn unify(
         &mut self,
-        found: &Type,
-        expected: &Type,
+        first: &Type,
+        second: &Type,
         span: SourceSpan,
     ) -> Result<(), TypeCheckError> {
-        self.unify_inner(found, expected)
+        self.unify_inner(first, second)
             .map_err(|err| err.into_type_check_error(span))
     }
 
     fn unify_inner(&mut self, found: &Type, expected: &Type) -> Result<(), UnifyError> {
-        match (self.representative(expected), self.representative(found)) {
+        match (self.resolve_shallow(expected), self.resolve_shallow(found)) {
             (Type::Var(var1), Type::Var(var2)) => self.union_vars(var1, var2),
 
             (Type::Var(type_var_id), concrete_type) | (concrete_type, Type::Var(type_var_id)) => {
@@ -238,17 +248,6 @@ impl UnificationMap {
         })
     }
 
-    pub(super) fn representative(&self, ty: &Type) -> Type {
-        match ty {
-            Type::Var(id) => match self.find_root(*id) {
-                Some((_, RootUnionNode::Concrete(concrete))) => concrete.clone(),
-                Some((root_id, RootUnionNode::FreeTypeVariable)) => Type::Var(root_id),
-                None => ty.clone(),
-            },
-            _ => ty.clone(),
-        }
-    }
-
     fn set(
         &mut self,
         type_var_id: TypeVarId,
@@ -270,7 +269,7 @@ impl UnificationMap {
             Type::Unit | Type::Literal(_) => false,
             Type::Var(type_var_id2) => match self.find_root(*type_var_id2) {
                 None => false,
-                Some((root2, RootUnionNode::FreeTypeVariable)) => root == root2,
+                Some((root2, RootUnionNode::FreeTypeVariable(level))) => root == root2,
                 Some((root2, RootUnionNode::Concrete(declared_type))) => {
                     root == root2 || self.root_occurs_in_type(root, declared_type)
                 }
@@ -309,7 +308,7 @@ impl UnificationMap {
 
         let root_concrete_type = match root_node {
             RootUnionNode::Concrete(ty) => Some(ty.clone()),
-            RootUnionNode::FreeTypeVariable => None,
+            RootUnionNode::FreeTypeVariable(_) => None,
         };
 
         match root_concrete_type {
@@ -320,7 +319,7 @@ impl UnificationMap {
                     return Err(UnifyError::InfiniteType(InfiniteType {
                         var: root_id,
 
-                        ty: self.subsitute(concrete_type),
+                        ty: self.resolve(concrete_type),
                     }));
                 }
                 self.set(
@@ -358,16 +357,35 @@ impl UnificationMap {
                 ))?;
 
         match (first_found, second_found) {
-            (RootUnionNode::FreeTypeVariable, RootUnionNode::FreeTypeVariable) => {
+            // Equating two free type variables.
+            // We must RAISE the surviving root to the min of the two LEVELS.
+            // This is so we don't generalise a free type variable that is pointing towards
+            // another that cannot be generalised.
+            (
+                RootUnionNode::FreeTypeVariable(first_level),
+                RootUnionNode::FreeTypeVariable(second_level),
+            ) => {
+                let updated_let_generalisation_level = *min(first_level, second_level);
+
                 self.set(
                     second_found_root_id,
                     UnionNode::Reference(first_found_root_id),
                 )
                 .map_err(UnifyError::FreeTypeVariableNotFoundError)?;
 
+                self.set(
+                    first_found_root_id,
+                    UnionNode::RootUnionNode(RootUnionNode::FreeTypeVariable(
+                        updated_let_generalisation_level,
+                    )),
+                );
+
                 Ok(())
             }
-            (RootUnionNode::FreeTypeVariable, RootUnionNode::Concrete(_)) => {
+
+            // Free <-> Concrete.
+            // Point the free type to the concrete type.
+            (RootUnionNode::FreeTypeVariable(_), RootUnionNode::Concrete(_)) => {
                 self.set(
                     first_found_root_id,
                     UnionNode::Reference(second_found_root_id),
@@ -375,7 +393,7 @@ impl UnificationMap {
                 .map_err(UnifyError::FreeTypeVariableNotFoundError)?;
                 Ok(())
             }
-            (RootUnionNode::Concrete(_), RootUnionNode::FreeTypeVariable) => {
+            (RootUnionNode::Concrete(_), RootUnionNode::FreeTypeVariable(_)) => {
                 self.set(
                     second_found_root_id,
                     UnionNode::Reference(first_found_root_id),
@@ -383,6 +401,9 @@ impl UnificationMap {
                 .map_err(UnifyError::FreeTypeVariableNotFoundError)?;
                 Ok(())
             }
+
+            // Concrete <-> Concrete
+            // This doesn't make sense. Can't unify two concrete types
             (
                 RootUnionNode::Concrete(first_concrete_type_var),
                 RootUnionNode::Concrete(second_concrete_type_var),
@@ -425,8 +446,8 @@ mod tests {
     #[test]
     fn a_solved_variable_unifies_structurally_with_a_compatible_function() {
         let mut unification_map = UnificationMap::new();
-        let v0 = Type::Var(unification_map.mint_new_type_var());
-        let v1 = Type::Var(unification_map.mint_new_type_var());
+        let v0 = Type::Var(unification_map.mint_new_type_var(LetGeneralisationLevel::new()));
+        let v1 = Type::Var(unification_map.mint_new_type_var(LetGeneralisationLevel::new()));
         let span = SourceSpan::from((0, 0));
 
         let partially_known = Type::Fn {
@@ -446,7 +467,7 @@ mod tests {
             .expect("a solved variable unifies structurally with a compatible function");
 
         assert_eq!(
-            unification_map.subsitute(&v1),
+            unification_map.resolve(&v1),
             Type::Literal(Literal::Int),
             "the partially known parameter should have been solved to Int"
         );
@@ -455,7 +476,7 @@ mod tests {
     #[test]
     fn binding_a_variable_into_a_type_that_contains_it_is_an_infinite_type() {
         let mut unification_map = UnificationMap::new();
-        let v0 = Type::Var(unification_map.mint_new_type_var());
+        let v0 = Type::Var(unification_map.mint_new_type_var(LetGeneralisationLevel::new()));
         let span = SourceSpan::from((0, 0));
 
         let recursive = Type::Fn {
@@ -479,14 +500,14 @@ mod tests {
             other => panic!("expected an infinite type error, got {other:?}"),
         }
 
-        assert_eq!(unification_map.subsitute(&v0), v0);
+        assert_eq!(unification_map.resolve(&v0), v0);
     }
 
     #[test]
     fn the_occurs_check_sees_through_an_equivalence_class() {
         let mut unification_map = UnificationMap::new();
-        let v0 = Type::Var(unification_map.mint_new_type_var());
-        let v1 = Type::Var(unification_map.mint_new_type_var());
+        let v0 = Type::Var(unification_map.mint_new_type_var(LetGeneralisationLevel::new()));
+        let v1 = Type::Var(unification_map.mint_new_type_var(LetGeneralisationLevel::new()));
         let span = SourceSpan::from((0, 0));
 
         unification_map
@@ -504,28 +525,25 @@ mod tests {
         match err {
             TypeCheckError::InfiniteType { var, .. } => assert_eq!(
                 Type::Var(var),
-                unification_map.subsitute(&v1),
+                unification_map.resolve(&v1),
                 "the error names the class's canonical root"
             ),
             other => panic!("expected an infinite type error, got {other:?}"),
         }
 
-        assert_eq!(
-            unification_map.subsitute(&v0),
-            unification_map.subsitute(&v1)
-        );
+        assert_eq!(unification_map.resolve(&v0), unification_map.resolve(&v1));
     }
 
     #[test]
     fn unifying_a_variable_with_itself_is_a_no_op() {
         let mut unification_map = UnificationMap::new();
-        let v: Type = Type::Var(unification_map.mint_new_type_var());
+        let v: Type = Type::Var(unification_map.mint_new_type_var(LetGeneralisationLevel::new()));
         let span = SourceSpan::from((0, 0));
 
         unification_map
             .unify(&v, &v, span)
             .expect("unifying a variable with itself succeeds");
 
-        assert_eq!(unification_map.subsitute(&v), v);
+        assert_eq!(unification_map.resolve(&v), v);
     }
 }

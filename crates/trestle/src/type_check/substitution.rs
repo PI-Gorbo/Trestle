@@ -25,7 +25,7 @@ pub(super) fn substitute_in_expr(map: &UnificationMap, expr: &mut TypeCheckedExp
         }
         ExpressionKind::Lambda(lambda) => {
             if let Some(param) = &mut lambda.parameter {
-                param.ty = map.subsitute(&param.ty);
+                param.ty = map.resolve(&param.ty);
             }
             substitute_in_expr(map, &mut lambda.body);
         }
@@ -54,9 +54,9 @@ pub(super) fn substitute_in_expr(map: &UnificationMap, expr: &mut TypeCheckedExp
             identifier: _,
             type_expression,
         } => {
-            *type_expression = map.subsitute(type_expression);
+            *type_expression = map.resolve(type_expression);
         }
     }
 
-    expr.ty = map.subsitute(&expr.ty);
+    expr.ty = map.resolve(&expr.ty);
 }

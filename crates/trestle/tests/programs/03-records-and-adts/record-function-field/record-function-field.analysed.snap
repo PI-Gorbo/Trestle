@@ -151,11 +151,16 @@ TypeCheckedProgram {
                                                             ),
                                                             length: 3,
                                                         },
-                                                        ty: Var(
-                                                            TypeVarId(
-                                                                1,
+                                                        ty: Fn {
+                                                            parameter: Some(
+                                                                Literal(
+                                                                    String,
+                                                                ),
                                                             ),
-                                                        ),
+                                                            return_type: Literal(
+                                                                Int,
+                                                            ),
+                                                        },
                                                     },
                                                     arguments: [
                                                         TypeCheckedExpression {

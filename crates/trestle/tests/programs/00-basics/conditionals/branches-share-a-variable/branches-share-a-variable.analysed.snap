@@ -30,8 +30,10 @@ TypeCheckedProgram {
                                                 binding: BindingId(
                                                     1,
                                                 ),
-                                                ty: Literal(
-                                                    Int,
+                                                ty: Var(
+                                                    TypeVarId(
+                                                        1,
+                                                    ),
                                                 ),
                                             },
                                         ),
@@ -65,8 +67,10 @@ TypeCheckedProgram {
                                                         ),
                                                         length: 1,
                                                     },
-                                                    ty: Literal(
-                                                        Int,
+                                                    ty: Var(
+                                                        TypeVarId(
+                                                            1,
+                                                        ),
                                                     ),
                                                 },
                                                 else_branch: Some(
@@ -82,8 +86,10 @@ TypeCheckedProgram {
                                                             ),
                                                             length: 1,
                                                         },
-                                                        ty: Literal(
-                                                            Int,
+                                                        ty: Var(
+                                                            TypeVarId(
+                                                                1,
+                                                            ),
                                                         ),
                                                     },
                                                 ),
@@ -94,8 +100,10 @@ TypeCheckedProgram {
                                                 ),
                                                 length: 17,
                                             },
-                                            ty: Literal(
-                                                Int,
+                                            ty: Var(
+                                                TypeVarId(
+                                                    1,
+                                                ),
                                             ),
                                         },
                                     },
@@ -108,12 +116,16 @@ TypeCheckedProgram {
                                 },
                                 ty: Fn {
                                     parameter: Some(
-                                        Literal(
-                                            Int,
+                                        Var(
+                                            TypeVarId(
+                                                1,
+                                            ),
                                         ),
                                     ),
-                                    return_type: Literal(
-                                        Int,
+                                    return_type: Var(
+                                        TypeVarId(
+                                            1,
+                                        ),
                                     ),
                                 },
                             },
@@ -133,12 +145,16 @@ TypeCheckedProgram {
                         ),
                         return_type: Fn {
                             parameter: Some(
-                                Literal(
-                                    Int,
+                                Var(
+                                    TypeVarId(
+                                        1,
+                                    ),
                                 ),
                             ),
-                            return_type: Literal(
-                                Int,
+                            return_type: Var(
+                                TypeVarId(
+                                    1,
+                                ),
                             ),
                         },
                     },
@@ -245,8 +261,10 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "x",
-            ty: Literal(
-                Int,
+            ty: Var(
+                TypeVarId(
+                    1,
+                ),
             ),
             span: SourceSpan {
                 offset: SourceOffset(
@@ -265,12 +283,16 @@ TypeCheckedProgram {
                 ),
                 return_type: Fn {
                     parameter: Some(
-                        Literal(
-                            Int,
+                        Var(
+                            TypeVarId(
+                                1,
+                            ),
                         ),
                     ),
-                    return_type: Literal(
-                        Int,
+                    return_type: Var(
+                        TypeVarId(
+                            1,
+                        ),
                     ),
                 },
             },
