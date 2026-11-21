@@ -1,0 +1,19 @@
+crates/trestle/src/type_check/inference.rs
+  s_f6a06c5389f956::t_a4dee24064a7eb 15,172,341,346,572,577
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "254f2cfccd0d684036dc514f0eaeee3a8f839c5f",
+  "prompts": {},
+  "sessions": {
+    "s_f6a06c5389f956": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3cdf9352-fff0-4af7-86d0-f74b11e94cd2",
+        "model": "unknown"
+      },
+      "human_author": "SamGorbatov <samgorbatov@propertyme.com>"
+    }
+  }
+}
