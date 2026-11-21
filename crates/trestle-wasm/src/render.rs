@@ -7,7 +7,7 @@
 use std::fmt::Write as _;
 
 use trestle::evaluate::Value;
-use trestle::type_check::typed_ast::{Literal, Type};
+use trestle::type_check::typed_ast::{Literal, Record, Type};
 
 pub fn format_value(value: &Value) -> String {
     let mut out = String::new();
@@ -98,7 +98,7 @@ fn write_type(out: &mut String, ty: &Type, parenthesise_function: bool) {
                 out.push(')');
             }
         }
-        Type::Record(fields) => {
+        Type::Record(Record { field1: fields }) => {
             out.push_str("{ ");
             for (index, (name, field)) in fields.iter().enumerate() {
                 if index > 0 {
@@ -220,7 +220,7 @@ mod tests {
         let mut fields = BTreeMap::new();
         fields.insert("x".to_owned(), Box::new(int()));
         fields.insert("y".to_owned(), Box::new(int()));
-        assert_eq!(format_type(&Type::Record(fields)), "{ x: Int, y: Int }");
+        assert_eq!(format_type(&Type::Record { fields: fields }), "{ x: Int, y: Int }");
     }
 
     /// Also pins the field order: `x` was inserted first, but `BTreeMap` sorts by name.
