@@ -12,7 +12,7 @@ use crate::binding_resolution::{
 };
 use crate::parse::ast::{BinaryOp, UnaryOp};
 use crate::type_check::binding_table::{Scheme, TypeBindingToTypeMap};
-use crate::type_check::typed_ast::{Record, TypeVarId};
+use crate::type_check::typed_ast::{RecordTail, TypeVarId};
 
 use super::binding_table::{BindingLookup, BindingToTypeMap};
 use super::error::TypeCheckError;
@@ -169,34 +169,87 @@ impl<'a> InferenceCtx<'a> {
     ) -> Result<(ExpressionKind, Type), TypeCheckError> {
         let target = self.infer(*target)?;
 
-        let Type::Record(Record {
-            field1: field_types,
-        }) = self.unification_map.resolve_shallow(&target.ty)
-        else {
-            return Err(TypeCheckError::NotARecord {
-                found: target.ty,
-                span,
-            });
-        };
+        match self.unification_map.resolve_shallow(&target.ty) {
+            // Example:
+            // When we unify a field access with the return type of a function.
+            type_var @ Type::Var(type_var_id) => {
+                let field_type = Type::Var(self.unification_map.mint_new_type_var(self.let_level));
+                let new_tail = self.unification_map.mint_new_type_var(self.let_level);
 
-        let field_type =
-            field_types
-                .get(&field_name)
-                .ok_or_else(|| TypeCheckError::RecordDoesNotHaveField {
-                    field_name: field_name.clone(),
-                    available: field_types.keys().cloned().collect(),
+                self.unification_map.unify(
+                    &type_var,
+                    &Type::Record {
+                        fields: BTreeMap::from([(
+                            field_name.clone(),
+                            Box::new(field_type.clone()),
+                        )]),
+                        tail: RecordTail::Open(new_tail),
+                    },
                     span,
-                })?;
+                );
 
-        let ty = (**field_type).clone();
+                Ok((
+                    ExpressionKind::FieldAccess {
+                        target: Box::new(target),
+                        field_name,
+                    },
+                    field_type,
+                ))
+            }
 
-        Ok((
-            ExpressionKind::FieldAccess {
-                target: Box::new(target),
-                field_name,
-            },
-            ty,
-        ))
+            Type::Record {
+                fields: field_types,
+                tail,
+            } => {
+                let type_of_field_access = match (field_types.get(&field_name), tail) {
+                    (Some(found_field), _) => Ok(found_field.clone()),
+
+                    (None, RecordTail::Closed) => Err(TypeCheckError::RecordDoesNotHaveField {
+                        field_name: field_name.clone(),
+                        available: field_types.keys().cloned().collect(),
+                        span,
+                    }),
+
+                    // When we have an open row, we unify it with the field_name.
+                    // we can also declare a new type variable.
+                    (None, RecordTail::Open(row)) => {
+                        let field_type =
+                            Type::Var(self.unification_map.mint_new_type_var(self.let_level));
+
+                        let new_tail = self.unification_map.mint_new_type_var(self.let_level);
+
+                        self.unification_map.unify(
+                            &Type::Var(row),
+                            &Type::Record {
+                                fields: BTreeMap::from([(
+                                    field_name.clone(),
+                                    Box::new(field_type.clone()),
+                                )]),
+                                tail: RecordTail::Open(new_tail),
+                            },
+                            span,
+                        );
+
+                        Ok(Box::new(field_type))
+                    }
+                }?;
+
+                Ok((
+                    ExpressionKind::FieldAccess {
+                        target: Box::new(target),
+                        field_name,
+                    },
+                    *type_of_field_access,
+                ))
+            }
+
+            _ => {
+                return Err(TypeCheckError::NotARecord {
+                    found: target.ty,
+                    span,
+                });
+            }
+        }
     }
 
     fn infer_unary_operation(

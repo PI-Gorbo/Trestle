@@ -209,7 +209,16 @@ impl UnificationMap {
                 self.unify_inner(&found_body, &expected_body)
             }
 
-            (Type::Record(expected_fields), Type::Record(found_fields)) => {
+            (
+                Type::Record {
+                    fields: expected_fields,
+                    tail,
+                },
+                Type::Record {
+                    fields: found_fields,
+                    tail,
+                },
+            ) => {
                 let missing: Vec<String> = expected_fields
                     .keys()
                     .filter(|name| !found_fields.contains_key(*name))
