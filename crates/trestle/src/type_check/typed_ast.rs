@@ -13,7 +13,7 @@ pub struct TypeVarId(pub usize);
 #[derive(Debug, Clone, PartialEq)]
 pub enum RecordTail {
     Closed,
-    Open(TypeVarId)
+    Open(TypeVarId),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -25,7 +25,10 @@ pub enum Type {
         parameter: Option<Box<Type>>,
         return_type: Box<Type>,
     },
-    Record { fields: BTreeMap<String, Box<Type>>, tail: RecordTail },
+    Record {
+        fields: BTreeMap<String, Box<Type>>,
+        tail: RecordTail,
+    },
 }
 
 impl Type {
@@ -48,16 +51,19 @@ impl Type {
 
                 result.fold_free_type_variables(folder, agg1)
             }
-            Type::Record { fields: btree_map, tail } => {
-                let folded_over_fields =  btree_map.iter().fold(initial_value, |agg, (_, field)| {
+            Type::Record {
+                fields: btree_map,
+                tail,
+            } => {
+                let folded_over_fields = btree_map.iter().fold(initial_value, |agg, (_, field)| {
                     field.as_ref().fold_free_type_variables(folder, agg)
                 });
 
                 match tail {
                     RecordTail::Closed => folded_over_fields,
-                    RecordTail::Open(type_var_id) => folder(type_var_id, folded_over_fields)
+                    RecordTail::Open(type_var_id) => folder(type_var_id, folded_over_fields),
                 }
-            },
+            }
         }
     }
 
@@ -77,7 +83,10 @@ impl Type {
                     .map(|param| Box::new(param.map_free_type_variables(mapper))),
                 return_type: Box::new(result.map_free_type_variables(mapper)),
             },
-            Type::Record { fields: btree_map, tail } => {
+            Type::Record {
+                fields: btree_map,
+                tail,
+            } => {
                 let mapped_fields = btree_map
                     .iter()
                     .map(|(name, field)| {
@@ -87,19 +96,30 @@ impl Type {
                         )
                     })
                     .collect();
-                
+
                 match tail {
-                    RecordTail::Closed => Type::Record { fields: mapped_fields, tail: RecordTail::Closed },
+                    RecordTail::Closed => Type::Record {
+                        fields: mapped_fields,
+                        tail: RecordTail::Closed,
+                    },
                     RecordTail::Open(type_var_id) => match mapper(type_var_id) {
-                        Type::Var(type_var_id) => Type::Record { fields: mapped_fields, tail: RecordTail::Open(type_var_id) },
-                        Type::Record { fields: tail_fields, tail: tail_tail } => Type::Record { 
-                            fields: tail_fields.into_iter().chain(mapped_fields).collect(),
-                            tail: tail_tail
+                        Type::Var(type_var_id) => Type::Record {
+                            fields: mapped_fields,
+                            tail: RecordTail::Open(type_var_id),
                         },
-                        Type::Literal(_)|Type::Unit|Type::Fn {..} => unreachable!("While mapping - the tail of a row type resolved to a non-row type."),
+                        Type::Record {
+                            fields: tail_fields,
+                            tail: tail_tail,
+                        } => Type::Record {
+                            fields: tail_fields.into_iter().chain(mapped_fields).collect(),
+                            tail: tail_tail,
+                        },
+                        Type::Literal(_) | Type::Unit | Type::Fn { .. } => unreachable!(
+                            "While mapping - the tail of a row type resolved to a non-row type."
+                        ),
                     },
                 }
-            },
+            }
         }
     }
 }

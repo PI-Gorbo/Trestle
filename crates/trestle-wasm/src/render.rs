@@ -220,7 +220,10 @@ mod tests {
         let mut fields = BTreeMap::new();
         fields.insert("x".to_owned(), Box::new(int()));
         fields.insert("y".to_owned(), Box::new(int()));
-        assert_eq!(format_type(&Type::Record { fields: fields }), "{ x: Int, y: Int }");
+        assert_eq!(
+            format_type(&Type::Record { fields: fields }),
+            "{ x: Int, y: Int }"
+        );
     }
 
     /// Also pins the field order: `x` was inserted first, but `BTreeMap` sorts by name.

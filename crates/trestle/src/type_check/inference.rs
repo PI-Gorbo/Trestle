@@ -169,7 +169,10 @@ impl<'a> InferenceCtx<'a> {
     ) -> Result<(ExpressionKind, Type), TypeCheckError> {
         let target = self.infer(*target)?;
 
-        let Type::Record(Record { field1: field_types }) = self.unification_map.resolve_shallow(&target.ty) else {
+        let Type::Record(Record {
+            field1: field_types,
+        }) = self.unification_map.resolve_shallow(&target.ty)
+        else {
             return Err(TypeCheckError::NotARecord {
                 found: target.ty,
                 span,
@@ -338,12 +341,12 @@ impl<'a> InferenceCtx<'a> {
                     })
                     .collect::<Result<BTreeMap<_, _>, TypeCheckError>>()?;
 
-                let ty = Type::Record(Record { field1:  
-                    fields
+                let ty = Type::Record(Record {
+                    field1: fields
                         .iter()
                         .map(|(key, field)| (key.clone(), Box::new(field.ty.clone())))
                         .collect(),
-                  });
+                });
 
                 (
                     ExpressionKind::Literal(TypeCheckedLiteral::Record(fields)),
@@ -569,12 +572,12 @@ fn get_type_from_type_expression(
                 Some(referenced_type) => Ok(referenced_type.clone()),
             }
         }
-        ResolvedTypeExpressionKind::Record(btree_map) => Ok(Type::Record(Record { field1:  
-            btree_map
+        ResolvedTypeExpressionKind::Record(btree_map) => Ok(Type::Record(Record {
+            field1: btree_map
                 .into_iter()
                 .map(|(key, value)| Ok((key, Box::new(get_type_from_type_expression(value, ctx)?))))
                 .collect::<Result<_, TypeCheckError>>()?,
-          })),
+        })),
         ResolvedTypeExpressionKind::Lambda(resolved_lambda_type_expression) => Ok(Type::Fn {
             parameter: resolved_lambda_type_expression
                 .parameter
