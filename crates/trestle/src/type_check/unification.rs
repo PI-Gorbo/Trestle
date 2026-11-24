@@ -1,8 +1,10 @@
 use std::cmp::min;
+use std::collections::{BTreeMap, BTreeSet};
 
 use miette::SourceSpan;
 
 use crate::type_check::inference::LetGeneralisationLevel;
+use crate::type_check::typed_ast::RecordTail::{self, Closed};
 
 use super::error::TypeCheckError;
 use super::typed_ast::{Type, TypeVarId};
@@ -40,9 +42,9 @@ struct InfiniteType {
 
 #[derive(Debug)]
 struct RecordFieldMismatch {
-    missing: Vec<String>,
+    missing: BTreeSet<String>,
 
-    additional: Vec<String>,
+    additional: BTreeSet<String>,
 }
 
 #[derive(Debug)]
@@ -212,38 +214,209 @@ impl UnificationMap {
             (
                 Type::Record {
                     fields: expected_fields,
-                    tail,
+                    tail: expected_tail,
                 },
                 Type::Record {
                     fields: found_fields,
-                    tail,
+                    tail: found_tail,
                 },
             ) => {
-                let missing: Vec<String> = expected_fields
-                    .keys()
-                    .filter(|name| !found_fields.contains_key(*name))
-                    .cloned()
-                    .collect();
+                match (expected_tail, found_tail) {
+                    // Two records must exact match if they are both closed.
+                    // Eg:
+                    // type Point = { x: Int, y: Int }
+                    // let p: Point = { x: 3, y: 4 }
+                    (RecordTail::Closed, RecordTail::Closed) => {
+                        let missing: BTreeSet<String> = expected_fields
+                            .keys()
+                            .filter(|name| !found_fields.contains_key(*name))
+                            .cloned()
+                            .collect();
 
-                let additional: Vec<String> = found_fields
-                    .keys()
-                    .filter(|name| !expected_fields.contains_key(*name))
-                    .cloned()
-                    .collect();
+                        let additional: BTreeSet<String> = found_fields
+                            .keys()
+                            .filter(|name| !expected_fields.contains_key(*name))
+                            .cloned()
+                            .collect();
 
-                if !missing.is_empty() || !additional.is_empty() {
-                    return Err(UnifyError::RecordFieldMismatch(RecordFieldMismatch {
-                        missing,
-                        additional,
-                    }));
+                        if !missing.is_empty() || !additional.is_empty() {
+                            return Err(UnifyError::RecordFieldMismatch(RecordFieldMismatch {
+                                missing,
+                                additional,
+                            }));
+                        }
+
+                        for (name, expected_field) in &expected_fields {
+                            let found_field = &found_fields[name];
+                            self.unify_inner(found_field, expected_field)?;
+                        }
+
+                        Ok(())
+                    }
+
+                    // We expect a closed record, but we receive an open one.
+                    (RecordTail::Closed, RecordTail::Open(found_tail)) => {
+                        // error example:
+                        // expected: { x: Int, y: Int }      // closed
+                        // found:    { z: a | r }            // open
+                        let any_missing_fields_in_found_record = found_fields
+                            .keys()
+                            .any(|name| !expected_fields.contains_key(name));
+
+                        if any_missing_fields_in_found_record {
+                            return Err(UnifyError::RecordFieldMismatch(RecordFieldMismatch {
+                                missing: expected_fields
+                                    .keys()
+                                    .filter(|name| !found_fields.contains_key(*name))
+                                    .cloned()
+                                    .collect(),
+                                additional: found_fields
+                                    .keys()
+                                    .filter(|name| !expected_fields.contains_key(*name))
+                                    .cloned()
+                                    .collect(),
+                            }));
+                        }
+
+                        // No extra fields, so every found field is a common field.
+                        for (name, found_field) in &found_fields {
+                            self.unify_inner(found_field, &expected_fields[name])?;
+                        }
+
+                        // We now know that the tail is a closed record (in this instance).
+                        // expected: { x: Int, y: Int, z: Bool }     // closed
+                        // found:    { x: a | r }                    // open
+                        // We would unify the tail with { y: Int, z: Bool }
+                        let extension_of_row = Type::Record {
+                            fields: expected_fields
+                                .into_iter()
+                                .filter(|(name, _)| !found_fields.contains_key(name))
+                                .collect(),
+                            tail: Closed,
+                        };
+
+                        self.unify_inner(&Type::Var(found_tail), &extension_of_row)
+                    }
+
+                    // We have an open record but received a closed one.
+                    // Eg:
+                    // let getField = (rec) => rec.field
+                    // getField({field: "abc", otherField: 123 })
+                    (RecordTail::Open(expected_tail), RecordTail::Closed) => {
+                        // error example:
+                        // expected: { z: Int | r }            // open
+                        // found: { x: Int, y: Int }           // closed
+                        let any_missing_fields_from_expected = expected_fields
+                            .keys()
+                            .any(|name| !found_fields.contains_key(name));
+
+                        if any_missing_fields_from_expected {
+                            return Err(UnifyError::RecordFieldMismatch(RecordFieldMismatch {
+                                missing: expected_fields
+                                    .keys()
+                                    .filter(|name| !found_fields.contains_key(*name))
+                                    .cloned()
+                                    .collect(),
+                                additional: found_fields
+                                    .keys()
+                                    .filter(|name| !expected_fields.contains_key(*name))
+                                    .cloned()
+                                    .collect(),
+                            }));
+                        }
+
+                        // No extra fields, so every found field is a common field.
+                        for (name, expected_field) in &expected_fields {
+                            self.unify_inner(expected_field, &found_fields[name])?;
+                        }
+
+                        // We now know that the tail is a closed record (in this instance).
+                        // expected:    { x: a | r }                    // open
+                        // found:       { x: Int, y: Int, z: Bool }     // closed
+                        let extension_of_row = Type::Record {
+                            fields: found_fields
+                                .into_iter()
+                                .filter(|(name, _)| !expected_fields.contains_key(name))
+                                .collect(),
+                            tail: Closed,
+                        };
+
+                        self.unify_inner(&Type::Var(expected_tail), &extension_of_row)
+                    }
+
+                    // Both records are open: each side knows some fields, and the rest is unknown.
+                    // Eg: using two fields of the same parameter
+                    // let getBoth = (rec) => [rec.x, rec.y]
+                    // rec.x says rec: { x: a | r1 }, and rec.y says rec: { y: b | r2 }
+                    //
+                    // expected: { x: a | r1 }
+                    // found:    { y: b | r2 }
+                    // Each tail must supply the fields only the other side has,
+                    // and both must end in the same fresh tail r3:
+                    // r1 := { y: b | r3 }   so expected = { x: a, y: b | r3 }
+                    // r2 := { x: a | r3 }   so found    = { x: a, y: b | r3 }
+                    (RecordTail::Open(expected_tail), RecordTail::Open(found_tail)) => {
+                        // Unify the common fields first, while both maps are still borrowed.
+                        for (name, expected_field) in &expected_fields {
+                            if let Some(found_field) = found_fields.get(name) {
+                                self.unify_inner(found_field, expected_field)?;
+                            }
+                        }
+
+                        let missing_from_found: BTreeMap<String, Box<Type>> = expected_fields
+                            .iter()
+                            .filter(|(name, _)| !found_fields.contains_key(*name))
+                            .map(|(name, ty)| (name.clone(), ty.clone()))
+                            .collect();
+
+                        let missing_from_expected: BTreeMap<String, Box<Type>> = found_fields
+                            .into_iter()
+                            .filter(|(name, _)| !expected_fields.contains_key(name))
+                            .collect();
+
+                        // { x | r } ~ { y | r }: one row can't gain different fields.
+                        let expected_root = self.find_root(expected_tail).map(|(root, _)| root);
+                        let found_root = self.find_root(found_tail).map(|(root, _)| root);
+                        if expected_root == found_root {
+                            if missing_from_found.is_empty() && missing_from_expected.is_empty() {
+                                return Ok(());
+                            }
+                            return Err(UnifyError::RecordFieldMismatch(RecordFieldMismatch {
+                                missing: missing_from_found.into_keys().collect(),
+                                additional: missing_from_expected.into_keys().collect(),
+                            }));
+                        }
+
+                        // None = the tail is already solved to a record.
+                        let expected_tail_level = self
+                            .get_let_generalisation_level(expected_tail)
+                            .ok_or_else(|| -> UnifyError {
+                                todo!("flatten records whose tail is already solved")
+                            })?;
+                        let found_tail_level = self
+                            .get_let_generalisation_level(found_tail)
+                            .ok_or_else(|| -> UnifyError {
+                                todo!("flatten records whose tail is already solved")
+                            })?;
+
+                        // One shared tail, so both rows stay the same row from here on.
+                        let rest =
+                            self.mint_new_type_var(min(expected_tail_level, found_tail_level));
+
+                        // Each tail absorbs the fields only the other side has.
+                        let extension_of_expected = Type::Record {
+                            fields: missing_from_expected,
+                            tail: RecordTail::Open(rest),
+                        };
+                        self.unify_inner(&extension_of_expected, &Type::Var(expected_tail))?;
+
+                        let extension_of_found = Type::Record {
+                            fields: missing_from_found,
+                            tail: RecordTail::Open(rest),
+                        };
+                        self.unify_inner(&Type::Var(found_tail), &extension_of_found)
+                    }
                 }
-
-                for (name, expected_field) in &expected_fields {
-                    let found_field = &found_fields[name];
-                    self.unify_inner(found_field, expected_field)?;
-                }
-
-                Ok(())
             }
 
             (expected, found) => Err(UnifyError::TypeMismatch(TypeMismatch { expected, found })),
@@ -292,12 +465,12 @@ impl UnificationMap {
                     .is_some_and(|p| self.root_occurs_in_type(root, p))
                     || self.root_occurs_in_type(root, body)
             }
-            Type::Record(btree_map) => {
-                btree_map
-                    .into_iter()
-                    .fold(false, |occurs, (_, record_key_type)| {
-                        occurs || self.root_occurs_in_type(root, record_key_type)
-                    })
+            Type::Record { fields, tail } => {
+                fields
+                    .values()
+                    .any(|field| self.root_occurs_in_type(root, field))
+                    || matches!(tail, RecordTail::Open(tail_var)
+                        if self.root_occurs_in_type(root, &Type::Var(*tail_var)))
             }
         }
     }

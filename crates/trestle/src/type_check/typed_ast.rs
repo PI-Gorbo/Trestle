@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::intrinsics::unreachable;
 
 use miette::SourceSpan;
 

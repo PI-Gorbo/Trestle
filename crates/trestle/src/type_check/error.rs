@@ -1,5 +1,7 @@
 #![allow(unused_assignments)]
 
+use std::collections::BTreeSet;
+
 use super::typed_ast::{Type, TypeVarId};
 use miette::{Diagnostic, SourceSpan};
 use thiserror::Error;
@@ -65,8 +67,8 @@ pub enum TypeCheckError {
     #[error("record field mismatch: missing {missing:?}, unexpected {additional:?}")]
     #[diagnostic(code(trestle::record_field_mismatch))]
     RecordFieldMismatch {
-        missing: Vec<String>,
-        additional: Vec<String>,
+        missing: BTreeSet<String>,
+        additional: BTreeSet<String>,
         #[label("here")]
         span: SourceSpan,
     },

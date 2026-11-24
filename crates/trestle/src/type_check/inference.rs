@@ -172,7 +172,7 @@ impl<'a> InferenceCtx<'a> {
         match self.unification_map.resolve_shallow(&target.ty) {
             // Example:
             // When we unify a field access with the return type of a function.
-            type_var @ Type::Var(type_var_id) => {
+            type_var @ Type::Var(_) => {
                 let field_type = Type::Var(self.unification_map.mint_new_type_var(self.let_level));
                 let new_tail = self.unification_map.mint_new_type_var(self.let_level);
 
@@ -183,10 +183,12 @@ impl<'a> InferenceCtx<'a> {
                             field_name.clone(),
                             Box::new(field_type.clone()),
                         )]),
+
+                        // Unifying with an open tail!
                         tail: RecordTail::Open(new_tail),
                     },
                     span,
-                );
+                )?;
 
                 Ok((
                     ExpressionKind::FieldAccess {
@@ -394,12 +396,13 @@ impl<'a> InferenceCtx<'a> {
                     })
                     .collect::<Result<BTreeMap<_, _>, TypeCheckError>>()?;
 
-                let ty = Type::Record(Record {
-                    field1: fields
+                let ty = Type::Record {
+                    fields: fields
                         .iter()
                         .map(|(key, field)| (key.clone(), Box::new(field.ty.clone())))
                         .collect(),
-                });
+                    tail: RecordTail::Closed,
+                };
 
                 (
                     ExpressionKind::Literal(TypeCheckedLiteral::Record(fields)),
@@ -625,12 +628,13 @@ fn get_type_from_type_expression(
                 Some(referenced_type) => Ok(referenced_type.clone()),
             }
         }
-        ResolvedTypeExpressionKind::Record(btree_map) => Ok(Type::Record(Record {
-            field1: btree_map
+        ResolvedTypeExpressionKind::Record(btree_map) => Ok(Type::Record {
+            fields: btree_map
                 .into_iter()
                 .map(|(key, value)| Ok((key, Box::new(get_type_from_type_expression(value, ctx)?))))
                 .collect::<Result<_, TypeCheckError>>()?,
-        })),
+            tail: RecordTail::Closed,
+        }),
         ResolvedTypeExpressionKind::Lambda(resolved_lambda_type_expression) => Ok(Type::Fn {
             parameter: resolved_lambda_type_expression
                 .parameter
