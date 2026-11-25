@@ -1,0 +1,556 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+TypeCheckedProgram {
+    expressions: [
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    1,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        0,
+                                    ),
+                                    ty: Record {
+                                        fields: {
+                                            "x": Literal(
+                                                Int,
+                                            ),
+                                            "y": Literal(
+                                                Int,
+                                            ),
+                                            "z": Literal(
+                                                Int,
+                                            ),
+                                        },
+                                        tail: Open(
+                                            TypeVarId(
+                                                6,
+                                            ),
+                                        ),
+                                    },
+                                },
+                            ),
+                            body: TypeCheckedExpression {
+                                kind: Binary(
+                                    Add,
+                                    TypeCheckedExpression {
+                                        kind: Binary(
+                                            Add,
+                                            TypeCheckedExpression {
+                                                kind: Binary(
+                                                    Add,
+                                                    TypeCheckedExpression {
+                                                        kind: FieldAccess {
+                                                            target: TypeCheckedExpression {
+                                                                kind: Var(
+                                                                    BindingId(
+                                                                        0,
+                                                                    ),
+                                                                ),
+                                                                span: SourceSpan {
+                                                                    offset: SourceOffset(
+                                                                        302,
+                                                                    ),
+                                                                    length: 1,
+                                                                },
+                                                                ty: Record {
+                                                                    fields: {
+                                                                        "x": Literal(
+                                                                            Int,
+                                                                        ),
+                                                                        "y": Literal(
+                                                                            Int,
+                                                                        ),
+                                                                        "z": Literal(
+                                                                            Int,
+                                                                        ),
+                                                                    },
+                                                                    tail: Open(
+                                                                        TypeVarId(
+                                                                            6,
+                                                                        ),
+                                                                    ),
+                                                                },
+                                                            },
+                                                            field_name: "x",
+                                                        },
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                302,
+                                                            ),
+                                                            length: 3,
+                                                        },
+                                                        ty: Literal(
+                                                            Int,
+                                                        ),
+                                                    },
+                                                    TypeCheckedExpression {
+                                                        kind: FieldAccess {
+                                                            target: TypeCheckedExpression {
+                                                                kind: Var(
+                                                                    BindingId(
+                                                                        0,
+                                                                    ),
+                                                                ),
+                                                                span: SourceSpan {
+                                                                    offset: SourceOffset(
+                                                                        308,
+                                                                    ),
+                                                                    length: 1,
+                                                                },
+                                                                ty: Record {
+                                                                    fields: {
+                                                                        "x": Literal(
+                                                                            Int,
+                                                                        ),
+                                                                        "y": Literal(
+                                                                            Int,
+                                                                        ),
+                                                                        "z": Literal(
+                                                                            Int,
+                                                                        ),
+                                                                    },
+                                                                    tail: Open(
+                                                                        TypeVarId(
+                                                                            6,
+                                                                        ),
+                                                                    ),
+                                                                },
+                                                            },
+                                                            field_name: "y",
+                                                        },
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                308,
+                                                            ),
+                                                            length: 3,
+                                                        },
+                                                        ty: Literal(
+                                                            Int,
+                                                        ),
+                                                    },
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        302,
+                                                    ),
+                                                    length: 9,
+                                                },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
+                                            },
+                                            TypeCheckedExpression {
+                                                kind: FieldAccess {
+                                                    target: TypeCheckedExpression {
+                                                        kind: Var(
+                                                            BindingId(
+                                                                0,
+                                                            ),
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                314,
+                                                            ),
+                                                            length: 1,
+                                                        },
+                                                        ty: Record {
+                                                            fields: {
+                                                                "x": Literal(
+                                                                    Int,
+                                                                ),
+                                                                "y": Literal(
+                                                                    Int,
+                                                                ),
+                                                                "z": Literal(
+                                                                    Int,
+                                                                ),
+                                                            },
+                                                            tail: Open(
+                                                                TypeVarId(
+                                                                    6,
+                                                                ),
+                                                            ),
+                                                        },
+                                                    },
+                                                    field_name: "y",
+                                                },
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        314,
+                                                    ),
+                                                    length: 3,
+                                                },
+                                                ty: Literal(
+                                                    Int,
+                                                ),
+                                            },
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                302,
+                                            ),
+                                            length: 15,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                    TypeCheckedExpression {
+                                        kind: FieldAccess {
+                                            target: TypeCheckedExpression {
+                                                kind: Var(
+                                                    BindingId(
+                                                        0,
+                                                    ),
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        320,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                                ty: Record {
+                                                    fields: {
+                                                        "x": Literal(
+                                                            Int,
+                                                        ),
+                                                        "y": Literal(
+                                                            Int,
+                                                        ),
+                                                        "z": Literal(
+                                                            Int,
+                                                        ),
+                                                    },
+                                                    tail: Open(
+                                                        TypeVarId(
+                                                            6,
+                                                        ),
+                                                    ),
+                                                },
+                                            },
+                                            field_name: "z",
+                                        },
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                320,
+                                            ),
+                                            length: 3,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        302,
+                                    ),
+                                    length: 21,
+                                },
+                                ty: Literal(
+                                    Int,
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            295,
+                        ),
+                        length: 28,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Record {
+                                fields: {
+                                    "x": Literal(
+                                        Int,
+                                    ),
+                                    "y": Literal(
+                                        Int,
+                                    ),
+                                    "z": Literal(
+                                        Int,
+                                    ),
+                                },
+                                tail: Open(
+                                    TypeVarId(
+                                        6,
+                                    ),
+                                ),
+                            },
+                        ),
+                        return_type: Literal(
+                            Int,
+                        ),
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    287,
+                ),
+                length: 36,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: FunctionInvocation {
+                function: TypeCheckedExpression {
+                    kind: Var(
+                        BindingId(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            325,
+                        ),
+                        length: 1,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Record {
+                                fields: {
+                                    "x": Literal(
+                                        Int,
+                                    ),
+                                    "y": Literal(
+                                        Int,
+                                    ),
+                                    "z": Literal(
+                                        Int,
+                                    ),
+                                },
+                                tail: Closed,
+                            },
+                        ),
+                        return_type: Literal(
+                            Int,
+                        ),
+                    },
+                },
+                arguments: [
+                    TypeCheckedExpression {
+                        kind: Literal(
+                            Record(
+                                {
+                                    "x": TypeCheckedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                332,
+                                            ),
+                                            length: 1,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                    "y": TypeCheckedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                338,
+                                            ),
+                                            length: 1,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                    "z": TypeCheckedExpression {
+                                        kind: Literal(
+                                            Int(
+                                                4,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                344,
+                                            ),
+                                            length: 1,
+                                        },
+                                        ty: Literal(
+                                            Int,
+                                        ),
+                                    },
+                                },
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                327,
+                            ),
+                            length: 20,
+                        },
+                        ty: Record {
+                            fields: {
+                                "x": Literal(
+                                    Int,
+                                ),
+                                "y": Literal(
+                                    Int,
+                                ),
+                                "z": Literal(
+                                    Int,
+                                ),
+                            },
+                            tail: Closed,
+                        },
+                    },
+                ],
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    325,
+                ),
+                length: 23,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
+    ],
+    bindings: [
+        TypedBinding {
+            name: "r",
+            ty: Record {
+                fields: {
+                    "x": Literal(
+                        Int,
+                    ),
+                    "y": Literal(
+                        Int,
+                    ),
+                    "z": Literal(
+                        Int,
+                    ),
+                },
+                tail: Open(
+                    TypeVarId(
+                        6,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    295,
+                ),
+                length: 28,
+            },
+        },
+        TypedBinding {
+            name: "f",
+            ty: Fn {
+                parameter: Some(
+                    Record {
+                        fields: {
+                            "x": Literal(
+                                Int,
+                            ),
+                            "y": Literal(
+                                Int,
+                            ),
+                            "z": Literal(
+                                Int,
+                            ),
+                        },
+                        tail: Open(
+                            TypeVarId(
+                                6,
+                            ),
+                        ),
+                    },
+                ),
+                return_type: Literal(
+                    Int,
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    287,
+                ),
+                length: 36,
+            },
+        },
+    ],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+    ],
+}

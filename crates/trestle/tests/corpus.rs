@@ -752,14 +752,12 @@ trsl_test!(
 trsl_test!(
     unification_row_deep_row_chain,
     "01-unification/row-polymorphism/deep-row-chain/deep-row-chain.trsl",
-    [ast, analyse, eval],
-    ignore = "todo!: open-vs-open unification on a row whose tail is already solved"
+    [ast, analyse, eval]
 );
 trsl_test!(
     unification_row_repeated_field_after_extension,
     "01-unification/row-polymorphism/repeated-field-after-extension/repeated-field-after-extension.trsl",
-    [ast, analyse, eval],
-    ignore = "todo!: open-vs-open unification on a row whose tail is already solved"
+    [ast, analyse, eval]
 );
 trsl_test!(
     unification_row_missing_field,
