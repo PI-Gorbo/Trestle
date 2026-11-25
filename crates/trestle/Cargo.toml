@@ -30,3 +30,6 @@ insta = "1"
 # Identifier concatenation for the `trsl_test!` macro (generates one `#[test]`
 # fn per stage, e.g. `<name>_ast` / `<name>_checked` / `<name>_eval`).
 paste = "1"
+
+[lints]
+workspace = true

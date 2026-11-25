@@ -1,3 +1,7 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
+
+# An ignored `Result` is a silently dropped error, so it fails the build rather than warns.
+[workspace.lints.rust]
+unused_must_use = "deny"
