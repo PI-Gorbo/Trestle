@@ -137,7 +137,7 @@ impl UnificationMap {
     /// Otherwise, just returns the type
     pub(super) fn resolve_shallow(&self, ty: &Type) -> Type {
         ty.map_free_type_variables(&mut |id| match self.find_root(*id) {
-            Some((_, RootUnionNode::Concrete(concrete))) => concrete.clone(),
+            Some((_, RootUnionNode::Concrete(concrete))) => self.resolve_shallow(concrete),
             Some((root_id, RootUnionNode::FreeTypeVariable(_))) => Type::Var(root_id),
             None => ty.clone(),
         })
