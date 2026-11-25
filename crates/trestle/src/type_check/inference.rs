@@ -111,7 +111,7 @@ impl<'a> InferenceCtx<'a> {
         let typed_condition = self.infer(*condition)?;
 
         self.unification_map
-            .unify(&typed_condition.ty, &Type::Literal(Literal::Bool), span)?;
+            .unify(&Type::Literal(Literal::Bool), &typed_condition.ty, span)?;
 
         let true_condition = self.infer(*true_condition)?;
         let true_condition_type = true_condition.ty.clone();
@@ -129,7 +129,7 @@ impl<'a> InferenceCtx<'a> {
                 let false_condition = self.infer(*false_condition)?;
 
                 self.unification_map
-                    .unify(&false_condition.ty, &true_condition.ty, span)?;
+                    .unify(&true_condition.ty, &false_condition.ty, span)?;
 
                 Ok((
                     ExpressionKind::If {
@@ -177,7 +177,6 @@ impl<'a> InferenceCtx<'a> {
                 let new_tail = self.unification_map.mint_new_type_var(self.let_level);
 
                 self.unification_map.unify(
-                    &type_var,
                     &Type::Record {
                         fields: BTreeMap::from([(
                             field_name.clone(),
@@ -187,6 +186,7 @@ impl<'a> InferenceCtx<'a> {
                         // Unifying with an open tail!
                         tail: RecordTail::Open(new_tail),
                     },
+                    &type_var,
                     span,
                 )?;
 
@@ -221,7 +221,6 @@ impl<'a> InferenceCtx<'a> {
                         let new_tail = self.unification_map.mint_new_type_var(self.let_level);
 
                         self.unification_map.unify(
-                            &Type::Var(row),
                             &Type::Record {
                                 fields: BTreeMap::from([(
                                     field_name.clone(),
@@ -229,8 +228,9 @@ impl<'a> InferenceCtx<'a> {
                                 )]),
                                 tail: RecordTail::Open(new_tail),
                             },
+                            &Type::Var(row),
                             span,
-                        );
+                        )?;
 
                         Ok(Box::new(field_type))
                     }
@@ -265,7 +265,7 @@ impl<'a> InferenceCtx<'a> {
             UnaryOp::Not => Type::Literal(Literal::Bool),
         };
 
-        self.unification_map.unify(&operand.ty, &ty, operand.span)?;
+        self.unification_map.unify(&ty, &operand.ty, operand.span)?;
 
         Ok((ExpressionKind::Unary(op, Box::new(operand)), ty))
     }
@@ -327,7 +327,7 @@ impl<'a> InferenceCtx<'a> {
                     return Err(TypeCheckError::PipeIntoArgumentlessFunction { span: rhs.span });
                 };
 
-                self.unification_map.unify(&lhs.ty, &input, span)?;
+                self.unification_map.unify(&input, &lhs.ty, span)?;
 
                 Ok((
                     ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
@@ -444,7 +444,7 @@ impl<'a> InferenceCtx<'a> {
 
         let body = self.infer(*body)?;
         let return_type = resolve_type_dec(return_type, self)?;
-        self.unification_map.unify(&body.ty, &return_type, span)?;
+        self.unification_map.unify(&return_type, &body.ty, span)?;
 
         let lambda_return_type = body.ty.clone();
 
@@ -509,7 +509,7 @@ impl<'a> InferenceCtx<'a> {
 
         // We try to unify the inferred type with the bound type.
         self.unification_map
-            .unify(&inferred_type.ty, &bound_type_from_declaration, span)?;
+            .unify(&bound_type_from_declaration, &inferred_type.ty, span)?;
 
         let scheme = self.generalise(bound_type_from_declaration);
 
@@ -658,8 +658,8 @@ fn unify_binary_op(
     rhs_type: Type,
     return_type: Type,
 ) -> Result<(ExpressionKind, Type), TypeCheckError> {
-    unification_map.unify(&lhs.ty, &lhs_type, lhs.span)?;
-    unification_map.unify(&rhs.ty, &rhs_type, rhs.span)?;
+    unification_map.unify(&lhs_type, &lhs.ty, lhs.span)?;
+    unification_map.unify(&rhs_type, &rhs.ty, rhs.span)?;
 
     Ok((
         ExpressionKind::Binary(op, Box::new(lhs), Box::new(rhs)),
@@ -730,7 +730,7 @@ fn apply_arguments(
                 parameter: Some(Box::new(arg.ty.clone())),
                 return_type: Box::new(result.clone()),
             };
-            unification_map.unify(&callee, &fn_shape, span)?;
+            unification_map.unify(&fn_shape, &callee, span)?;
             apply_arguments(unification_map, level, &result, &arguments[1..], span)
         }
 

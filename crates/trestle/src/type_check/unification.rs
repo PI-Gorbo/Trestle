@@ -146,15 +146,15 @@ impl UnificationMap {
     /// Records that the first type is equivalent to the second type.
     pub(super) fn unify(
         &mut self,
-        first: &Type,
-        second: &Type,
+        expected: &Type,
+        found: &Type,
         span: SourceSpan,
     ) -> Result<(), TypeCheckError> {
-        self.unify_inner(first, second)
+        self.unify_inner(expected, found)
             .map_err(|err| err.into_type_check_error(span))
     }
 
-    fn unify_inner(&mut self, found: &Type, expected: &Type) -> Result<(), UnifyError> {
+    fn unify_inner(&mut self, expected: &Type, found: &Type) -> Result<(), UnifyError> {
         match (self.resolve_shallow(expected), self.resolve_shallow(found)) {
             (Type::Var(var1), Type::Var(var2)) => self.union_vars(var1, var2),
 
@@ -203,12 +203,12 @@ impl UnificationMap {
                     }
                     (None, None) => Ok(()),
                     (Some(expected_param), Some(found_param)) => {
-                        self.unify_inner(found_param, expected_param)
+                        self.unify_inner(expected_param, found_param)
                     }
                 };
 
                 param_unification?;
-                self.unify_inner(&found_body, &expected_body)
+                self.unify_inner(&expected_body, &found_body)
             }
 
             (
@@ -248,7 +248,7 @@ impl UnificationMap {
 
                         for (name, expected_field) in &expected_fields {
                             let found_field = &found_fields[name];
-                            self.unify_inner(found_field, expected_field)?;
+                            self.unify_inner(expected_field, found_field)?;
                         }
 
                         Ok(())
@@ -265,11 +265,9 @@ impl UnificationMap {
 
                         if any_missing_fields_in_found_record {
                             return Err(UnifyError::RecordFieldMismatch(RecordFieldMismatch {
-                                missing: expected_fields
-                                    .keys()
-                                    .filter(|name| !found_fields.contains_key(*name))
-                                    .cloned()
-                                    .collect(),
+                                // The open tail can supply anything it lacks, so only its
+                                // extra fields are an error.
+                                missing: BTreeSet::new(),
                                 additional: found_fields
                                     .keys()
                                     .filter(|name| !expected_fields.contains_key(*name))
@@ -280,7 +278,7 @@ impl UnificationMap {
 
                         // No extra fields, so every found field is a common field.
                         for (name, found_field) in &found_fields {
-                            self.unify_inner(found_field, &expected_fields[name])?;
+                            self.unify_inner(&expected_fields[name], found_field)?;
                         }
 
                         // We now know that the tail is a closed record (in this instance).
@@ -295,7 +293,7 @@ impl UnificationMap {
                             tail: Closed,
                         };
 
-                        self.unify_inner(&Type::Var(found_tail), &extension_of_row)
+                        self.unify_inner(&extension_of_row, &Type::Var(found_tail))
                     }
 
                     // We have an open record but received a closed one.
@@ -317,11 +315,8 @@ impl UnificationMap {
                                     .filter(|name| !found_fields.contains_key(*name))
                                     .cloned()
                                     .collect(),
-                                additional: found_fields
-                                    .keys()
-                                    .filter(|name| !expected_fields.contains_key(*name))
-                                    .cloned()
-                                    .collect(),
+                                // The open tail absorbs the closed record's extra fields.
+                                additional: BTreeSet::new(),
                             }));
                         }
 
@@ -359,7 +354,7 @@ impl UnificationMap {
                         // Unify the common fields first, while both maps are still borrowed.
                         for (name, expected_field) in &expected_fields {
                             if let Some(found_field) = found_fields.get(name) {
-                                self.unify_inner(found_field, expected_field)?;
+                                self.unify_inner(expected_field, found_field)?;
                             }
                         }
 
@@ -408,13 +403,13 @@ impl UnificationMap {
                             fields: missing_from_expected,
                             tail: RecordTail::Open(rest),
                         };
-                        self.unify_inner(&extension_of_expected, &Type::Var(expected_tail))?;
+                        self.unify_inner(&Type::Var(expected_tail), &extension_of_expected)?;
 
                         let extension_of_found = Type::Record {
                             fields: missing_from_found,
                             tail: RecordTail::Open(rest),
                         };
-                        self.unify_inner(&Type::Var(found_tail), &extension_of_found)
+                        self.unify_inner(&extension_of_found, &Type::Var(found_tail))
                     }
                 }
             }
@@ -451,7 +446,7 @@ impl UnificationMap {
             Type::Unit | Type::Literal(_) => false,
             Type::Var(type_var_id2) => match self.find_root(*type_var_id2) {
                 None => false,
-                Some((root2, RootUnionNode::FreeTypeVariable(level))) => root == root2,
+                Some((root2, RootUnionNode::FreeTypeVariable(_))) => root == root2,
                 Some((root2, RootUnionNode::Concrete(declared_type))) => {
                     root == root2 || self.root_occurs_in_type(root, declared_type)
                 }
@@ -560,7 +555,8 @@ impl UnificationMap {
                     UnionNode::RootUnionNode(RootUnionNode::FreeTypeVariable(
                         updated_let_generalisation_level,
                     )),
-                );
+                )
+                .map_err(UnifyError::FreeTypeVariableNotFoundError)?;
 
                 Ok(())
             }
