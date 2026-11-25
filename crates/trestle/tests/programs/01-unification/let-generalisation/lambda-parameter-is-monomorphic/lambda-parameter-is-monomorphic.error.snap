@@ -6,10 +6,10 @@ TypeCheck(
     [
         TypeMismatch {
             expected: Literal(
-                String,
+                Int,
             ),
             found: Literal(
-                Int,
+                String,
             ),
             span: SourceSpan {
                 offset: SourceOffset(

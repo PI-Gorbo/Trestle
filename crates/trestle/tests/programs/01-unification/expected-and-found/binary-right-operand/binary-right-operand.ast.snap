@@ -1,0 +1,45 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Binary(
+                And,
+                Expression {
+                    kind: Literal(
+                        Bool(
+                            true,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            135,
+                        ),
+                        length: 4,
+                    },
+                },
+                Expression {
+                    kind: Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            143,
+                        ),
+                        length: 1,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    135,
+                ),
+                length: 9,
+            },
+        },
+    ],
+}

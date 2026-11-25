@@ -1,0 +1,13 @@
+// Levels through a row. `r` belongs to `outer`'s lambda, but `r.y` is read inside
+// `getY`, one level deeper. The field variable minted for `y` lives inside `r`'s type,
+// so it must take `r`'s level — otherwise generalising `getY` would treat `y` as
+// `getY`'s own and let it be Int at one call and String at the next.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let outer = (r) => {
+    let getY = (u) => r.y
+    let a: Int = getY(1)
+    let b: String = getY(2)
+    a
+}

@@ -695,6 +695,12 @@ trsl_test!(
     "01-unification/let-generalisation/captured-variable-is-not-generalised/captured-variable-is-not-generalised.trsl",
     [ast, error]
 );
+trsl_test!(
+    unification_let_generalisation_captured_function_result_is_not_generalised,
+    "01-unification/let-generalisation/captured-function-result-is-not-generalised/captured-function-result-is-not-generalised.trsl",
+    [ast, error],
+    ignore = "binding a variable to a type must raise the levels of the variables inside it"
+);
 
 // Row polymorphism: a field access on an unknown type opens a row `{ f: a | r }`, and
 // unification extends, closes, or merges tails. Success cases first, then one error
@@ -802,6 +808,80 @@ trsl_test!(
 trsl_test!(
     unification_row_infinite_row,
     "01-unification/row-polymorphism/infinite-row/infinite-row.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_captured_row_is_not_generalised,
+    "01-unification/row-polymorphism/captured-row-is-not-generalised/captured-row-is-not-generalised.trsl",
+    [ast, error],
+    ignore = "binding a variable to a type must raise the levels of the variables inside it"
+);
+
+// Expected vs found: one deliberate mismatch per place the checker unifies a required
+// type (expected) with a written one (found), pinning which side each error reports.
+trsl_test!(
+    unification_expected_and_found_if_condition,
+    "01-unification/expected-and-found/if-condition/if-condition.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_if_branches,
+    "01-unification/expected-and-found/if-branches/if-branches.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_unary_operand,
+    "01-unification/expected-and-found/unary-operand/unary-operand.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_binary_left_operand,
+    "01-unification/expected-and-found/binary-left-operand/binary-left-operand.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_binary_right_operand,
+    "01-unification/expected-and-found/binary-right-operand/binary-right-operand.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_call_argument,
+    "01-unification/expected-and-found/call-argument/call-argument.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_pipe_input,
+    "01-unification/expected-and-found/pipe-input/pipe-input.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_let_annotation,
+    "01-unification/expected-and-found/let-annotation/let-annotation.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_lambda_return_annotation,
+    "01-unification/expected-and-found/lambda-return-annotation/lambda-return-annotation.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_function_argument_parameter,
+    "01-unification/expected-and-found/function-argument-parameter/function-argument-parameter.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_function_argument_return,
+    "01-unification/expected-and-found/function-argument-return/function-argument-return.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_record_field,
+    "01-unification/expected-and-found/record-field/record-field.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_expected_and_found_record_missing_field,
+    "01-unification/expected-and-found/record-missing-field/record-missing-field.trsl",
     [ast, error]
 );
 

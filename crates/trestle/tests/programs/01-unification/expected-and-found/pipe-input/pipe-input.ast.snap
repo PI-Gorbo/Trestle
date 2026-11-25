@@ -1,0 +1,121 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "inc",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "n",
+                                    type_dec: Some(
+                                        TypeExpression {
+                                            kind: Named(
+                                                "Int",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    235,
+                                                ),
+                                                length: 3,
+                                            },
+                                        },
+                                    ),
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Binary(
+                                    Add,
+                                    Expression {
+                                        kind: Var(
+                                            "n",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                243,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                247,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        243,
+                                    ),
+                                    length: 5,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            231,
+                        ),
+                        length: 17,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    221,
+                ),
+                length: 27,
+            },
+        },
+        Expression {
+            kind: Binary(
+                Pipe,
+                Expression {
+                    kind: Literal(
+                        String(
+                            "one",
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            250,
+                        ),
+                        length: 5,
+                    },
+                },
+                Expression {
+                    kind: Var(
+                        "inc",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            259,
+                        ),
+                        length: 3,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    250,
+                ),
+                length: 12,
+            },
+        },
+    ],
+}

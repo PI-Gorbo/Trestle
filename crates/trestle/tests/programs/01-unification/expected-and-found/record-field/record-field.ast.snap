@@ -1,0 +1,117 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Point",
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {
+                            "x": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        214,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                            "y": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        222,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            209,
+                        ),
+                        length: 18,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    196,
+                ),
+                length: 31,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "p",
+                type_dec: Some(
+                    TypeExpression {
+                        kind: Named(
+                            "Point",
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                236,
+                            ),
+                            length: 5,
+                        },
+                    },
+                ),
+                value: Expression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "x": Expression {
+                                    kind: Literal(
+                                        String(
+                                            "three",
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            249,
+                                        ),
+                                        length: 7,
+                                    },
+                                },
+                                "y": Expression {
+                                    kind: Literal(
+                                        Int(
+                                            4,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            261,
+                                        ),
+                                        length: 1,
+                                    },
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            244,
+                        ),
+                        length: 20,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    229,
+                ),
+                length: 36,
+            },
+        },
+    ],
+}

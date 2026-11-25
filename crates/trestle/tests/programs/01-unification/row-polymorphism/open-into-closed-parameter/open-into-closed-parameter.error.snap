@@ -5,12 +5,9 @@ expression: errors
 TypeCheck(
     [
         RecordFieldMismatch {
-            missing: {
-                "z",
-            },
+            missing: {},
             additional: {
-                "x",
-                "y",
+                "z",
             },
             span: SourceSpan {
                 offset: SourceOffset(

@@ -1,0 +1,5 @@
+// `&&` requires Bool operands; the left operand is an Int.
+//
+// Should be rejected with a type mismatch: expected Bool, found Int.
+
+1 && true

@@ -1,0 +1,5 @@
+// A `let` annotation is expected; the bound value's type is found.
+//
+// Should be rejected with a type mismatch: expected String, found Int.
+
+let s: String = 1

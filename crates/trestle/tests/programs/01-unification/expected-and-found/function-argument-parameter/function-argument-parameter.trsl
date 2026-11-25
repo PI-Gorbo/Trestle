@@ -1,0 +1,8 @@
+// Unifying two function types compares their parameters. `apply` expects a function taking
+// an Int; the function passed takes a String.
+//
+// Should be rejected with a type mismatch: expected Int, found String.
+
+let apply = (f: (Int) => Int) => f(1)
+
+apply((s: String) => 1)

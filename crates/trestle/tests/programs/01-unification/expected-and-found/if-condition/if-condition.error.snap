@@ -1,0 +1,22 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: errors
+---
+TypeCheck(
+    [
+        TypeMismatch {
+            expected: Literal(
+                Bool,
+            ),
+            found: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    151,
+                ),
+                length: 16,
+            },
+        },
+    ],
+)

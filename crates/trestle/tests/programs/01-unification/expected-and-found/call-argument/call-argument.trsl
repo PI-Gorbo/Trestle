@@ -1,0 +1,7 @@
+// A call's parameter type is expected; the argument passed is found.
+//
+// Should be rejected with a type mismatch: expected Int, found String.
+
+let inc = (n: Int) => n + 1
+
+inc("one")

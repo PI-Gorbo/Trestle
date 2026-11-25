@@ -1,0 +1,5 @@
+// A lambda's return annotation is expected; its body's type is found.
+//
+// Should be rejected with a type mismatch: expected String, found Int.
+
+let f = (n: Int): String => n

@@ -1,0 +1,8 @@
+// A record field compared through an annotation: the declared field type is expected, the
+// literal's field is found.
+//
+// Should be rejected with a type mismatch: expected Int, found String.
+
+type Point = { x: Int, y: Int }
+
+let p: Point = { x: "three", y: 4 }

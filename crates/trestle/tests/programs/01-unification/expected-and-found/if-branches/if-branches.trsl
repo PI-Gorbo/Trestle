@@ -1,0 +1,6 @@
+// Both branches must share a type. The `then` branch sets it, so the `else` branch is the
+// one found to disagree.
+//
+// Should be rejected with a type mismatch: expected Int, found String.
+
+if (true) 1 else "one"

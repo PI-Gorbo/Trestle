@@ -1,0 +1,74 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "f",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "n",
+                                    type_dec: Some(
+                                        TypeExpression {
+                                            kind: Named(
+                                                "Int",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    159,
+                                                ),
+                                                length: 3,
+                                            },
+                                        },
+                                    ),
+                                },
+                            ),
+                            return_type: Some(
+                                TypeExpression {
+                                    kind: Named(
+                                        "String",
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            163,
+                                        ),
+                                        length: 8,
+                                    },
+                                },
+                            ),
+                            body: Expression {
+                                kind: Var(
+                                    "n",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        175,
+                                    ),
+                                    length: 1,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            155,
+                        ),
+                        length: 22,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    147,
+                ),
+                length: 30,
+            },
+        },
+    ],
+}

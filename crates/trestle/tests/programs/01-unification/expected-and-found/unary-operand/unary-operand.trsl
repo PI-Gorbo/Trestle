@@ -1,0 +1,5 @@
+// `!` requires a Bool operand; the operand written is an Int.
+//
+// Should be rejected with a type mismatch: expected Bool, found Int.
+
+!1

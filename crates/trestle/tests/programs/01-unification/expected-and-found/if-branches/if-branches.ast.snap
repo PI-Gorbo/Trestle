@@ -1,0 +1,59 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: If {
+                condition: Expression {
+                    kind: Literal(
+                        Bool(
+                            true,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            197,
+                        ),
+                        length: 4,
+                    },
+                },
+                true_pathway: Expression {
+                    kind: Literal(
+                        Int(
+                            1,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            203,
+                        ),
+                        length: 1,
+                    },
+                },
+                false_pathway: Some(
+                    Expression {
+                        kind: Literal(
+                            String(
+                                "one",
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                210,
+                            ),
+                            length: 5,
+                        },
+                    },
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    193,
+                ),
+                length: 23,
+            },
+        },
+    ],
+}

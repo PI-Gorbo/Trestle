@@ -6,11 +6,9 @@ TypeCheck(
     [
         RecordFieldMismatch {
             missing: {
-                "y",
-            },
-            additional: {
                 "x",
             },
+            additional: {},
             span: SourceSpan {
                 offset: SourceOffset(
                     235,

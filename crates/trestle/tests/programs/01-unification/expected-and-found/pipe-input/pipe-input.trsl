@@ -1,0 +1,8 @@
+// `|>` passes its left-hand side as the right-hand function's argument: the function's
+// parameter type is expected, the piped value is found.
+//
+// Should be rejected with a type mismatch: expected Int, found String.
+
+let inc = (n: Int) => n + 1
+
+"one" |> inc

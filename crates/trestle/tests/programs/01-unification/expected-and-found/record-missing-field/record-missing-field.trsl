@@ -1,0 +1,8 @@
+// The annotation's record type is expected; the literal is found. The literal lacks `y`
+// and adds `z`.
+//
+// Should be rejected with a record field mismatch: missing `y`, unexpected `z`.
+
+type Point = { x: Int, y: Int }
+
+let p: Point = { x: 3, z: 4 }

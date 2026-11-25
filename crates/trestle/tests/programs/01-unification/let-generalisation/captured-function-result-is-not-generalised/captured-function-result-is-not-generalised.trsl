@@ -1,0 +1,13 @@
+// The same level leak without records. `f` belongs to `outer`'s lambda; calling it inside
+// `callF` solves `f := (Int) => b` with `b` minted one level deeper. `b` now lives inside
+// `f`'s type, so it must take `f`'s level — otherwise generalising `callF` frees `b` and
+// `f(0)` can be Int at one call and String at the next.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let outer = (f) => {
+    let callF = (u) => f(0)
+    let a: Int = callF(1)
+    let b: String = callF(2)
+    a
+}
