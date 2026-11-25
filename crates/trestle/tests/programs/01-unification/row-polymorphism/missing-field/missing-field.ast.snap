@@ -1,0 +1,111 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "getX",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "r",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: FieldAccess {
+                                    target: Expression {
+                                        kind: Var(
+                                            "r",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                230,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    identifier: "x",
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        230,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            223,
+                        ),
+                        length: 12,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    212,
+                ),
+                length: 23,
+            },
+        },
+        Expression {
+            kind: FunctionInvocation {
+                function: Expression {
+                    kind: Var(
+                        "getX",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            235,
+                        ),
+                        length: 4,
+                    },
+                },
+                arguments: [
+                    Expression {
+                        kind: Literal(
+                            Record(
+                                {
+                                    "y": Expression {
+                                        kind: Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                245,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                },
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                240,
+                            ),
+                            length: 8,
+                        },
+                    },
+                ],
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    235,
+                ),
+                length: 14,
+            },
+        },
+    ],
+}

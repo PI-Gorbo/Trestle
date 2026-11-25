@@ -7,7 +7,7 @@
 use std::fmt::Write as _;
 
 use trestle::evaluate::Value;
-use trestle::type_check::typed_ast::{Literal, Record, Type};
+use trestle::type_check::typed_ast::{Literal, RecordTail, Type, TypeVarId};
 
 pub fn format_value(value: &Value) -> String {
     let mut out = String::new();
@@ -60,6 +60,7 @@ fn write_value(out: &mut String, value: &Value) {
             out.push_str("<closure: ");
             write_function_type(
                 out,
+                &mut Vec::new(),
                 lambda.parameter.as_ref().map(|parameter| &parameter.ty),
                 &lambda.body.ty,
             );
@@ -70,22 +71,42 @@ fn write_value(out: &mut String, value: &Value) {
 
 pub fn format_type(ty: &Type) -> String {
     let mut out = String::new();
-    write_type(&mut out, ty, false);
+    write_type(&mut out, &mut Vec::new(), ty, false);
     out
+}
+
+/// Names type variables `A`, `B`, … by order of first appearance in the type being printed
+/// (`A1`, `B1`, … past `Z`). `names` holds the variables seen so far; an index into it is a name.
+fn write_var(out: &mut String, names: &mut Vec<TypeVarId>, var: TypeVarId) {
+    let index = names
+        .iter()
+        .position(|seen| *seen == var)
+        .unwrap_or_else(|| {
+            names.push(var);
+            names.len() - 1
+        });
+    out.push(char::from(b'A' + (index % 26) as u8));
+    if index >= 26 {
+        let _ = write!(out, "{}", index / 26);
+    }
 }
 
 /// `parenthesise_function` is set when `ty` sits in a position where a bare arrow would
 /// re-associate: the left of another arrow. `->` is right-associative (currying is
 /// desugared that way), so `Int -> Int -> Int` needs no parens but `(Int -> Int) -> Int`
 /// does.
-fn write_type(out: &mut String, ty: &Type, parenthesise_function: bool) {
+fn write_type(
+    out: &mut String,
+    names: &mut Vec<TypeVarId>,
+    ty: &Type,
+    parenthesise_function: bool,
+) {
     match ty {
         Type::Unit => out.push_str("Unit"),
         Type::Literal(literal) => out.push_str(format_literal(literal)),
-        // Matches the spelling `TypeCheckError::InfiniteType` uses for an unsolved variable.
-        Type::Var(var) => {
-            let _ = write!(out, "_{}", var.0);
-        }
+        // Any variable left after type checking is shown as a generic, generalised or not:
+        // `TypedBinding` carries no scheme to tell the two apart.
+        Type::Var(var) => write_var(out, names, *var),
         Type::Fn {
             parameter,
             return_type: result,
@@ -93,19 +114,31 @@ fn write_type(out: &mut String, ty: &Type, parenthesise_function: bool) {
             if parenthesise_function {
                 out.push('(');
             }
-            write_function_type(out, parameter.as_deref(), result);
+            write_function_type(out, names, parameter.as_deref(), result);
             if parenthesise_function {
                 out.push(')');
             }
         }
-        Type::Record(Record { field1: fields }) => {
+        Type::Record {
+            fields,
+            tail: RecordTail::Closed,
+        } if fields.is_empty() => out.push_str("{}"),
+        // An open tail prints as `..A` after the fields: "these, plus whatever row `A` holds".
+        Type::Record { fields, tail } => {
             out.push_str("{ ");
             for (index, (name, field)) in fields.iter().enumerate() {
                 if index > 0 {
                     out.push_str(", ");
                 }
                 let _ = write!(out, "{name}: ");
-                write_type(out, field, false);
+                write_type(out, names, field, false);
+            }
+            if let RecordTail::Open(row) = tail {
+                if !fields.is_empty() {
+                    out.push_str(", ");
+                }
+                out.push_str("..");
+                write_var(out, names, *row);
             }
             out.push_str(" }");
         }
@@ -116,14 +149,19 @@ fn write_type(out: &mut String, ty: &Type, parenthesise_function: bool) {
 /// type inside `<…>`, which already delimits it, so only [`write_type`]'s `Fn` arm needs those.
 /// `Value::Closure` doesn't hold a `Type::Fn` to hand off, so this takes the two halves loose:
 /// the lambda carries them as `parameter.ty` and `body.ty`.
-fn write_function_type(out: &mut String, parameter: Option<&Type>, result: &Type) {
+fn write_function_type(
+    out: &mut String,
+    names: &mut Vec<TypeVarId>,
+    parameter: Option<&Type>,
+    result: &Type,
+) {
     match parameter {
         // A zero-parameter lambda: `() => 1`.
         None => out.push_str("()"),
-        Some(parameter) => write_type(out, parameter, true),
+        Some(parameter) => write_type(out, names, parameter, true),
     }
     out.push_str(" -> ");
-    write_type(out, result, false);
+    write_type(out, names, result, false);
 }
 
 fn format_literal(literal: &Literal) -> &'static str {
@@ -144,8 +182,8 @@ mod tests {
     use trestle::binding_resolution::BindingId;
     use trestle::evaluate::{Environment, Value};
     use trestle::type_check::typed_ast::{
-        ExpressionKind, Lambda, Literal, Param, Type, TypeCheckedExpression, TypeCheckedLiteral,
-        TypeVarId,
+        ExpressionKind, Lambda, Literal, Param, RecordTail, Type, TypeCheckedExpression,
+        TypeCheckedLiteral, TypeVarId,
     };
 
     use super::{format_type, format_value};
@@ -211,8 +249,15 @@ mod tests {
     }
 
     #[test]
-    fn unsolved_variables_print_as_underscore_numbers() {
-        assert_eq!(format_type(&Type::Var(TypeVarId(3))), "_3");
+    fn type_variables_are_named_in_order_of_appearance() {
+        let ty = Type::Fn {
+            parameter: Some(Box::new(Type::Var(TypeVarId(7)))),
+            return_type: Box::new(Type::Fn {
+                parameter: Some(Box::new(Type::Var(TypeVarId(3)))),
+                return_type: Box::new(Type::Var(TypeVarId(7))),
+            }),
+        };
+        assert_eq!(format_type(&ty), "A -> B -> A");
     }
 
     #[test]
@@ -221,9 +266,40 @@ mod tests {
         fields.insert("x".to_owned(), Box::new(int()));
         fields.insert("y".to_owned(), Box::new(int()));
         assert_eq!(
-            format_type(&Type::Record { fields: fields }),
+            format_type(&Type::Record {
+                fields,
+                tail: RecordTail::Closed
+            }),
             "{ x: Int, y: Int }"
         );
+    }
+
+    #[test]
+    fn an_empty_closed_record_type_prints_without_padding() {
+        let ty = Type::Record {
+            fields: BTreeMap::new(),
+            tail: RecordTail::Closed,
+        };
+        assert_eq!(format_type(&ty), "{}");
+    }
+
+    /// The row variable shares its naming with the field variables.
+    #[test]
+    fn an_open_record_prints_its_row_after_the_fields() {
+        let ty = Type::Record {
+            fields: BTreeMap::from([("x".to_owned(), Box::new(Type::Var(TypeVarId(5))))]),
+            tail: RecordTail::Open(TypeVarId(2)),
+        };
+        assert_eq!(format_type(&ty), "{ x: A, ..B }");
+    }
+
+    #[test]
+    fn an_open_record_without_fields_prints_only_its_row() {
+        let ty = Type::Record {
+            fields: BTreeMap::new(),
+            tail: RecordTail::Open(TypeVarId(2)),
+        };
+        assert_eq!(format_type(&ty), "{ ..A }");
     }
 
     /// Also pins the field order: `x` was inserted first, but `BTreeMap` sorts by name.

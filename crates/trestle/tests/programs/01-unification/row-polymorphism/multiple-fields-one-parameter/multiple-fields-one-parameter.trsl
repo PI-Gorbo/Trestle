@@ -1,0 +1,9 @@
+// Two different fields read off one parameter. `r.x` opens the row as `{ x: a | r1 }`;
+// `r.y` finds no `y` there, so it extends the tail: `r1 := { y: b | r2 }`. The call then
+// supplies a third field, which lands in `r2`.
+//
+// Should analyse cleanly and evaluate to `7`.
+
+let sum = (r) => r.x + r.y
+
+sum({ x: 3, y: 4, label: "point" })

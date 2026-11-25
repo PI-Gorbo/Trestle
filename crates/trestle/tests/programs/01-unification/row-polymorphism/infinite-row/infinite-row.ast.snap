@@ -1,0 +1,84 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "loop",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "r",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: FunctionInvocation {
+                                    function: Expression {
+                                        kind: FieldAccess {
+                                            target: Expression {
+                                                kind: Var(
+                                                    "r",
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        237,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                            identifier: "next",
+                                        },
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                237,
+                                            ),
+                                            length: 6,
+                                        },
+                                    },
+                                    arguments: [
+                                        Expression {
+                                            kind: Var(
+                                                "r",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    244,
+                                                ),
+                                                length: 1,
+                                            },
+                                        },
+                                    ],
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        237,
+                                    ),
+                                    length: 9,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            230,
+                        ),
+                        length: 17,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    219,
+                ),
+                length: 28,
+            },
+        },
+    ],
+}

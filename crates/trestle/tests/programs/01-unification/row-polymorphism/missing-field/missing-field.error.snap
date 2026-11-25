@@ -1,0 +1,22 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: errors
+---
+TypeCheck(
+    [
+        RecordFieldMismatch {
+            missing: {
+                "y",
+            },
+            additional: {
+                "x",
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    235,
+                ),
+                length: 14,
+            },
+        },
+    ],
+)

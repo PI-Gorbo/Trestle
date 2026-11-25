@@ -1,0 +1,8 @@
+// `getX` demands an `x`; the closed literal has none. Open-vs-Closed unification finds
+// a field required by the row that the record lacks.
+//
+// Should be rejected with a record field mismatch (missing `x`).
+
+let getX = (r) => r.x
+
+getX({ y: 1 })

@@ -1,0 +1,248 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "server",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "r",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: FieldAccess {
+                                    target: Expression {
+                                        kind: Var(
+                                            "r",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                250,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    identifier: "server",
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        250,
+                                    ),
+                                    length: 8,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            243,
+                        ),
+                        length: 16,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    230,
+                ),
+                length: 29,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "port",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "r",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: FieldAccess {
+                                    target: Expression {
+                                        kind: Var(
+                                            "r",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                277,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    identifier: "port",
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        277,
+                                    ),
+                                    length: 6,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            270,
+                        ),
+                        length: 15,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    259,
+                ),
+                length: 26,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "config",
+                type_dec: None,
+                value: Expression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "debug": Expression {
+                                    kind: Literal(
+                                        Bool(
+                                            false,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            350,
+                                        ),
+                                        length: 5,
+                                    },
+                                },
+                                "server": Expression {
+                                    kind: Literal(
+                                        Record(
+                                            {
+                                                "host": Expression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "localhost",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            316,
+                                                        ),
+                                                        length: 11,
+                                                    },
+                                                },
+                                                "port": Expression {
+                                                    kind: Literal(
+                                                        Int(
+                                                            8080,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            335,
+                                                        ),
+                                                        length: 4,
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            308,
+                                        ),
+                                        length: 33,
+                                    },
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            298,
+                        ),
+                        length: 59,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    285,
+                ),
+                length: 74,
+            },
+        },
+        Expression {
+            kind: Binary(
+                Pipe,
+                Expression {
+                    kind: Binary(
+                        Pipe,
+                        Expression {
+                            kind: Var(
+                                "config",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    359,
+                                ),
+                                length: 6,
+                            },
+                        },
+                        Expression {
+                            kind: Var(
+                                "server",
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    369,
+                                ),
+                                length: 6,
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            359,
+                        ),
+                        length: 16,
+                    },
+                },
+                Expression {
+                    kind: Var(
+                        "port",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            379,
+                        ),
+                        length: 4,
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    359,
+                ),
+                length: 24,
+            },
+        },
+    ],
+}

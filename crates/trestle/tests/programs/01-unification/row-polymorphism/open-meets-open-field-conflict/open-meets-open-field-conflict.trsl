@@ -1,0 +1,10 @@
+// Open-vs-Open where the shared field disagrees: `a.x : Int`, `b.x : String`, and the
+// `if` forces `a ~ b`. The common-field step must fail before the tails are touched.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let pick = (a, b) => {
+    let n: Int = a.x
+    let s: String = b.x
+    if (true) a else b
+}

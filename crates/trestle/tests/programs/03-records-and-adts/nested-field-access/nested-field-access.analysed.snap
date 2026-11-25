@@ -74,8 +74,8 @@ TypeCheckedProgram {
                                         ),
                                         length: 34,
                                     },
-                                    ty: Record(
-                                        {
+                                    ty: Record {
+                                        fields: {
                                             "key": Literal(
                                                 String,
                                             ),
@@ -83,7 +83,8 @@ TypeCheckedProgram {
                                                 String,
                                             ),
                                         },
-                                    ),
+                                        tail: Closed,
+                                    },
                                 },
                             },
                         ),
@@ -94,13 +95,13 @@ TypeCheckedProgram {
                         ),
                         length: 58,
                     },
-                    ty: Record(
-                        {
+                    ty: Record {
+                        fields: {
                             "name": Literal(
                                 String,
                             ),
-                            "value": Record(
-                                {
+                            "value": Record {
+                                fields: {
                                     "key": Literal(
                                         String,
                                     ),
@@ -108,9 +109,11 @@ TypeCheckedProgram {
                                         String,
                                     ),
                                 },
-                            ),
+                                tail: Closed,
+                            },
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
             },
             span: SourceSpan {
@@ -142,13 +145,13 @@ TypeCheckedProgram {
                                         ),
                                         length: 11,
                                     },
-                                    ty: Record(
-                                        {
+                                    ty: Record {
+                                        fields: {
                                             "name": Literal(
                                                 String,
                                             ),
-                                            "value": Record(
-                                                {
+                                            "value": Record {
+                                                fields: {
                                                     "key": Literal(
                                                         String,
                                                     ),
@@ -156,9 +159,11 @@ TypeCheckedProgram {
                                                         String,
                                                     ),
                                                 },
-                                            ),
+                                                tail: Closed,
+                                            },
                                         },
-                                    ),
+                                        tail: Closed,
+                                    },
                                 },
                                 field_name: "value",
                             },
@@ -168,8 +173,8 @@ TypeCheckedProgram {
                                 ),
                                 length: 17,
                             },
-                            ty: Record(
-                                {
+                            ty: Record {
+                                fields: {
                                     "key": Literal(
                                         String,
                                     ),
@@ -177,7 +182,8 @@ TypeCheckedProgram {
                                         String,
                                     ),
                                 },
-                            ),
+                                tail: Closed,
+                            },
                         },
                         field_name: "key",
                     },
@@ -220,13 +226,13 @@ TypeCheckedProgram {
     bindings: [
         TypedBinding {
             name: "nestedValue",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "name": Literal(
                         String,
                     ),
-                    "value": Record(
-                        {
+                    "value": Record {
+                        fields: {
                             "key": Literal(
                                 String,
                             ),
@@ -234,9 +240,11 @@ TypeCheckedProgram {
                                 String,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     90,

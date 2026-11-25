@@ -1,0 +1,6 @@
+// Baseline: two *closed* records must match exactly. Both branches of the `if` must
+// have one type, and `{ x }` vs `{ y }` disagree on both sides.
+//
+// Should be rejected with a record field mismatch (missing `x`, unexpected `y`).
+
+if (true) { x: 1 } else { y: 1 }

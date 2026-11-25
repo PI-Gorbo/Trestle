@@ -180,7 +180,7 @@ ParsedProgram {
                                                 offset: SourceOffset(
                                                     375,
                                                 ),
-                                                length: 32,
+                                                length: 37,
                                             },
                                         },
                                         Expression {
@@ -189,7 +189,7 @@ ParsedProgram {
                                             ),
                                             span: SourceSpan {
                                                 offset: SourceOffset(
-                                                    407,
+                                                    412,
                                                 ),
                                                 length: 1,
                                             },
@@ -200,7 +200,7 @@ ParsedProgram {
                                     offset: SourceOffset(
                                         312,
                                     ),
-                                    length: 98,
+                                    length: 103,
                                 },
                             },
                         },
@@ -209,7 +209,7 @@ ParsedProgram {
                         offset: SourceOffset(
                             305,
                         ),
-                        length: 105,
+                        length: 110,
                     },
                 },
             },
@@ -217,7 +217,7 @@ ParsedProgram {
                 offset: SourceOffset(
                     293,
                 ),
-                length: 117,
+                length: 122,
             },
         },
         Expression {
@@ -228,7 +228,7 @@ ParsedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    411,
+                    416,
                 ),
                 length: 1,
             },

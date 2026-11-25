@@ -9,8 +9,8 @@ TypeCheckedProgram {
                 identifier: TypeBindingId(
                     5,
                 ),
-                type_expression: Record(
-                    {
+                type_expression: Record {
+                    fields: {
                         "label": Literal(
                             String,
                         ),
@@ -24,7 +24,8 @@ TypeCheckedProgram {
                             Int,
                         ),
                     },
-                ),
+                    tail: Closed,
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -32,8 +33,8 @@ TypeCheckedProgram {
                 ),
                 length: 54,
             },
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "label": Literal(
                         String,
                     ),
@@ -47,15 +48,16 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
         },
         TypeCheckedExpression {
             kind: TypeDeclaration {
                 identifier: TypeBindingId(
                     6,
                 ),
-                type_expression: Record(
-                    {
+                type_expression: Record {
+                    fields: {
                         "label": Literal(
                             String,
                         ),
@@ -69,7 +71,8 @@ TypeCheckedProgram {
                             Int,
                         ),
                     },
-                ),
+                    tail: Closed,
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -77,8 +80,8 @@ TypeCheckedProgram {
                 ),
                 length: 96,
             },
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "label": Literal(
                         String,
                     ),
@@ -92,16 +95,18 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
         },
         TypeCheckedExpression {
             kind: TypeDeclaration {
                 identifier: TypeBindingId(
                     7,
                 ),
-                type_expression: Record(
-                    {},
-                ),
+                type_expression: Record {
+                    fields: {},
+                    tail: Closed,
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -109,18 +114,20 @@ TypeCheckedProgram {
                 ),
                 length: 28,
             },
-            ty: Record(
-                {},
-            ),
+            ty: Record {
+                fields: {},
+                tail: Closed,
+            },
         },
         TypeCheckedExpression {
             kind: TypeDeclaration {
                 identifier: TypeBindingId(
                     8,
                 ),
-                type_expression: Record(
-                    {},
-                ),
+                type_expression: Record {
+                    fields: {},
+                    tail: Closed,
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -128,9 +135,10 @@ TypeCheckedProgram {
                 ),
                 length: 31,
             },
-            ty: Record(
-                {},
-            ),
+            ty: Record {
+                fields: {},
+                tail: Closed,
+            },
         },
     ],
     bindings: [],
@@ -197,8 +205,8 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "Point",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "label": Literal(
                         String,
                     ),
@@ -212,7 +220,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     0,
@@ -222,8 +231,8 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "Point2",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "label": Literal(
                         String,
                     ),
@@ -237,7 +246,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     56,
@@ -247,9 +257,10 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "EmptyRecordNoSpace",
-            ty: Record(
-                {},
-            ),
+            ty: Record {
+                fields: {},
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     154,
@@ -259,9 +270,10 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "EmptyRecordWithSpace",
-            ty: Record(
-                {},
-            ),
+            ty: Record {
+                fields: {},
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     183,

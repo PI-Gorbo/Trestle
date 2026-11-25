@@ -1,0 +1,17 @@
+// Open-vs-Open unification. `a.x` gives `a : { x: p | r1 }` and `b.y` gives
+// `b : { y: q | r2 }`; the `if` forces `a ~ b`. Each tail absorbs the field only the
+// other side knows, ending in one shared tail `r3`:
+//     r1 := { y: q | r3 }      r2 := { x: p | r3 }
+// so both become `{ x: p, y: q | r3 }`, and the result supports both fields.
+//
+// Should analyse cleanly and evaluate to `30`.
+
+let pick = (cond, a, b) => {
+    let ax = a.x
+    let by = b.y
+    if (cond) a else b
+}
+
+let chosen = pick(false, { x: 1, y: 2, z: true }, { x: 10, y: 20, z: false })
+
+chosen.x + chosen.y

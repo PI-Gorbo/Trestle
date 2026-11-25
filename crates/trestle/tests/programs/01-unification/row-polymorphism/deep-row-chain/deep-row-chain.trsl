@@ -1,0 +1,10 @@
+// Stress: four distinct fields read off one parameter. Every read after the second goes
+// through a tail that is already solved (`r1 := { y | r2 }`, `r2 := { z | ... }`), and
+// `resolve_shallow` only unwraps one level, so a later open-vs-open unification sees a
+// tail with no let level.
+//
+// Should analyse cleanly and evaluate to `10`.
+
+let sum4 = (r) => r.a + r.b + r.c + r.d
+
+sum4({ a: 1, b: 2, c: 3, d: 4, e: 5 })

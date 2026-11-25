@@ -10,15 +10,16 @@ TypeCheck(
             ),
             ty: Fn {
                 parameter: Some(
-                    Record(
-                        {
+                    Record {
+                        fields: {
                             "inner": Var(
                                 TypeVarId(
                                     0,
                                 ),
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 ),
                 return_type: Var(
                     TypeVarId(

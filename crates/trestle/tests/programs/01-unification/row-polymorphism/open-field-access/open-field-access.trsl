@@ -1,0 +1,9 @@
+// Row polymorphism, the base case: `getX` never names a record type, so reading `r.x`
+// gives `r` the *open* row `{ x: a | r1 }`. A closed literal with extra fields then
+// unifies against it (Open expected, Closed found), solving `r1 := { y: Int }`.
+//
+// Should analyse cleanly and evaluate to `1`.
+
+let getX = (r) => r.x
+
+getX({ x: 1, y: 2 })

@@ -1,0 +1,13 @@
+// Closed-vs-Open: `takesPoint` wants exactly `{ x, y }`; `r` is open and has been
+// extended with `z`. A closed row can't absorb an extra field.
+//
+// Should be rejected with a record field mismatch (unexpected `z`).
+
+type Point = { x: Int, y: Int }
+
+let takesPoint = (p: Point) => p.x
+
+let f = (r) => {
+    let z = r.z
+    takesPoint(r)
+}

@@ -1,0 +1,9 @@
+// The row grew to `{ x, y | r }` across two reads; the argument supplies only `x`.
+// Pins that the error names exactly the field that's absent — not `x`, and not the
+// extra `z`.
+//
+// Should be rejected with a record field mismatch (missing `y`).
+
+let sum = (r) => r.x + r.y
+
+sum({ x: 1, z: 2 })

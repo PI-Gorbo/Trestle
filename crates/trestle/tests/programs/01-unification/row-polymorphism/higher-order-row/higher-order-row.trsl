@@ -1,0 +1,13 @@
+// A row-polymorphic function passed as a value. `apply` instantiates `getX` at the
+// argument's shape, and a function-valued field shows a row field can hold any type.
+//
+// Should analyse cleanly and evaluate to `47`.
+
+let getX = (r) => r.x
+let apply = (f, v) => f(v)
+let run = (r) => r.fn(r.arg)
+
+let five = apply(getX, { x: 5, extra: "ignored" })
+let doubled = run({ fn: (n: Int) => n * 2, arg: 21, label: "doubler" })
+
+five + doubled

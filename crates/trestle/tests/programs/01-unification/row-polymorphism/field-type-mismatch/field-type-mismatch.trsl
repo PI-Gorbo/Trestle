@@ -1,0 +1,8 @@
+// The row is satisfied by name but not by type: `r.x + 1` fixes `x : Int`, and the
+// argument's `x` is a String.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let addOne = (r) => r.x + 1
+
+addOne({ x: "one" })

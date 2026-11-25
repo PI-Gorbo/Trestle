@@ -1,0 +1,12 @@
+// The point of rows over plain structural subtyping: `touch` reads `x` but returns the
+// record it was given, so its type is `{ x: a | r } -> { x: a | r }`. The tail `r` carries
+// the caller's extra fields *through* the call, so `.label` on the result type-checks.
+//
+// Should analyse cleanly and evaluate to `"kept"`.
+
+let touch = (r) => {
+    let seen = r.x
+    r
+}
+
+touch({ x: 1, label: "kept" }).label

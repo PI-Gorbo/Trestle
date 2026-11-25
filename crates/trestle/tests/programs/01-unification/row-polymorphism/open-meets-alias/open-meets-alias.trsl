@@ -1,0 +1,12 @@
+// A row-polymorphic function applied to a value of a named, closed record type: the
+// alias `Point` is just a closed row, so this is the same Open-vs-Closed unification as
+// passing a literal.
+//
+// Should analyse cleanly and evaluate to `4`.
+
+type Point = { x: Int, y: Int }
+
+let getY = (r) => r.y
+let p: Point = { x: 3, y: 4 }
+
+getY(p)

@@ -1,0 +1,262 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: Let {
+                name: "sum4",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "r",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Binary(
+                                    Add,
+                                    Expression {
+                                        kind: Binary(
+                                            Add,
+                                            Expression {
+                                                kind: Binary(
+                                                    Add,
+                                                    Expression {
+                                                        kind: FieldAccess {
+                                                            target: Expression {
+                                                                kind: Var(
+                                                                    "r",
+                                                                ),
+                                                                span: SourceSpan {
+                                                                    offset: SourceOffset(
+                                                                        362,
+                                                                    ),
+                                                                    length: 1,
+                                                                },
+                                                            },
+                                                            identifier: "a",
+                                                        },
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                362,
+                                                            ),
+                                                            length: 3,
+                                                        },
+                                                    },
+                                                    Expression {
+                                                        kind: FieldAccess {
+                                                            target: Expression {
+                                                                kind: Var(
+                                                                    "r",
+                                                                ),
+                                                                span: SourceSpan {
+                                                                    offset: SourceOffset(
+                                                                        368,
+                                                                    ),
+                                                                    length: 1,
+                                                                },
+                                                            },
+                                                            identifier: "b",
+                                                        },
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                368,
+                                                            ),
+                                                            length: 3,
+                                                        },
+                                                    },
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        362,
+                                                    ),
+                                                    length: 9,
+                                                },
+                                            },
+                                            Expression {
+                                                kind: FieldAccess {
+                                                    target: Expression {
+                                                        kind: Var(
+                                                            "r",
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                374,
+                                                            ),
+                                                            length: 1,
+                                                        },
+                                                    },
+                                                    identifier: "c",
+                                                },
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        374,
+                                                    ),
+                                                    length: 3,
+                                                },
+                                            },
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                362,
+                                            ),
+                                            length: 15,
+                                        },
+                                    },
+                                    Expression {
+                                        kind: FieldAccess {
+                                            target: Expression {
+                                                kind: Var(
+                                                    "r",
+                                                ),
+                                                span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        380,
+                                                    ),
+                                                    length: 1,
+                                                },
+                                            },
+                                            identifier: "d",
+                                        },
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                380,
+                                            ),
+                                            length: 3,
+                                        },
+                                    },
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        362,
+                                    ),
+                                    length: 21,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            355,
+                        ),
+                        length: 28,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    344,
+                ),
+                length: 39,
+            },
+        },
+        Expression {
+            kind: FunctionInvocation {
+                function: Expression {
+                    kind: Var(
+                        "sum4",
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            385,
+                        ),
+                        length: 4,
+                    },
+                },
+                arguments: [
+                    Expression {
+                        kind: Literal(
+                            Record(
+                                {
+                                    "a": Expression {
+                                        kind: Literal(
+                                            Int(
+                                                1,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                395,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    "b": Expression {
+                                        kind: Literal(
+                                            Int(
+                                                2,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                401,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    "c": Expression {
+                                        kind: Literal(
+                                            Int(
+                                                3,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                407,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    "d": Expression {
+                                        kind: Literal(
+                                            Int(
+                                                4,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                413,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    "e": Expression {
+                                        kind: Literal(
+                                            Int(
+                                                5,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                419,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                },
+                            ),
+                        ),
+                        span: SourceSpan {
+                            offset: SourceOffset(
+                                390,
+                            ),
+                            length: 32,
+                        },
+                    },
+                ],
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    385,
+                ),
+                length: 38,
+            },
+        },
+    ],
+}

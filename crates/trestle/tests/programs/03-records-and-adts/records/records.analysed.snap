@@ -9,8 +9,8 @@ TypeCheckedProgram {
                 identifier: TypeBindingId(
                     5,
                 ),
-                type_expression: Record(
-                    {
+                type_expression: Record {
+                    fields: {
                         "x": Literal(
                             Int,
                         ),
@@ -18,7 +18,8 @@ TypeCheckedProgram {
                             Int,
                         ),
                     },
-                ),
+                    tail: Closed,
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -26,8 +27,8 @@ TypeCheckedProgram {
                 ),
                 length: 31,
             },
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "x": Literal(
                         Int,
                     ),
@@ -35,7 +36,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
         },
         TypeCheckedExpression {
             kind: Let {
@@ -87,8 +89,8 @@ TypeCheckedProgram {
                         ),
                         length: 14,
                     },
-                    ty: Record(
-                        {
+                    ty: Record {
+                        fields: {
                             "x": Literal(
                                 Int,
                             ),
@@ -96,7 +98,8 @@ TypeCheckedProgram {
                                 Int,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
             },
             span: SourceSpan {
@@ -157,8 +160,8 @@ TypeCheckedProgram {
                         ),
                         length: 14,
                     },
-                    ty: Record(
-                        {
+                    ty: Record {
+                        fields: {
                             "x": Literal(
                                 Int,
                             ),
@@ -166,7 +169,8 @@ TypeCheckedProgram {
                                 Int,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
             },
             span: SourceSpan {
@@ -189,8 +193,8 @@ TypeCheckedProgram {
                 ),
                 length: 1,
             },
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "x": Literal(
                         Int,
                     ),
@@ -198,14 +202,15 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
         },
     ],
     bindings: [
         TypedBinding {
             name: "origin",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "x": Literal(
                         Int,
                     ),
@@ -213,7 +218,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     33,
@@ -223,8 +229,8 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "p",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "x": Literal(
                         Int,
                     ),
@@ -232,7 +238,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     69,
@@ -304,8 +311,8 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "Point",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "x": Literal(
                         Int,
                     ),
@@ -313,7 +320,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     0,

@@ -1,0 +1,10 @@
+// One field, two incompatible uses inside the same function. The second read finds `x`
+// already in the row, so the annotations conflict on the same field type.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let f = (r) => {
+    let n: Int = r.x
+    let s: String = r.x
+    n
+}

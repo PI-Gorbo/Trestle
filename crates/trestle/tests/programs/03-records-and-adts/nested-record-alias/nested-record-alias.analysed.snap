@@ -9,8 +9,8 @@ TypeCheckedProgram {
                 identifier: TypeBindingId(
                     5,
                 ),
-                type_expression: Record(
-                    {
+                type_expression: Record {
+                    fields: {
                         "key": Literal(
                             String,
                         ),
@@ -18,7 +18,8 @@ TypeCheckedProgram {
                             String,
                         ),
                     },
-                ),
+                    tail: Closed,
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -26,8 +27,8 @@ TypeCheckedProgram {
                 ),
                 length: 43,
             },
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "key": Literal(
                         String,
                     ),
@@ -35,20 +36,21 @@ TypeCheckedProgram {
                         String,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
         },
         TypeCheckedExpression {
             kind: TypeDeclaration {
                 identifier: TypeBindingId(
                     6,
                 ),
-                type_expression: Record(
-                    {
+                type_expression: Record {
+                    fields: {
                         "name": Literal(
                             String,
                         ),
-                        "value": Record(
-                            {
+                        "value": Record {
+                            fields: {
                                 "key": Literal(
                                     String,
                                 ),
@@ -56,9 +58,11 @@ TypeCheckedProgram {
                                     String,
                                 ),
                             },
-                        ),
+                            tail: Closed,
+                        },
                     },
-                ),
+                    tail: Closed,
+                },
             },
             span: SourceSpan {
                 offset: SourceOffset(
@@ -66,13 +70,13 @@ TypeCheckedProgram {
                 ),
                 length: 52,
             },
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "name": Literal(
                         String,
                     ),
-                    "value": Record(
-                        {
+                    "value": Record {
+                        fields: {
                             "key": Literal(
                                 String,
                             ),
@@ -80,9 +84,11 @@ TypeCheckedProgram {
                                 String,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
-            ),
+                tail: Closed,
+            },
         },
         TypeCheckedExpression {
             kind: Let {
@@ -154,8 +160,8 @@ TypeCheckedProgram {
                                         ),
                                         length: 34,
                                     },
-                                    ty: Record(
-                                        {
+                                    ty: Record {
+                                        fields: {
                                             "key": Literal(
                                                 String,
                                             ),
@@ -163,7 +169,8 @@ TypeCheckedProgram {
                                                 String,
                                             ),
                                         },
-                                    ),
+                                        tail: Closed,
+                                    },
                                 },
                             },
                         ),
@@ -174,13 +181,13 @@ TypeCheckedProgram {
                         ),
                         length: 58,
                     },
-                    ty: Record(
-                        {
+                    ty: Record {
+                        fields: {
                             "name": Literal(
                                 String,
                             ),
-                            "value": Record(
-                                {
+                            "value": Record {
+                                fields: {
                                     "key": Literal(
                                         String,
                                     ),
@@ -188,9 +195,11 @@ TypeCheckedProgram {
                                         String,
                                     ),
                                 },
-                            ),
+                                tail: Closed,
+                            },
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
             },
             span: SourceSpan {
@@ -217,13 +226,13 @@ TypeCheckedProgram {
                                 ),
                                 length: 11,
                             },
-                            ty: Record(
-                                {
+                            ty: Record {
+                                fields: {
                                     "name": Literal(
                                         String,
                                     ),
-                                    "value": Record(
-                                        {
+                                    "value": Record {
+                                        fields: {
                                             "key": Literal(
                                                 String,
                                             ),
@@ -231,9 +240,11 @@ TypeCheckedProgram {
                                                 String,
                                             ),
                                         },
-                                    ),
+                                        tail: Closed,
+                                    },
                                 },
-                            ),
+                                tail: Closed,
+                            },
                         },
                         field_name: "value",
                     },
@@ -243,8 +254,8 @@ TypeCheckedProgram {
                         ),
                         length: 17,
                     },
-                    ty: Record(
-                        {
+                    ty: Record {
+                        fields: {
                             "key": Literal(
                                 String,
                             ),
@@ -252,7 +263,8 @@ TypeCheckedProgram {
                                 String,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
                 field_name: "value",
             },
@@ -270,13 +282,13 @@ TypeCheckedProgram {
     bindings: [
         TypedBinding {
             name: "nestedValue",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "name": Literal(
                         String,
                     ),
-                    "value": Record(
-                        {
+                    "value": Record {
+                        fields: {
                             "key": Literal(
                                 String,
                             ),
@@ -284,9 +296,11 @@ TypeCheckedProgram {
                                 String,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     416,
@@ -358,8 +372,8 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "Inner",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "key": Literal(
                         String,
                     ),
@@ -367,7 +381,8 @@ TypeCheckedProgram {
                         String,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     317,
@@ -377,13 +392,13 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "Nested",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "name": Literal(
                         String,
                     ),
-                    "value": Record(
-                        {
+                    "value": Record {
+                        fields: {
                             "key": Literal(
                                 String,
                             ),
@@ -391,9 +406,11 @@ TypeCheckedProgram {
                                 String,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     362,

@@ -1,0 +1,14 @@
+// A generalised row: `getX : { x: a | r } -> a` instantiates a fresh field type *and* a
+// fresh tail at every call, so the same getter accepts records of different widths and
+// different field types.
+//
+// Should analyse cleanly and evaluate to `6`.
+
+let getX = (r) => r.x
+
+let a = getX({ x: 1 })
+let b = getX({ x: 2, y: "two" })
+let c = getX({ x: 3, y: true, z: 3.0 })
+let s = getX({ x: "ignored" })
+
+a + b + c

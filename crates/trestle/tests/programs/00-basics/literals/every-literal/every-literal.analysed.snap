@@ -202,8 +202,8 @@ TypeCheckedProgram {
                         ),
                         length: 14,
                     },
-                    ty: Record(
-                        {
+                    ty: Record {
+                        fields: {
                             "x": Literal(
                                 Int,
                             ),
@@ -211,7 +211,8 @@ TypeCheckedProgram {
                                 Int,
                             ),
                         },
-                    ),
+                        tail: Closed,
+                    },
                 },
             },
             span: SourceSpan {
@@ -234,8 +235,8 @@ TypeCheckedProgram {
                 ),
                 length: 6,
             },
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "x": Literal(
                         Int,
                     ),
@@ -243,7 +244,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
         },
     ],
     bindings: [
@@ -309,8 +311,8 @@ TypeCheckedProgram {
         },
         TypedBinding {
             name: "origin",
-            ty: Record(
-                {
+            ty: Record {
+                fields: {
                     "x": Literal(
                         Int,
                     ),
@@ -318,7 +320,8 @@ TypeCheckedProgram {
                         Int,
                     ),
                 },
-            ),
+                tail: Closed,
+            },
             span: SourceSpan {
                 offset: SourceOffset(
                     279,

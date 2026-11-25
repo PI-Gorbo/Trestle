@@ -1,0 +1,8 @@
+// The field's type is itself a fresh variable, so `r.inner.value` opens a row *inside*
+// a row: `r : { inner: { value: a | r2 } | r1 }`. Both levels accept extra fields.
+//
+// Should analyse cleanly and evaluate to `"deep"`.
+
+let getValue = (r) => r.inner.value
+
+getValue({ inner: { value: "deep", depth: 2 }, id: 1 })

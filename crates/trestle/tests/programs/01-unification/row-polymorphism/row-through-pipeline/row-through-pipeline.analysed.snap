@@ -1,0 +1,702 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: analysed
+---
+TypeCheckedProgram {
+    expressions: [
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    1,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        0,
+                                    ),
+                                    ty: Record {
+                                        fields: {
+                                            "server": Var(
+                                                TypeVarId(
+                                                    3,
+                                                ),
+                                            ),
+                                        },
+                                        tail: Open(
+                                            TypeVarId(
+                                                2,
+                                            ),
+                                        ),
+                                    },
+                                },
+                            ),
+                            body: TypeCheckedExpression {
+                                kind: FieldAccess {
+                                    target: TypeCheckedExpression {
+                                        kind: Var(
+                                            BindingId(
+                                                0,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                250,
+                                            ),
+                                            length: 1,
+                                        },
+                                        ty: Record {
+                                            fields: {
+                                                "server": Var(
+                                                    TypeVarId(
+                                                        3,
+                                                    ),
+                                                ),
+                                            },
+                                            tail: Open(
+                                                TypeVarId(
+                                                    2,
+                                                ),
+                                            ),
+                                        },
+                                    },
+                                    field_name: "server",
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        250,
+                                    ),
+                                    length: 8,
+                                },
+                                ty: Var(
+                                    TypeVarId(
+                                        3,
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            243,
+                        ),
+                        length: 16,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Record {
+                                fields: {
+                                    "server": Var(
+                                        TypeVarId(
+                                            3,
+                                        ),
+                                    ),
+                                },
+                                tail: Open(
+                                    TypeVarId(
+                                        2,
+                                    ),
+                                ),
+                            },
+                        ),
+                        return_type: Var(
+                            TypeVarId(
+                                3,
+                            ),
+                        ),
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    230,
+                ),
+                length: 29,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    3,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    binding: BindingId(
+                                        2,
+                                    ),
+                                    ty: Record {
+                                        fields: {
+                                            "port": Var(
+                                                TypeVarId(
+                                                    8,
+                                                ),
+                                            ),
+                                        },
+                                        tail: Open(
+                                            TypeVarId(
+                                                7,
+                                            ),
+                                        ),
+                                    },
+                                },
+                            ),
+                            body: TypeCheckedExpression {
+                                kind: FieldAccess {
+                                    target: TypeCheckedExpression {
+                                        kind: Var(
+                                            BindingId(
+                                                2,
+                                            ),
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                277,
+                                            ),
+                                            length: 1,
+                                        },
+                                        ty: Record {
+                                            fields: {
+                                                "port": Var(
+                                                    TypeVarId(
+                                                        8,
+                                                    ),
+                                                ),
+                                            },
+                                            tail: Open(
+                                                TypeVarId(
+                                                    7,
+                                                ),
+                                            ),
+                                        },
+                                    },
+                                    field_name: "port",
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        277,
+                                    ),
+                                    length: 6,
+                                },
+                                ty: Var(
+                                    TypeVarId(
+                                        8,
+                                    ),
+                                ),
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            270,
+                        ),
+                        length: 15,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Record {
+                                fields: {
+                                    "port": Var(
+                                        TypeVarId(
+                                            8,
+                                        ),
+                                    ),
+                                },
+                                tail: Open(
+                                    TypeVarId(
+                                        7,
+                                    ),
+                                ),
+                            },
+                        ),
+                        return_type: Var(
+                            TypeVarId(
+                                8,
+                            ),
+                        ),
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    259,
+                ),
+                length: 26,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: Let {
+                binding: BindingId(
+                    4,
+                ),
+                value: TypeCheckedExpression {
+                    kind: Literal(
+                        Record(
+                            {
+                                "debug": TypeCheckedExpression {
+                                    kind: Literal(
+                                        Bool(
+                                            false,
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            350,
+                                        ),
+                                        length: 5,
+                                    },
+                                    ty: Literal(
+                                        Bool,
+                                    ),
+                                },
+                                "server": TypeCheckedExpression {
+                                    kind: Literal(
+                                        Record(
+                                            {
+                                                "host": TypeCheckedExpression {
+                                                    kind: Literal(
+                                                        String(
+                                                            "localhost",
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            316,
+                                                        ),
+                                                        length: 11,
+                                                    },
+                                                    ty: Literal(
+                                                        String,
+                                                    ),
+                                                },
+                                                "port": TypeCheckedExpression {
+                                                    kind: Literal(
+                                                        Int(
+                                                            8080,
+                                                        ),
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            335,
+                                                        ),
+                                                        length: 4,
+                                                    },
+                                                    ty: Literal(
+                                                        Int,
+                                                    ),
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: SourceSpan {
+                                        offset: SourceOffset(
+                                            308,
+                                        ),
+                                        length: 33,
+                                    },
+                                    ty: Record {
+                                        fields: {
+                                            "host": Literal(
+                                                String,
+                                            ),
+                                            "port": Literal(
+                                                Int,
+                                            ),
+                                        },
+                                        tail: Closed,
+                                    },
+                                },
+                            },
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            298,
+                        ),
+                        length: 59,
+                    },
+                    ty: Record {
+                        fields: {
+                            "debug": Literal(
+                                Bool,
+                            ),
+                            "server": Record {
+                                fields: {
+                                    "host": Literal(
+                                        String,
+                                    ),
+                                    "port": Literal(
+                                        Int,
+                                    ),
+                                },
+                                tail: Closed,
+                            },
+                        },
+                        tail: Closed,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    285,
+                ),
+                length: 74,
+            },
+            ty: Unit,
+        },
+        TypeCheckedExpression {
+            kind: Binary(
+                Pipe,
+                TypeCheckedExpression {
+                    kind: Binary(
+                        Pipe,
+                        TypeCheckedExpression {
+                            kind: Var(
+                                BindingId(
+                                    4,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    359,
+                                ),
+                                length: 6,
+                            },
+                            ty: Record {
+                                fields: {
+                                    "debug": Literal(
+                                        Bool,
+                                    ),
+                                    "server": Record {
+                                        fields: {
+                                            "host": Literal(
+                                                String,
+                                            ),
+                                            "port": Literal(
+                                                Int,
+                                            ),
+                                        },
+                                        tail: Closed,
+                                    },
+                                },
+                                tail: Closed,
+                            },
+                        },
+                        TypeCheckedExpression {
+                            kind: Var(
+                                BindingId(
+                                    1,
+                                ),
+                            ),
+                            span: SourceSpan {
+                                offset: SourceOffset(
+                                    369,
+                                ),
+                                length: 6,
+                            },
+                            ty: Fn {
+                                parameter: Some(
+                                    Record {
+                                        fields: {
+                                            "debug": Literal(
+                                                Bool,
+                                            ),
+                                            "server": Record {
+                                                fields: {
+                                                    "host": Literal(
+                                                        String,
+                                                    ),
+                                                    "port": Literal(
+                                                        Int,
+                                                    ),
+                                                },
+                                                tail: Closed,
+                                            },
+                                        },
+                                        tail: Closed,
+                                    },
+                                ),
+                                return_type: Record {
+                                    fields: {
+                                        "host": Literal(
+                                            String,
+                                        ),
+                                        "port": Literal(
+                                            Int,
+                                        ),
+                                    },
+                                    tail: Closed,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            359,
+                        ),
+                        length: 16,
+                    },
+                    ty: Record {
+                        fields: {
+                            "host": Literal(
+                                String,
+                            ),
+                            "port": Literal(
+                                Int,
+                            ),
+                        },
+                        tail: Closed,
+                    },
+                },
+                TypeCheckedExpression {
+                    kind: Var(
+                        BindingId(
+                            3,
+                        ),
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            379,
+                        ),
+                        length: 4,
+                    },
+                    ty: Fn {
+                        parameter: Some(
+                            Record {
+                                fields: {
+                                    "host": Literal(
+                                        String,
+                                    ),
+                                    "port": Literal(
+                                        Int,
+                                    ),
+                                },
+                                tail: Closed,
+                            },
+                        ),
+                        return_type: Literal(
+                            Int,
+                        ),
+                    },
+                },
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    359,
+                ),
+                length: 24,
+            },
+            ty: Literal(
+                Int,
+            ),
+        },
+    ],
+    bindings: [
+        TypedBinding {
+            name: "r",
+            ty: Record {
+                fields: {
+                    "server": Var(
+                        TypeVarId(
+                            3,
+                        ),
+                    ),
+                },
+                tail: Open(
+                    TypeVarId(
+                        2,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    243,
+                ),
+                length: 16,
+            },
+        },
+        TypedBinding {
+            name: "server",
+            ty: Fn {
+                parameter: Some(
+                    Record {
+                        fields: {
+                            "server": Var(
+                                TypeVarId(
+                                    3,
+                                ),
+                            ),
+                        },
+                        tail: Open(
+                            TypeVarId(
+                                2,
+                            ),
+                        ),
+                    },
+                ),
+                return_type: Var(
+                    TypeVarId(
+                        3,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    230,
+                ),
+                length: 29,
+            },
+        },
+        TypedBinding {
+            name: "r",
+            ty: Record {
+                fields: {
+                    "port": Var(
+                        TypeVarId(
+                            8,
+                        ),
+                    ),
+                },
+                tail: Open(
+                    TypeVarId(
+                        7,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    270,
+                ),
+                length: 15,
+            },
+        },
+        TypedBinding {
+            name: "port",
+            ty: Fn {
+                parameter: Some(
+                    Record {
+                        fields: {
+                            "port": Var(
+                                TypeVarId(
+                                    8,
+                                ),
+                            ),
+                        },
+                        tail: Open(
+                            TypeVarId(
+                                7,
+                            ),
+                        ),
+                    },
+                ),
+                return_type: Var(
+                    TypeVarId(
+                        8,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    259,
+                ),
+                length: 26,
+            },
+        },
+        TypedBinding {
+            name: "config",
+            ty: Record {
+                fields: {
+                    "debug": Literal(
+                        Bool,
+                    ),
+                    "server": Record {
+                        fields: {
+                            "host": Literal(
+                                String,
+                            ),
+                            "port": Literal(
+                                Int,
+                            ),
+                        },
+                        tail: Closed,
+                    },
+                },
+                tail: Closed,
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    285,
+                ),
+                length: 74,
+            },
+        },
+    ],
+    type_bindings: [
+        TypedBinding {
+            name: "Int",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Float",
+            ty: Literal(
+                Float,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "String",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Bool",
+            ty: Literal(
+                Bool,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+        TypedBinding {
+            name: "Unit",
+            ty: Literal(
+                Unit,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    0,
+                ),
+                length: 0,
+            },
+        },
+    ],
+}

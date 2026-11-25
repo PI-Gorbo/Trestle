@@ -1,0 +1,11 @@
+// `|>` feeds a closed record through open-row getters. The first step returns a nested
+// record, which the second step reads through its own, independently instantiated row.
+//
+// Should analyse cleanly and evaluate to `8080`.
+
+let server = (r) => r.server
+let port = (r) => r.port
+
+let config = { server: { host: "localhost", port: 8080 }, debug: false }
+
+config |> server |> port

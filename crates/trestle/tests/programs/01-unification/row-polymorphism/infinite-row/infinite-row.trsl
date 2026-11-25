@@ -1,0 +1,6 @@
+// The occurs check through a row field. `r.next` is some `a`, and calling it with `r`
+// itself forces `a := (({ next: a | t }) => b)`: `a` occurs inside its own field.
+//
+// Should be rejected with an infinite type.
+
+let loop = (r) => r.next(r)

@@ -1,0 +1,8 @@
+// Reading the same field twice must reuse the field already in the row rather than
+// extend the tail with a second `x` — otherwise the row would carry `x` twice.
+//
+// Should analyse cleanly and evaluate to `10`.
+
+let double = (r) => r.x + r.x
+
+double({ x: 5, unused: true })

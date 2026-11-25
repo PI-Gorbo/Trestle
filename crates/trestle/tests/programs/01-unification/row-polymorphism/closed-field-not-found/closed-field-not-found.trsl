@@ -1,0 +1,9 @@
+// A closed row stays closed: when the record's type is known, a missing field is an
+// error at the access site, not a tail extension.
+//
+// Should be rejected with "record does not have field" (`z`).
+
+let id = (r) => r
+let p = id({ x: 1, y: 2 })
+
+p.z

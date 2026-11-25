@@ -1,0 +1,229 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: program
+---
+ParsedProgram {
+    expressions: [
+        Expression {
+            kind: TypeDeclaration {
+                identifier: "Point",
+                type_expression: TypeExpression {
+                    kind: Record(
+                        {
+                            "x": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        238,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                            "y": TypeExpression {
+                                kind: Named(
+                                    "Int",
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        246,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            233,
+                        ),
+                        length: 18,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    220,
+                ),
+                length: 31,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "takesPoint",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "p",
+                                    type_dec: Some(
+                                        TypeExpression {
+                                            kind: Named(
+                                                "Point",
+                                            ),
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    274,
+                                                ),
+                                                length: 5,
+                                            },
+                                        },
+                                    ),
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: FieldAccess {
+                                    target: Expression {
+                                        kind: Var(
+                                            "p",
+                                        ),
+                                        span: SourceSpan {
+                                            offset: SourceOffset(
+                                                284,
+                                            ),
+                                            length: 1,
+                                        },
+                                    },
+                                    identifier: "x",
+                                },
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        284,
+                                    ),
+                                    length: 3,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            270,
+                        ),
+                        length: 19,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    253,
+                ),
+                length: 36,
+            },
+        },
+        Expression {
+            kind: Let {
+                name: "f",
+                type_dec: None,
+                value: Expression {
+                    kind: Lambda(
+                        Lambda {
+                            parameter: Some(
+                                Param {
+                                    name: "r",
+                                    type_dec: None,
+                                },
+                            ),
+                            return_type: None,
+                            body: Expression {
+                                kind: Block(
+                                    [
+                                        Expression {
+                                            kind: Let {
+                                                name: "z",
+                                                type_dec: None,
+                                                value: Expression {
+                                                    kind: FieldAccess {
+                                                        target: Expression {
+                                                            kind: Var(
+                                                                "r",
+                                                            ),
+                                                            span: SourceSpan {
+                                                                offset: SourceOffset(
+                                                                    318,
+                                                                ),
+                                                                length: 1,
+                                                            },
+                                                        },
+                                                        identifier: "z",
+                                                    },
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            318,
+                                                        ),
+                                                        length: 3,
+                                                    },
+                                                },
+                                            },
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    310,
+                                                ),
+                                                length: 16,
+                                            },
+                                        },
+                                        Expression {
+                                            kind: FunctionInvocation {
+                                                function: Expression {
+                                                    kind: Var(
+                                                        "takesPoint",
+                                                    ),
+                                                    span: SourceSpan {
+                                                        offset: SourceOffset(
+                                                            326,
+                                                        ),
+                                                        length: 10,
+                                                    },
+                                                },
+                                                arguments: [
+                                                    Expression {
+                                                        kind: Var(
+                                                            "r",
+                                                        ),
+                                                        span: SourceSpan {
+                                                            offset: SourceOffset(
+                                                                337,
+                                                            ),
+                                                            length: 1,
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                            span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    326,
+                                                ),
+                                                length: 13,
+                                            },
+                                        },
+                                    ],
+                                ),
+                                span: SourceSpan {
+                                    offset: SourceOffset(
+                                        304,
+                                    ),
+                                    length: 37,
+                                },
+                            },
+                        },
+                    ),
+                    span: SourceSpan {
+                        offset: SourceOffset(
+                            297,
+                        ),
+                        length: 44,
+                    },
+                },
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    289,
+                ),
+                length: 52,
+            },
+        },
+    ],
+}

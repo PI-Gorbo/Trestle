@@ -1,0 +1,9 @@
+// Stress: re-reading a field that lives in the row's *tail*, not its head. `r.x` puts `x`
+// in the head; `r.y` puts `y` in the tail. Reading `r.y` again must find it through the
+// tail instead of extending the row with a second `y`.
+//
+// Should analyse cleanly and evaluate to `9`.
+
+let f = (r) => r.x + r.y + r.y + r.z
+
+f({ x: 1, y: 2, z: 4 })

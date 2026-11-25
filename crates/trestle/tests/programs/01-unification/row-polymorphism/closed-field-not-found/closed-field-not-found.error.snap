@@ -1,0 +1,21 @@
+---
+source: crates/trestle/tests/corpus.rs
+expression: errors
+---
+TypeCheck(
+    [
+        RecordDoesNotHaveField {
+            field_name: "z",
+            available: [
+                "x",
+                "y",
+            ],
+            span: SourceSpan {
+                offset: SourceOffset(
+                    249,
+                ),
+                length: 3,
+            },
+        },
+    ],
+)

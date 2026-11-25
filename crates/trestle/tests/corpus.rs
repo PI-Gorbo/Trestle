@@ -696,6 +696,117 @@ trsl_test!(
     [ast, error]
 );
 
+// Row polymorphism: a field access on an unknown type opens a row `{ f: a | r }`, and
+// unification extends, closes, or merges tails. Success cases first, then one error
+// program per rejection the row unifier makes.
+trsl_test!(
+    unification_row_open_field_access,
+    "01-unification/row-polymorphism/open-field-access/open-field-access.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_polymorphic_getter_many_shapes,
+    "01-unification/row-polymorphism/polymorphic-getter-many-shapes/polymorphic-getter-many-shapes.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_multiple_fields_one_parameter,
+    "01-unification/row-polymorphism/multiple-fields-one-parameter/multiple-fields-one-parameter.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_same_field_twice,
+    "01-unification/row-polymorphism/same-field-twice/same-field-twice.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_nested_open_records,
+    "01-unification/row-polymorphism/nested-open-records/nested-open-records.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_open_meets_alias,
+    "01-unification/row-polymorphism/open-meets-alias/open-meets-alias.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_row_preserved_through_return,
+    "01-unification/row-polymorphism/row-preserved-through-return/row-preserved-through-return.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_open_meets_open,
+    "01-unification/row-polymorphism/open-meets-open/open-meets-open.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_higher_order_row,
+    "01-unification/row-polymorphism/higher-order-row/higher-order-row.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_row_through_pipeline,
+    "01-unification/row-polymorphism/row-through-pipeline/row-through-pipeline.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_row_deep_row_chain,
+    "01-unification/row-polymorphism/deep-row-chain/deep-row-chain.trsl",
+    [ast, analyse, eval],
+    ignore = "todo!: open-vs-open unification on a row whose tail is already solved"
+);
+trsl_test!(
+    unification_row_repeated_field_after_extension,
+    "01-unification/row-polymorphism/repeated-field-after-extension/repeated-field-after-extension.trsl",
+    [ast, analyse, eval],
+    ignore = "todo!: open-vs-open unification on a row whose tail is already solved"
+);
+trsl_test!(
+    unification_row_missing_field,
+    "01-unification/row-polymorphism/missing-field/missing-field.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_missing_one_of_several,
+    "01-unification/row-polymorphism/missing-one-of-several/missing-one-of-several.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_field_type_mismatch,
+    "01-unification/row-polymorphism/field-type-mismatch/field-type-mismatch.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_conflicting_field_uses,
+    "01-unification/row-polymorphism/conflicting-field-uses/conflicting-field-uses.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_open_into_closed_parameter,
+    "01-unification/row-polymorphism/open-into-closed-parameter/open-into-closed-parameter.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_open_meets_open_field_conflict,
+    "01-unification/row-polymorphism/open-meets-open-field-conflict/open-meets-open-field-conflict.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_closed_field_not_found,
+    "01-unification/row-polymorphism/closed-field-not-found/closed-field-not-found.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_closed_records_differ,
+    "01-unification/row-polymorphism/closed-records-differ/closed-records-differ.trsl",
+    [ast, error]
+);
+trsl_test!(
+    unification_row_infinite_row,
+    "01-unification/row-polymorphism/infinite-row/infinite-row.trsl",
+    [ast, error]
+);
+
 // ══ 02 control flow ═══════════════════════════════════════
 trsl_test!(
     control_match_expression,
