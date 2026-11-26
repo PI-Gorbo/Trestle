@@ -1,0 +1,49 @@
+crates/trestle/src/type_check/unification.rs
+  s_a38960e1d34d06::t_8aa6465977cfdf 717-744
+  s_fc2abf343f29a6::t_6c1d8723c57d4e 499-500
+  s_fc2abf343f29a6::t_3ba512491c0575 496-498
+  s_fc2abf343f29a6::t_08b12e1214a2e2 501
+crates/trestle/tests/corpus.rs
+  s_a38960e1d34d06::t_5d2edd15daed36 818-820,822-826
+  s_a38960e1d34d06::t_213ebabb9074c7 816-817
+  s_a38960e1d34d06::t_0f4707fc47cd81 821
+TODO.md
+  s_a38960e1d34d06::t_2b1e74fbbb229d 8-16
+  s_a38960e1d34d06::t_1fc8a3c757d036 50-60
+crates/trestle/tests/programs/01-unification/row-polymorphism/captured-tail-is-not-generalised/captured-tail-is-not-generalised.ast.snap
+  s_a38960e1d34d06::t_06511b88cea68f 1-292
+crates/trestle/tests/programs/01-unification/row-polymorphism/captured-tail-is-not-generalised/captured-tail-is-not-generalised.trsl
+  s_a38960e1d34d06::t_68ab6f532992fb 1-16
+crates/trestle/tests/programs/01-unification/row-polymorphism/open-meets-open-same-row/open-meets-open-same-row.analysed.snap
+  s_a38960e1d34d06::t_a4b7600fb8976f 1-514
+crates/trestle/tests/programs/01-unification/row-polymorphism/open-meets-open-same-row/open-meets-open-same-row.ast.snap
+  s_a38960e1d34d06::t_9ed9c79ddb034a 1-194
+crates/trestle/tests/programs/01-unification/row-polymorphism/open-meets-open-same-row/open-meets-open-same-row.eval.snap
+  s_a38960e1d34d06::t_48f819cc19e7ed 1-8
+crates/trestle/tests/programs/01-unification/row-polymorphism/open-meets-open-same-row/open-meets-open-same-row.trsl
+  s_a38960e1d34d06::t_56fcec6ec00585 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5a5c6c18c8780440d080ad6fe59d16cc20b8287a",
+  "prompts": {},
+  "sessions": {
+    "s_a38960e1d34d06": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1663e7ad-33fa-4f3b-b947-5d01a3689473",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "SamGorbatov <samgorbatov@propertyme.com>"
+    },
+    "s_fc2abf343f29a6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ec082419-87b1-412b-ba26-fbc50945a897",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "SamGorbatov <samgorbatov@propertyme.com>"
+    }
+  }
+}
