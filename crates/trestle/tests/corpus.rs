@@ -813,8 +813,17 @@ trsl_test!(
 trsl_test!(
     unification_row_captured_row_is_not_generalised,
     "01-unification/row-polymorphism/captured-row-is-not-generalised/captured-row-is-not-generalised.trsl",
-    [ast, error],
-    ignore = "binding a variable to a type must raise the levels of the variables inside it"
+    [ast, error]
+);
+trsl_test!(
+    unification_row_captured_tail_is_not_generalised,
+    "01-unification/row-polymorphism/captured-tail-is-not-generalised/captured-tail-is-not-generalised.trsl",
+    [ast, error]
+); 
+trsl_test!(
+    unification_row_open_meets_open_same_row,
+    "01-unification/row-polymorphism/open-meets-open-same-row/open-meets-open-same-row.trsl",
+    [ast, analyse, eval]
 );
 
 // Expected vs found: one deliberate mismatch per place the checker unifies a required

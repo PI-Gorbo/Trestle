@@ -5,6 +5,15 @@ Paths are relative to `crates/trestle/src/type_check/`.
 
 ## Bugs
 
+- [ ] **Binding a variable doesn't lower the levels inside the type it's bound to.**
+  `union_with_concrete_type` (`unification.rs:494`) sets a free root at level L to a type
+  whose own variables can sit deeper than L, and leaves them there. They're now reachable
+  from something in an outer scope, but `generalise` still quantifies them. The
+  Free<->Concrete arms of `union_vars` (`:566`, `:574`) have the same gap. Fix: before
+  binding, lower every free root in the (resolved) type to `min(its level, L)`. Pinned by
+  three ignored corpus tests: `captured-function-result-is-not-generalised`,
+  `captured-row-is-not-generalised`, `captured-tail-is-not-generalised`.
+
 - [ ] **Unknown variables are replaced by the whole enclosing type.** In `resolve` and
   `resolve_shallow` (`unification.rs:132`, `:142`), `None => ty.clone()` substitutes the
   *entire* type being mapped for a variable missing from the union-find map. Nothing triggers
@@ -38,9 +47,14 @@ Paths are relative to `crates/trestle/src/type_check/`.
 
 ## Missing tests
 
-- [ ] **Open-vs-open records whose tails share a root** (`{ x | r } ~ { y | r }`). No program
-  found yet that reaches this branch.
-- [ ] **A mismatch found while unifying record tails.** No test checks which side is
-  reported as expected and which as found there.
-- [ ] **The callee-shape `unify`** (`inference.rs:733`) can't produce a mismatch from source,
-  so its expected/found order is untested.
+- [x] **Open-vs-open records whose tails share a root.** Success path:
+  `open-meets-open-same-row`. Mismatch path (`{ x | r } ~ { y | r }`): unit test
+  `open_records_sharing_a_tail_cannot_gain_different_fields`. The mismatch can't come from
+  source: annotations only build closed records and field access only extends a tail.
+- [x] **A mismatch found while unifying record tails.** Can't happen. `resolve_shallow`
+  flattens solved tails into the fields, so both tails are free roots when the record arm
+  runs, and binding a free root can only fail the occurs check (`InfiniteType`, no
+  expected/found). Covered by `infinite-row`.
+- [x] **The callee-shape `unify`** (`inference.rs:733`). `callee` is always a free root after
+  `resolve_shallow`, so the only failure is `InfiniteType`. Covered by
+  `infinite-type/self-application` and `row-polymorphism/infinite-row`.

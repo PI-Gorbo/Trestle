@@ -1,0 +1,16 @@
+// Levels through a row's tail. `r` belongs to `outer`'s lambda, but `r.y` is read inside
+// `getR`, one level deeper, which binds `r`'s type to `{ y: a | t }`. The tail `t` now
+// lives inside `r`'s type, so it must take `r`'s level. Otherwise generalising `getR`
+// treats `t` as its own, and each call can extend the same row with a different `z`.
+//
+// Should be rejected with a type mismatch (Int vs String).
+
+let outer = (r) => {
+    let getR = (u) => {
+        let k = r.y
+        r
+    }
+    let a: Int = getR(1).z
+    let b: String = getR(2).z
+    a
+}

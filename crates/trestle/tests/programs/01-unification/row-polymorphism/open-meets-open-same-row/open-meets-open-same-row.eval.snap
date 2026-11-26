@@ -1,0 +1,8 @@
+---
+source: crates/trestle/tests/corpus.rs
+assertion_line: 150
+expression: value
+---
+Int(
+    1,
+)

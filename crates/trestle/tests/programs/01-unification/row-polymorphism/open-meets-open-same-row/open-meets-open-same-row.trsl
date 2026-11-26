@@ -1,0 +1,12 @@
+// Open-vs-Open where both sides are the same row. `a.x` gives `a : { x: p | r }`, and the
+// `if` unifies `a` with itself, so both tails share a root. Nothing needs adding to
+// either side, so unification succeeds without minting a new tail.
+//
+// Should analyse cleanly and evaluate to `1`.
+
+let same = (a) => {
+    let ax = a.x
+    if (true) a else a
+}
+
+same({ x: 1 }).x
