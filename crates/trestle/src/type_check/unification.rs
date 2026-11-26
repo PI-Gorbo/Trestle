@@ -447,6 +447,23 @@ impl UnificationMap {
         root_level: LetGeneralisationLevel,
         declared_type: &Type,
     ) -> Result<BTreeSet<TypeVarId>, UnifyError> {
+        let set = BTreeSet::new();
+
+        self.ensure_no_infinite_types_and_find_lowerable_roots_inner(
+            root,
+            root_level,
+            declared_type,
+            set,
+        )
+    }
+
+    fn ensure_no_infinite_types_and_find_lowerable_roots_inner(
+        &self,
+        root: TypeVarId,
+        root_level: LetGeneralisationLevel,
+        declared_type: &Type,
+        lowerable_roots: BTreeSet<TypeVarId>,
+    ) -> Result<BTreeSet<TypeVarId>, UnifyError> {
         declared_type.try_fold_free_type_variables(
             &mut |type_var_id2, mut set: BTreeSet<TypeVarId>| match self.find_root(*type_var_id2) {
                 None => Ok(set),
@@ -466,15 +483,16 @@ impl UnificationMap {
                             Ok(set)
                         }
                         RootUnionNode::Concrete(declared_type) => self
-                            .ensure_no_infinite_types_and_find_lowerable_roots(
+                            .ensure_no_infinite_types_and_find_lowerable_roots_inner(
                                 root,
                                 root_level,
                                 declared_type,
+                                set,
                             ),
                     }
                 }
             },
-            BTreeSet::new(),
+            lowerable_roots,
         )
     }
 
