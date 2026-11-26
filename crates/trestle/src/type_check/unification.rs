@@ -441,33 +441,41 @@ impl UnificationMap {
         }
     }
 
-    fn ensure_no_infinite_types_and_find_lowerable_roots(&mut self, root: TypeVarId, root_level: LetGeneralisationLevel, declared_type: &Type) -> Result<BTreeSet<TypeVarId>, UnifyError> {
-        match declared_type {
-            Type::Unit | Type::Literal(_) => false,
-            Type::Var(type_var_id2) => match self.find_root(*type_var_id2) {
-                None => false,
-                Some((root2, RootUnionNode::FreeTypeVariable(_))) => root == root2,
-                Some((root2, RootUnionNode::Concrete(declared_type))) => {
-                    root == root2 || self.ensure_no_infinite_types_and_find_lowerable_roots(root, declared_type)
+    fn ensure_no_infinite_types_and_find_lowerable_roots(
+        &self,
+        root: TypeVarId,
+        root_level: LetGeneralisationLevel,
+        declared_type: &Type,
+    ) -> Result<BTreeSet<TypeVarId>, UnifyError> {
+        declared_type.try_fold_free_type_variables(
+            &mut |type_var_id2, mut set: BTreeSet<TypeVarId>| match self.find_root(*type_var_id2) {
+                None => Ok(set),
+                Some((root2, node)) => {
+                    if root == root2 {
+                        return Err(UnifyError::InfiniteType(InfiniteType {
+                            var: root,
+                            ty: self.resolve(declared_type),
+                        }));
+                    }
+                    match node {
+                        RootUnionNode::FreeTypeVariable(let_level) => {
+                            if let_level > &root_level {
+                                set.insert(root2);
+                            }
+
+                            Ok(set)
+                        }
+                        RootUnionNode::Concrete(declared_type) => self
+                            .ensure_no_infinite_types_and_find_lowerable_roots(
+                                root,
+                                root_level,
+                                declared_type,
+                            ),
+                    }
                 }
             },
-            Type::Fn {
-                parameter: param,
-                return_type: body,
-            } => {
-                param
-                    .as_ref()
-                    .is_some_and(|p| self.ensure_no_infinite_types_and_find_lowerable_roots(root, p))
-                    || self.ensure_no_infinite_types_and_find_lowerable_roots(root, body)
-            }
-            Type::Record { fields, tail } => {
-                fields
-                    .values()
-                    .any(|field| self.ensure_no_infinite_types_and_find_lowerable_roots(root, field))
-                    || matches!(tail, RecordTail::Open(tail_var)
-                        if self.ensure_no_infinite_types_and_find_lowerable_roots(root, &Type::Var(*tail_var)))
-            }
-        }
+            BTreeSet::new(),
+        )
     }
 
     fn union_with_concrete_type(
@@ -489,15 +497,25 @@ impl UnificationMap {
         // };
 
         match root_node {
-            RootUnionNode::Concrete(root_concrete_type) =>  self.unify_inner(concrete_type, &root_concrete_type.clone()),
+            RootUnionNode::Concrete(root_concrete_type) => {
+                self.unify_inner(concrete_type, &root_concrete_type.clone())
+            }
             RootUnionNode::FreeTypeVariable(root_generalisation_level) => {
-                let root_generalisation_level = *root_generalisation_level; 
-                let type_vars_to_lower: BTreeSet<TypeVarId> = self.ensure_no_infinite_types_and_find_lowerable_roots(root_id, root_generalisation_level, concrete_type)?;
+                let root_generalisation_level = *root_generalisation_level;
+                let type_vars_to_lower: BTreeSet<TypeVarId> = self
+                    .ensure_no_infinite_types_and_find_lowerable_roots(
+                        root_id,
+                        root_generalisation_level,
+                        concrete_type,
+                    )?;
 
                 for type_var in type_vars_to_lower {
-                    self.set(type_var, UnionNode::RootUnionNode(
-                        RootUnionNode::FreeTypeVariable(root_generalisation_level)
-                    ))
+                    self.set(
+                        type_var,
+                        UnionNode::RootUnionNode(RootUnionNode::FreeTypeVariable(
+                            root_generalisation_level,
+                        )),
+                    )
                     .map_err(UnifyError::FreeTypeVariableNotFoundError)?;
                 }
 
@@ -506,7 +524,7 @@ impl UnificationMap {
                     UnionNode::RootUnionNode(RootUnionNode::Concrete(concrete_type.clone())),
                 )
                 .map_err(UnifyError::FreeTypeVariableNotFoundError)
-            },
+            }
         }
     }
 
@@ -733,13 +751,25 @@ mod tests {
                 additional,
                 ..
             } => {
-                assert_eq!(missing, BTreeSet::from(["x".to_string()]), "expected-only field");
-                assert_eq!(additional, BTreeSet::from(["y".to_string()]), "found-only field");
+                assert_eq!(
+                    missing,
+                    BTreeSet::from(["x".to_string()]),
+                    "expected-only field"
+                );
+                assert_eq!(
+                    additional,
+                    BTreeSet::from(["y".to_string()]),
+                    "found-only field"
+                );
             }
             other => panic!("expected a record field mismatch, got {other:?}"),
         }
 
-        assert_eq!(unification_map.resolve(&Type::Var(r)), Type::Var(r), "r stays free");
+        assert_eq!(
+            unification_map.resolve(&Type::Var(r)),
+            Type::Var(r),
+            "r stays free"
+        );
     }
 
     #[test]

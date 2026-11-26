@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::convert::Infallible;
 
 use miette::SourceSpan;
 
@@ -36,30 +37,46 @@ impl Type {
         folder: &mut impl FnMut(&TypeVarId, TAgg) -> TAgg,
         initial_value: TAgg,
     ) -> TAgg {
+        // Infallible makes the Result zero-cost, so there's only one traversal to maintain.
+        let Ok(agg) = self.try_fold_free_type_variables(
+            &mut |v, agg| Ok::<_, Infallible>(folder(v, agg)),
+            initial_value,
+        );
+
+        agg
+    }
+
+    /// Like `fold_free_type_variables`, but stops at the first `Err`.
+    pub(super) fn try_fold_free_type_variables<TAgg, E>(
+        &self,
+        folder: &mut impl FnMut(&TypeVarId, TAgg) -> Result<TAgg, E>,
+        initial_value: TAgg,
+    ) -> Result<TAgg, E> {
         match self {
             Type::Var(v) => folder(v, initial_value),
-            Type::Unit | Type::Literal(_) => initial_value,
+            Type::Unit | Type::Literal(_) => Ok(initial_value),
             Type::Fn {
                 parameter: param,
                 return_type: result,
             } => {
                 let agg1 = match param {
                     None => initial_value,
-                    Some(param) => param.fold_free_type_variables(folder, initial_value),
+                    Some(param) => param.try_fold_free_type_variables(folder, initial_value)?,
                 };
 
-                result.fold_free_type_variables(folder, agg1)
+                result.try_fold_free_type_variables(folder, agg1)
             }
             Type::Record {
                 fields: btree_map,
                 tail,
             } => {
-                let folded_over_fields = btree_map.iter().fold(initial_value, |agg, (_, field)| {
-                    field.as_ref().fold_free_type_variables(folder, agg)
-                });
+                let folded_over_fields =
+                    btree_map.values().try_fold(initial_value, |agg, field| {
+                        field.try_fold_free_type_variables(folder, agg)
+                    })?;
 
                 match tail {
-                    RecordTail::Closed => folded_over_fields,
+                    RecordTail::Closed => Ok(folded_over_fields),
                     RecordTail::Open(type_var_id) => folder(type_var_id, folded_over_fields),
                 }
             }
