@@ -10,7 +10,7 @@ use trestle::{
     binding_resolution::{self, BindingResolutionError},
     evaluate::{self, Value},
     parse::{self},
-    type_check::{self, TypeCheckError},
+    type_check::{self, TypeCheckError, TypeCheckedProgram},
 };
 
 #[derive(Debug, Error, Diagnostic)]
@@ -68,36 +68,14 @@ enum Command {
 fn main() -> miette::Result<()> {
     match Cli::parse().command {
         Command::Run { path } => {
-            if path.extension() != Some("trsl".as_ref()) {
-                return Err(CliError::BadExtension(path).into());
-            }
-
-            // Early returns rather than `map_err`, so each error path can move its values instead of cloning them.
-            let file_content = match fs::read_to_string(&path) {
-                Ok(content) => content,
-                Err(source) => return Err(CliError::FailedToRead { path, source }.into()),
+            let file_content = match read_trsl_file(&path) {
+                Ok(value) => value,
+                Err(value) => return Err(value),
             };
 
             let src = NamedSource::new(path.display().to_string(), file_content);
 
-            let parsed_file = match parse::parse(src.inner()) {
-                Ok(program) => program,
-                Err(error) => {
-                    return Err(error
-                        .with_source_code(src)
-                        .wrap_err(format!("while parsing {}", path.display())));
-                }
-            };
-
-            let resolved_program = match binding_resolution::resolve(parsed_file) {
-                Ok(program) => program,
-                Err(errors) => return Err(CliError::BindingResolution { src, errors }.into()),
-            };
-
-            let type_checked_program = match type_check::type_check(resolved_program) {
-                Ok(program) => program,
-                Err(errors) => return Err(CliError::TypeError { src, errors }.into()),
-            };
+            let type_checked_program = type_check(path, &src)?;
 
             let evaluated_program = match evaluate::evaluate(type_checked_program) {
                 Ok(value) => value,
@@ -111,7 +89,67 @@ fn main() -> miette::Result<()> {
                 other => println!("{other}"),
             }
         }
-        Command::Typecheck { path: _ } => todo!(),
+        Command::Typecheck { path } => {
+            let file_content = match read_trsl_file(&path) {
+                Ok(value) => value,
+                Err(value) => return Err(value),
+            };
+
+            let src = NamedSource::new(path.display().to_string(), file_content);
+
+            type_check(path, &src)?;
+        }
     }
     Ok(())
+}
+
+fn type_check(path: PathBuf, src: &NamedSource<String>) -> Result<TypeCheckedProgram, Report> {
+    let parsed_file = match parse::parse(src.inner()) {
+        Ok(program) => program,
+        Err(error) => {
+            return Err(error
+                .with_source_code(src.clone())
+                .wrap_err(format!("while parsing {}", path.display())));
+        }
+    };
+    let resolved_program = match binding_resolution::resolve(parsed_file) {
+        Ok(program) => program,
+        Err(errors) => {
+            return Err(CliError::BindingResolution {
+                src: src.clone(),
+                errors,
+            }
+            .into());
+        }
+    };
+    let type_checked_program = match type_check::type_check(resolved_program) {
+        Ok(program) => program,
+        Err(errors) => {
+            return Err(CliError::TypeError {
+                src: src.clone(),
+                errors,
+            }
+            .into());
+        }
+    };
+    Ok(type_checked_program)
+}
+
+fn read_trsl_file(path: &PathBuf) -> Result<String, Report> {
+    if path.extension() != Some("trsl".as_ref()) {
+        return Err(CliError::BadExtension(path.to_path_buf()).into());
+    }
+
+    let file_content = match fs::read_to_string(&path) {
+        Ok(content) => content,
+        Err(source) => {
+            return Err(CliError::FailedToRead {
+                path: path.to_path_buf(),
+                source,
+            }
+            .into());
+        }
+    };
+
+    Ok(file_content)
 }

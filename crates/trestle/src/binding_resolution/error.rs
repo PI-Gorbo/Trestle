@@ -1,7 +1,3 @@
-//! Isolated in its own module so the `#![allow(unused_assignments)]` below stays local. The
-//! `thiserror`/`miette` derives emit per-field assignments that trip `unused_assignments` on
-//! fields not yet read, and only a *module*-scoped allow suppresses it (item- and field-level
-//! allows don't, due to the derive's span hygiene).
 #![allow(unused_assignments)]
 
 use miette::{Diagnostic, SourceSpan};

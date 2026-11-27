@@ -715,7 +715,7 @@ fn apply_arguments(
             parameter: Some(param_type),
             return_type,
         } => {
-            unification_map.unify(&param_type, &arg.ty, span)?;
+            unification_map.unify(&param_type, &arg.ty, arg.span)?;
             apply_arguments(unification_map, level, &return_type, &arguments[1..], span)
         }
 

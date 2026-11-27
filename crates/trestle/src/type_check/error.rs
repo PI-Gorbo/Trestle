@@ -8,7 +8,7 @@ use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug)]
 pub enum TypeCheckError {
-    #[error("type mismatch: expected {expected:?}, found {found:?}")]
+    #[error("type mismatch: expected {expected}, found {found}")]
     #[diagnostic(code(trestle::type_mismatch))]
     TypeMismatch {
         expected: Type,
@@ -17,7 +17,7 @@ pub enum TypeCheckError {
         span: SourceSpan,
     },
 
-    #[error("`{found:?}` is not a function and cannot be applied to arguments")]
+    #[error("`{found}` is not a function and cannot be applied to arguments")]
     #[diagnostic(code(trestle::not_a_function))]
     NotAFunction {
         found: Type,
@@ -54,7 +54,7 @@ pub enum TypeCheckError {
     },
 
     #[error(
-        "function shape mismatch: one function takes a parameter and the other does not (expected {expected:?}, found {found:?})"
+        "function shape mismatch: one function takes a parameter and the other does not (expected {expected}, found {found})"
     )]
     #[diagnostic(code(trestle::function_parameter_mismatch))]
     FunctionParameterMismatch {
@@ -73,7 +73,7 @@ pub enum TypeCheckError {
         span: SourceSpan,
     },
 
-    #[error("`{found:?}` is not a record, so it has no fields to access")]
+    #[error("`{found}` is not a record, so it has no fields to access")]
     #[diagnostic(code(trestle::not_a_record))]
     NotARecord {
         found: Type,
@@ -90,7 +90,7 @@ pub enum TypeCheckError {
         span: SourceSpan,
     },
 
-    #[error("cannot construct an infinite type: `_{}` occurs in `{:?}`", .var.0, .ty)]
+    #[error("cannot construct an infinite type: `_{}` occurs in `{}`", .var.0, .ty)]
     #[diagnostic(code(trestle::infinite_type))]
     InfiniteType {
         var: TypeVarId,

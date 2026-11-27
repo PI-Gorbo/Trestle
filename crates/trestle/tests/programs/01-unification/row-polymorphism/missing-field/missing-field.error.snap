@@ -11,9 +11,9 @@ TypeCheck(
             additional: {},
             span: SourceSpan {
                 offset: SourceOffset(
-                    235,
+                    240,
                 ),
-                length: 14,
+                length: 8,
             },
         },
     ],
