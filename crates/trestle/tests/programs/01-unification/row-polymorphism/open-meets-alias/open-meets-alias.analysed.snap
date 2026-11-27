@@ -42,7 +42,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -50,19 +50,19 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     ty: Record {
                                         fields: {
                                             "y": Var(
                                                 TypeVarId(
-                                                    3,
+                                                    4,
                                                 ),
                                             ),
                                         },
                                         tail: Open(
                                             TypeVarId(
-                                                2,
+                                                3,
                                             ),
                                         ),
                                     },
@@ -73,7 +73,7 @@ TypeCheckedProgram {
                                     target: TypeCheckedExpression {
                                         kind: Var(
                                             BindingId(
-                                                0,
+                                                1,
                                             ),
                                         ),
                                         span: SourceSpan {
@@ -86,13 +86,13 @@ TypeCheckedProgram {
                                             fields: {
                                                 "y": Var(
                                                     TypeVarId(
-                                                        3,
+                                                        4,
                                                     ),
                                                 ),
                                             },
                                             tail: Open(
                                                 TypeVarId(
-                                                    2,
+                                                    3,
                                                 ),
                                             ),
                                         },
@@ -107,7 +107,7 @@ TypeCheckedProgram {
                                 },
                                 ty: Var(
                                     TypeVarId(
-                                        3,
+                                        4,
                                     ),
                                 ),
                             },
@@ -125,20 +125,20 @@ TypeCheckedProgram {
                                 fields: {
                                     "y": Var(
                                         TypeVarId(
-                                            3,
+                                            4,
                                         ),
                                     ),
                                 },
                                 tail: Open(
                                     TypeVarId(
-                                        2,
+                                        3,
                                     ),
                                 ),
                             },
                         ),
                         return_type: Var(
                             TypeVarId(
-                                3,
+                                4,
                             ),
                         ),
                     },
@@ -228,7 +228,7 @@ TypeCheckedProgram {
                 function: TypeCheckedExpression {
                     kind: Var(
                         BindingId(
-                            1,
+                            0,
                         ),
                     ),
                     span: SourceSpan {
@@ -296,29 +296,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "r",
-            ty: Record {
-                fields: {
-                    "y": Var(
-                        TypeVarId(
-                            3,
-                        ),
-                    ),
-                },
-                tail: Open(
-                    TypeVarId(
-                        2,
-                    ),
-                ),
-            },
-            span: SourceSpan {
-                offset: SourceOffset(
-                    291,
-                ),
-                length: 11,
-            },
-        },
-        TypedBinding {
             name: "getY",
             ty: Fn {
                 parameter: Some(
@@ -326,20 +303,20 @@ TypeCheckedProgram {
                         fields: {
                             "y": Var(
                                 TypeVarId(
-                                    3,
+                                    4,
                                 ),
                             ),
                         },
                         tail: Open(
                             TypeVarId(
-                                2,
+                                3,
                             ),
                         ),
                     },
                 ),
                 return_type: Var(
                     TypeVarId(
-                        3,
+                        4,
                     ),
                 ),
             },
@@ -348,6 +325,29 @@ TypeCheckedProgram {
                     280,
                 ),
                 length: 22,
+            },
+        },
+        TypedBinding {
+            name: "r",
+            ty: Record {
+                fields: {
+                    "y": Var(
+                        TypeVarId(
+                            4,
+                        ),
+                    ),
+                },
+                tail: Open(
+                    TypeVarId(
+                        3,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    291,
+                ),
+                length: 11,
             },
         },
         TypedBinding {

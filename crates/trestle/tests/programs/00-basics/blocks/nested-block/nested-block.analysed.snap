@@ -7,7 +7,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Block(
@@ -15,7 +15,7 @@ TypeCheckedProgram {
                             TypeCheckedExpression {
                                 kind: Let {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     value: TypeCheckedExpression {
                                         kind: Block(
@@ -93,7 +93,7 @@ TypeCheckedProgram {
                                     TypeCheckedExpression {
                                         kind: Var(
                                             BindingId(
-                                                0,
+                                                1,
                                             ),
                                         ),
                                         span: SourceSpan {
@@ -157,7 +157,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Var(
                 BindingId(
-                    1,
+                    0,
                 ),
             ),
             span: SourceSpan {
@@ -173,18 +173,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "inner",
-            ty: Literal(
-                Int,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    124,
-                ),
-                length: 21,
-            },
-        },
-        TypedBinding {
             name: "x",
             ty: Literal(
                 Int,
@@ -194,6 +182,18 @@ TypeCheckedProgram {
                     110,
                 ),
                 length: 78,
+            },
+        },
+        TypedBinding {
+            name: "inner",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    124,
+                ),
+                length: 21,
             },
         },
     ],

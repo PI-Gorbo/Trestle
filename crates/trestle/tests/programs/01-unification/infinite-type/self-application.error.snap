@@ -6,19 +6,19 @@ TypeCheck(
     [
         InfiniteType {
             var: TypeVarId(
-                0,
+                1,
             ),
             ty: Fn {
                 parameter: Some(
                     Var(
                         TypeVarId(
-                            0,
+                            1,
                         ),
                     ),
                 ),
                 return_type: Var(
                     TypeVarId(
-                        1,
+                        2,
                     ),
                 ),
             },

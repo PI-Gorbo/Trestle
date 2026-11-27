@@ -7,7 +7,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -15,7 +15,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     ty: Record {
                                         fields: {
@@ -23,20 +23,20 @@ TypeCheckedProgram {
                                                 fields: {
                                                     "value": Var(
                                                         TypeVarId(
-                                                            5,
+                                                            6,
                                                         ),
                                                     ),
                                                 },
                                                 tail: Open(
                                                     TypeVarId(
-                                                        4,
+                                                        5,
                                                     ),
                                                 ),
                                             },
                                         },
                                         tail: Open(
                                             TypeVarId(
-                                                2,
+                                                3,
                                             ),
                                         ),
                                     },
@@ -49,7 +49,7 @@ TypeCheckedProgram {
                                             target: TypeCheckedExpression {
                                                 kind: Var(
                                                     BindingId(
-                                                        0,
+                                                        1,
                                                     ),
                                                 ),
                                                 span: SourceSpan {
@@ -64,20 +64,20 @@ TypeCheckedProgram {
                                                             fields: {
                                                                 "value": Var(
                                                                     TypeVarId(
-                                                                        5,
+                                                                        6,
                                                                     ),
                                                                 ),
                                                             },
                                                             tail: Open(
                                                                 TypeVarId(
-                                                                    4,
+                                                                    5,
                                                                 ),
                                                             ),
                                                         },
                                                     },
                                                     tail: Open(
                                                         TypeVarId(
-                                                            2,
+                                                            3,
                                                         ),
                                                     ),
                                                 },
@@ -94,13 +94,13 @@ TypeCheckedProgram {
                                             fields: {
                                                 "value": Var(
                                                     TypeVarId(
-                                                        5,
+                                                        6,
                                                     ),
                                                 ),
                                             },
                                             tail: Open(
                                                 TypeVarId(
-                                                    4,
+                                                    5,
                                                 ),
                                             ),
                                         },
@@ -115,7 +115,7 @@ TypeCheckedProgram {
                                 },
                                 ty: Var(
                                     TypeVarId(
-                                        5,
+                                        6,
                                     ),
                                 ),
                             },
@@ -135,27 +135,27 @@ TypeCheckedProgram {
                                         fields: {
                                             "value": Var(
                                                 TypeVarId(
-                                                    5,
+                                                    6,
                                                 ),
                                             ),
                                         },
                                         tail: Open(
                                             TypeVarId(
-                                                4,
+                                                5,
                                             ),
                                         ),
                                     },
                                 },
                                 tail: Open(
                                     TypeVarId(
-                                        2,
+                                        3,
                                     ),
                                 ),
                             },
                         ),
                         return_type: Var(
                             TypeVarId(
-                                5,
+                                6,
                             ),
                         ),
                     },
@@ -174,7 +174,7 @@ TypeCheckedProgram {
                 function: TypeCheckedExpression {
                     kind: Var(
                         BindingId(
-                            1,
+                            0,
                         ),
                     ),
                     span: SourceSpan {
@@ -332,38 +332,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "r",
-            ty: Record {
-                fields: {
-                    "inner": Record {
-                        fields: {
-                            "value": Var(
-                                TypeVarId(
-                                    5,
-                                ),
-                            ),
-                        },
-                        tail: Open(
-                            TypeVarId(
-                                4,
-                            ),
-                        ),
-                    },
-                },
-                tail: Open(
-                    TypeVarId(
-                        2,
-                    ),
-                ),
-            },
-            span: SourceSpan {
-                offset: SourceOffset(
-                    243,
-                ),
-                length: 22,
-            },
-        },
-        TypedBinding {
             name: "getValue",
             ty: Fn {
                 parameter: Some(
@@ -373,27 +341,27 @@ TypeCheckedProgram {
                                 fields: {
                                     "value": Var(
                                         TypeVarId(
-                                            5,
+                                            6,
                                         ),
                                     ),
                                 },
                                 tail: Open(
                                     TypeVarId(
-                                        4,
+                                        5,
                                     ),
                                 ),
                             },
                         },
                         tail: Open(
                             TypeVarId(
-                                2,
+                                3,
                             ),
                         ),
                     },
                 ),
                 return_type: Var(
                     TypeVarId(
-                        5,
+                        6,
                     ),
                 ),
             },
@@ -402,6 +370,38 @@ TypeCheckedProgram {
                     228,
                 ),
                 length: 37,
+            },
+        },
+        TypedBinding {
+            name: "r",
+            ty: Record {
+                fields: {
+                    "inner": Record {
+                        fields: {
+                            "value": Var(
+                                TypeVarId(
+                                    6,
+                                ),
+                            ),
+                        },
+                        tail: Open(
+                            TypeVarId(
+                                5,
+                            ),
+                        ),
+                    },
+                },
+                tail: Open(
+                    TypeVarId(
+                        3,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    243,
+                ),
+                length: 22,
             },
         },
     ],

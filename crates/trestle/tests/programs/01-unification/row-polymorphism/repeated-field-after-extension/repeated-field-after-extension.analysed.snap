@@ -7,7 +7,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -15,7 +15,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     ty: Record {
                                         fields: {
@@ -31,7 +31,7 @@ TypeCheckedProgram {
                                         },
                                         tail: Open(
                                             TypeVarId(
-                                                6,
+                                                7,
                                             ),
                                         ),
                                     },
@@ -51,7 +51,7 @@ TypeCheckedProgram {
                                                             target: TypeCheckedExpression {
                                                                 kind: Var(
                                                                     BindingId(
-                                                                        0,
+                                                                        1,
                                                                     ),
                                                                 ),
                                                                 span: SourceSpan {
@@ -74,7 +74,7 @@ TypeCheckedProgram {
                                                                     },
                                                                     tail: Open(
                                                                         TypeVarId(
-                                                                            6,
+                                                                            7,
                                                                         ),
                                                                     ),
                                                                 },
@@ -96,7 +96,7 @@ TypeCheckedProgram {
                                                             target: TypeCheckedExpression {
                                                                 kind: Var(
                                                                     BindingId(
-                                                                        0,
+                                                                        1,
                                                                     ),
                                                                 ),
                                                                 span: SourceSpan {
@@ -119,7 +119,7 @@ TypeCheckedProgram {
                                                                     },
                                                                     tail: Open(
                                                                         TypeVarId(
-                                                                            6,
+                                                                            7,
                                                                         ),
                                                                     ),
                                                                 },
@@ -152,7 +152,7 @@ TypeCheckedProgram {
                                                     target: TypeCheckedExpression {
                                                         kind: Var(
                                                             BindingId(
-                                                                0,
+                                                                1,
                                                             ),
                                                         ),
                                                         span: SourceSpan {
@@ -175,7 +175,7 @@ TypeCheckedProgram {
                                                             },
                                                             tail: Open(
                                                                 TypeVarId(
-                                                                    6,
+                                                                    7,
                                                                 ),
                                                             ),
                                                         },
@@ -208,7 +208,7 @@ TypeCheckedProgram {
                                             target: TypeCheckedExpression {
                                                 kind: Var(
                                                     BindingId(
-                                                        0,
+                                                        1,
                                                     ),
                                                 ),
                                                 span: SourceSpan {
@@ -231,7 +231,7 @@ TypeCheckedProgram {
                                                     },
                                                     tail: Open(
                                                         TypeVarId(
-                                                            6,
+                                                            7,
                                                         ),
                                                     ),
                                                 },
@@ -283,7 +283,7 @@ TypeCheckedProgram {
                                 },
                                 tail: Open(
                                     TypeVarId(
-                                        6,
+                                        7,
                                     ),
                                 ),
                             },
@@ -307,7 +307,7 @@ TypeCheckedProgram {
                 function: TypeCheckedExpression {
                     kind: Var(
                         BindingId(
-                            1,
+                            0,
                         ),
                     ),
                     span: SourceSpan {
@@ -430,33 +430,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "r",
-            ty: Record {
-                fields: {
-                    "x": Literal(
-                        Int,
-                    ),
-                    "y": Literal(
-                        Int,
-                    ),
-                    "z": Literal(
-                        Int,
-                    ),
-                },
-                tail: Open(
-                    TypeVarId(
-                        6,
-                    ),
-                ),
-            },
-            span: SourceSpan {
-                offset: SourceOffset(
-                    295,
-                ),
-                length: 28,
-            },
-        },
-        TypedBinding {
             name: "f",
             ty: Fn {
                 parameter: Some(
@@ -474,7 +447,7 @@ TypeCheckedProgram {
                         },
                         tail: Open(
                             TypeVarId(
-                                6,
+                                7,
                             ),
                         ),
                     },
@@ -488,6 +461,33 @@ TypeCheckedProgram {
                     287,
                 ),
                 length: 36,
+            },
+        },
+        TypedBinding {
+            name: "r",
+            ty: Record {
+                fields: {
+                    "x": Literal(
+                        Int,
+                    ),
+                    "y": Literal(
+                        Int,
+                    ),
+                    "z": Literal(
+                        Int,
+                    ),
+                },
+                tail: Open(
+                    TypeVarId(
+                        7,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    295,
+                ),
+                length: 28,
             },
         },
     ],

@@ -6,7 +6,7 @@ TypeCheck(
     [
         InfiniteType {
             var: TypeVarId(
-                1,
+                2,
             ),
             ty: Fn {
                 parameter: Some(
@@ -14,20 +14,20 @@ TypeCheck(
                         fields: {
                             "next": Var(
                                 TypeVarId(
-                                    1,
+                                    2,
                                 ),
                             ),
                         },
                         tail: Open(
                             TypeVarId(
-                                2,
+                                3,
                             ),
                         ),
                     },
                 ),
                 return_type: Var(
                     TypeVarId(
-                        3,
+                        4,
                     ),
                 ),
             },

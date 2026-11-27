@@ -37,7 +37,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    2,
+                    1,
                 ),
                 value: TypeCheckedExpression {
                     kind: Block(
@@ -45,7 +45,7 @@ TypeCheckedProgram {
                             TypeCheckedExpression {
                                 kind: Let {
                                     binding: BindingId(
-                                        1,
+                                        2,
                                     ),
                                     value: TypeCheckedExpression {
                                         kind: Literal(
@@ -75,7 +75,7 @@ TypeCheckedProgram {
                             TypeCheckedExpression {
                                 kind: Var(
                                     BindingId(
-                                        1,
+                                        2,
                                     ),
                                 ),
                                 span: SourceSpan {
@@ -115,7 +115,7 @@ TypeCheckedProgram {
                 TypeCheckedExpression {
                     kind: Var(
                         BindingId(
-                            2,
+                            1,
                         ),
                     ),
                     span: SourceSpan {
@@ -170,18 +170,6 @@ TypeCheckedProgram {
             },
         },
         TypedBinding {
-            name: "x",
-            ty: Literal(
-                Int,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    264,
-                ),
-                length: 61,
-            },
-        },
-        TypedBinding {
             name: "inner",
             ty: Literal(
                 Int,
@@ -191,6 +179,18 @@ TypeCheckedProgram {
                     246,
                 ),
                 length: 101,
+            },
+        },
+        TypedBinding {
+            name: "x",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    264,
+                ),
+                length: 61,
             },
         },
     ],

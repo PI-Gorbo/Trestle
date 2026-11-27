@@ -7,7 +7,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -19,7 +19,7 @@ TypeCheckedProgram {
                                         TypeCheckedExpression {
                                             kind: Let {
                                                 binding: BindingId(
-                                                    0,
+                                                    1,
                                                 ),
                                                 value: TypeCheckedExpression {
                                                     kind: Literal(
@@ -53,7 +53,7 @@ TypeCheckedProgram {
                                                     body: TypeCheckedExpression {
                                                         kind: Var(
                                                             BindingId(
-                                                                0,
+                                                                1,
                                                             ),
                                                         ),
                                                         span: SourceSpan {
@@ -133,7 +133,7 @@ TypeCheckedProgram {
                         function: TypeCheckedExpression {
                             kind: Var(
                                 BindingId(
-                                    1,
+                                    0,
                                 ),
                             ),
                             span: SourceSpan {
@@ -212,18 +212,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "my_value",
-            ty: Literal(
-                Int,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    33,
-                ),
-                length: 22,
-            },
-        },
-        TypedBinding {
             name: "create_closure",
             ty: Fn {
                 parameter: None,
@@ -239,6 +227,18 @@ TypeCheckedProgram {
                     0,
                 ),
                 length: 71,
+            },
+        },
+        TypedBinding {
+            name: "my_value",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    33,
+                ),
+                length: 22,
             },
         },
         TypedBinding {

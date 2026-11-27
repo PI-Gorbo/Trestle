@@ -7,7 +7,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    2,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -15,7 +15,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     ty: Literal(
                                         String,
@@ -28,7 +28,7 @@ TypeCheckedProgram {
                                         parameter: Some(
                                             Param {
                                                 binding: BindingId(
-                                                    1,
+                                                    2,
                                                 ),
                                                 ty: Literal(
                                                     String,
@@ -38,7 +38,7 @@ TypeCheckedProgram {
                                         body: TypeCheckedExpression {
                                             kind: Var(
                                                 BindingId(
-                                                    1,
+                                                    2,
                                                 ),
                                             ),
                                             span: SourceSpan {
@@ -108,7 +108,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    5,
+                    3,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -116,7 +116,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        3,
+                                        4,
                                     ),
                                     ty: Literal(
                                         Int,
@@ -129,7 +129,7 @@ TypeCheckedProgram {
                                         parameter: Some(
                                             Param {
                                                 binding: BindingId(
-                                                    4,
+                                                    5,
                                                 ),
                                                 ty: Literal(
                                                     String,
@@ -139,7 +139,7 @@ TypeCheckedProgram {
                                         body: TypeCheckedExpression {
                                             kind: Var(
                                                 BindingId(
-                                                    4,
+                                                    5,
                                                 ),
                                             ),
                                             span: SourceSpan {
@@ -209,7 +209,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    7,
+                    6,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -217,7 +217,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        6,
+                                        7,
                                     ),
                                     ty: Literal(
                                         String,
@@ -227,7 +227,7 @@ TypeCheckedProgram {
                             body: TypeCheckedExpression {
                                 kind: Var(
                                     BindingId(
-                                        6,
+                                        7,
                                     ),
                                 ),
                                 span: SourceSpan {
@@ -333,7 +333,7 @@ TypeCheckedProgram {
                                                 function: TypeCheckedExpression {
                                                     kind: Var(
                                                         BindingId(
-                                                            2,
+                                                            0,
                                                         ),
                                                     ),
                                                     span: SourceSpan {
@@ -412,7 +412,7 @@ TypeCheckedProgram {
                                         function: TypeCheckedExpression {
                                             kind: Var(
                                                 BindingId(
-                                                    5,
+                                                    3,
                                                 ),
                                             ),
                                             span: SourceSpan {
@@ -489,7 +489,7 @@ TypeCheckedProgram {
                         TypeCheckedExpression {
                             kind: Var(
                                 BindingId(
-                                    7,
+                                    6,
                                 ),
                             ),
                             span: SourceSpan {
@@ -548,30 +548,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "host",
-            ty: Literal(
-                String,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    237,
-                ),
-                length: 78,
-            },
-        },
-        TypedBinding {
-            name: "config",
-            ty: Literal(
-                String,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    237,
-                ),
-                length: 78,
-            },
-        },
-        TypedBinding {
             name: "withHost",
             ty: Fn {
                 parameter: Some(
@@ -598,15 +574,15 @@ TypeCheckedProgram {
             },
         },
         TypedBinding {
-            name: "port",
+            name: "host",
             ty: Literal(
-                Int,
+                String,
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    330,
+                    237,
                 ),
-                length: 38,
+                length: 78,
             },
         },
         TypedBinding {
@@ -616,9 +592,9 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    330,
+                    237,
                 ),
-                length: 38,
+                length: 78,
             },
         },
         TypedBinding {
@@ -648,15 +624,27 @@ TypeCheckedProgram {
             },
         },
         TypedBinding {
+            name: "port",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    330,
+                ),
+                length: 38,
+            },
+        },
+        TypedBinding {
             name: "config",
             ty: Literal(
                 String,
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    383,
+                    330,
                 ),
-                length: 28,
+                length: 38,
             },
         },
         TypedBinding {
@@ -676,6 +664,18 @@ TypeCheckedProgram {
                     368,
                 ),
                 length: 43,
+            },
+        },
+        TypedBinding {
+            name: "config",
+            ty: Literal(
+                String,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    383,
+                ),
+                length: 28,
             },
         },
         TypedBinding {

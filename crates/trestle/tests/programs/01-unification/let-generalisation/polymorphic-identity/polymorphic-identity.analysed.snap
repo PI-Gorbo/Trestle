@@ -7,7 +7,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -15,11 +15,11 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     ty: Var(
                                         TypeVarId(
-                                            1,
+                                            2,
                                         ),
                                     ),
                                 },
@@ -27,7 +27,7 @@ TypeCheckedProgram {
                             body: TypeCheckedExpression {
                                 kind: Var(
                                     BindingId(
-                                        0,
+                                        1,
                                     ),
                                 ),
                                 span: SourceSpan {
@@ -38,7 +38,7 @@ TypeCheckedProgram {
                                 },
                                 ty: Var(
                                     TypeVarId(
-                                        1,
+                                        2,
                                     ),
                                 ),
                             },
@@ -54,13 +54,13 @@ TypeCheckedProgram {
                         parameter: Some(
                             Var(
                                 TypeVarId(
-                                    1,
+                                    2,
                                 ),
                             ),
                         ),
                         return_type: Var(
                             TypeVarId(
-                                1,
+                                2,
                             ),
                         ),
                     },
@@ -84,7 +84,7 @@ TypeCheckedProgram {
                         function: TypeCheckedExpression {
                             kind: Var(
                                 BindingId(
-                                    1,
+                                    0,
                                 ),
                             ),
                             span: SourceSpan {
@@ -152,7 +152,7 @@ TypeCheckedProgram {
                         function: TypeCheckedExpression {
                             kind: Var(
                                 BindingId(
-                                    1,
+                                    0,
                                 ),
                             ),
                             span: SourceSpan {
@@ -229,32 +229,18 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "x",
-            ty: Var(
-                TypeVarId(
-                    1,
-                ),
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    183,
-                ),
-                length: 9,
-            },
-        },
-        TypedBinding {
             name: "id",
             ty: Fn {
                 parameter: Some(
                     Var(
                         TypeVarId(
-                            1,
+                            2,
                         ),
                     ),
                 ),
                 return_type: Var(
                     TypeVarId(
-                        1,
+                        2,
                     ),
                 ),
             },
@@ -263,6 +249,20 @@ TypeCheckedProgram {
                     174,
                 ),
                 length: 18,
+            },
+        },
+        TypedBinding {
+            name: "x",
+            ty: Var(
+                TypeVarId(
+                    2,
+                ),
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    183,
+                ),
+                length: 9,
             },
         },
         TypedBinding {

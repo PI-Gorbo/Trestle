@@ -101,7 +101,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    2,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -109,7 +109,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     ty: Literal(
                                         Int,
@@ -122,7 +122,7 @@ TypeCheckedProgram {
                                         parameter: Some(
                                             Param {
                                                 binding: BindingId(
-                                                    1,
+                                                    2,
                                                 ),
                                                 ty: Literal(
                                                     Int,
@@ -135,7 +135,7 @@ TypeCheckedProgram {
                                                 TypeCheckedExpression {
                                                     kind: Var(
                                                         BindingId(
-                                                            0,
+                                                            1,
                                                         ),
                                                     ),
                                                     span: SourceSpan {
@@ -151,7 +151,7 @@ TypeCheckedProgram {
                                                 TypeCheckedExpression {
                                                     kind: Var(
                                                         BindingId(
-                                                            1,
+                                                            2,
                                                         ),
                                                     ),
                                                     span: SourceSpan {
@@ -232,7 +232,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    5,
+                    3,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -240,7 +240,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        3,
+                                        4,
                                     ),
                                     ty: Literal(
                                         Int,
@@ -253,7 +253,7 @@ TypeCheckedProgram {
                                         parameter: Some(
                                             Param {
                                                 binding: BindingId(
-                                                    4,
+                                                    5,
                                                 ),
                                                 ty: Literal(
                                                     Int,
@@ -266,7 +266,7 @@ TypeCheckedProgram {
                                                 TypeCheckedExpression {
                                                     kind: Var(
                                                         BindingId(
-                                                            3,
+                                                            4,
                                                         ),
                                                     ),
                                                     span: SourceSpan {
@@ -282,7 +282,7 @@ TypeCheckedProgram {
                                                 TypeCheckedExpression {
                                                     kind: Var(
                                                         BindingId(
-                                                            4,
+                                                            5,
                                                         ),
                                                     ),
                                                     span: SourceSpan {
@@ -370,7 +370,7 @@ TypeCheckedProgram {
                         function: TypeCheckedExpression {
                             kind: Var(
                                 BindingId(
-                                    2,
+                                    0,
                                 ),
                             ),
                             span: SourceSpan {
@@ -453,7 +453,7 @@ TypeCheckedProgram {
                                 function: TypeCheckedExpression {
                                     kind: Var(
                                         BindingId(
-                                            2,
+                                            0,
                                         ),
                                     ),
                                     span: SourceSpan {
@@ -530,7 +530,7 @@ TypeCheckedProgram {
                                 function: TypeCheckedExpression {
                                     kind: Var(
                                         BindingId(
-                                            5,
+                                            3,
                                         ),
                                     ),
                                     span: SourceSpan {
@@ -681,30 +681,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "a",
-            ty: Literal(
-                Int,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    715,
-                ),
-                length: 15,
-            },
-        },
-        TypedBinding {
-            name: "b",
-            ty: Literal(
-                Int,
-            ),
-            span: SourceSpan {
-                offset: SourceOffset(
-                    715,
-                ),
-                length: 15,
-            },
-        },
-        TypedBinding {
             name: "add",
             ty: Fn {
                 parameter: Some(
@@ -737,7 +713,7 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    748,
+                    715,
                 ),
                 length: 15,
             },
@@ -749,7 +725,7 @@ TypeCheckedProgram {
             ),
             span: SourceSpan {
                 offset: SourceOffset(
-                    748,
+                    715,
                 ),
                 length: 15,
             },
@@ -778,6 +754,30 @@ TypeCheckedProgram {
                     731,
                 ),
                 length: 32,
+            },
+        },
+        TypedBinding {
+            name: "a",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    748,
+                ),
+                length: 15,
+            },
+        },
+        TypedBinding {
+            name: "b",
+            ty: Literal(
+                Int,
+            ),
+            span: SourceSpan {
+                offset: SourceOffset(
+                    748,
+                ),
+                length: 15,
             },
         },
         TypedBinding {

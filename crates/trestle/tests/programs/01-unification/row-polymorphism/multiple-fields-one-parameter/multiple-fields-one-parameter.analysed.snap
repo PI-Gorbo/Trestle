@@ -7,7 +7,7 @@ TypeCheckedProgram {
         TypeCheckedExpression {
             kind: Let {
                 binding: BindingId(
-                    1,
+                    0,
                 ),
                 value: TypeCheckedExpression {
                     kind: Lambda(
@@ -15,7 +15,7 @@ TypeCheckedProgram {
                             parameter: Some(
                                 Param {
                                     binding: BindingId(
-                                        0,
+                                        1,
                                     ),
                                     ty: Record {
                                         fields: {
@@ -28,7 +28,7 @@ TypeCheckedProgram {
                                         },
                                         tail: Open(
                                             TypeVarId(
-                                                4,
+                                                5,
                                             ),
                                         ),
                                     },
@@ -42,7 +42,7 @@ TypeCheckedProgram {
                                             target: TypeCheckedExpression {
                                                 kind: Var(
                                                     BindingId(
-                                                        0,
+                                                        1,
                                                     ),
                                                 ),
                                                 span: SourceSpan {
@@ -62,7 +62,7 @@ TypeCheckedProgram {
                                                     },
                                                     tail: Open(
                                                         TypeVarId(
-                                                            4,
+                                                            5,
                                                         ),
                                                     ),
                                                 },
@@ -84,7 +84,7 @@ TypeCheckedProgram {
                                             target: TypeCheckedExpression {
                                                 kind: Var(
                                                     BindingId(
-                                                        0,
+                                                        1,
                                                     ),
                                                 ),
                                                 span: SourceSpan {
@@ -104,7 +104,7 @@ TypeCheckedProgram {
                                                     },
                                                     tail: Open(
                                                         TypeVarId(
-                                                            4,
+                                                            5,
                                                         ),
                                                     ),
                                                 },
@@ -153,7 +153,7 @@ TypeCheckedProgram {
                                 },
                                 tail: Open(
                                     TypeVarId(
-                                        4,
+                                        5,
                                     ),
                                 ),
                             },
@@ -177,7 +177,7 @@ TypeCheckedProgram {
                 function: TypeCheckedExpression {
                     kind: Var(
                         BindingId(
-                            1,
+                            0,
                         ),
                     ),
                     span: SourceSpan {
@@ -300,30 +300,6 @@ TypeCheckedProgram {
     ],
     bindings: [
         TypedBinding {
-            name: "r",
-            ty: Record {
-                fields: {
-                    "x": Literal(
-                        Int,
-                    ),
-                    "y": Literal(
-                        Int,
-                    ),
-                },
-                tail: Open(
-                    TypeVarId(
-                        4,
-                    ),
-                ),
-            },
-            span: SourceSpan {
-                offset: SourceOffset(
-                    287,
-                ),
-                length: 16,
-            },
-        },
-        TypedBinding {
             name: "sum",
             ty: Fn {
                 parameter: Some(
@@ -338,7 +314,7 @@ TypeCheckedProgram {
                         },
                         tail: Open(
                             TypeVarId(
-                                4,
+                                5,
                             ),
                         ),
                     },
@@ -352,6 +328,30 @@ TypeCheckedProgram {
                     277,
                 ),
                 length: 26,
+            },
+        },
+        TypedBinding {
+            name: "r",
+            ty: Record {
+                fields: {
+                    "x": Literal(
+                        Int,
+                    ),
+                    "y": Literal(
+                        Int,
+                    ),
+                },
+                tail: Open(
+                    TypeVarId(
+                        5,
+                    ),
+                ),
+            },
+            span: SourceSpan {
+                offset: SourceOffset(
+                    287,
+                ),
+                length: 16,
             },
         },
     ],
