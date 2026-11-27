@@ -102,6 +102,8 @@ pub enum ExpressionKind {
     },
     Let {
         name: String,
+        /// The name alone, for errors about the binding itself (e.g. a duplicate).
+        name_span: SourceSpan,
         type_dec: Option<TypeExpression>,
         value: Box<Expression>,
     },

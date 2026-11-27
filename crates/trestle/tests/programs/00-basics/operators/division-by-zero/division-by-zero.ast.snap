@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "numerator",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        269,
+                    ),
+                    length: 9,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Literal(
@@ -32,6 +38,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "divisor",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        288,
+                    ),
+                    length: 7,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Literal(

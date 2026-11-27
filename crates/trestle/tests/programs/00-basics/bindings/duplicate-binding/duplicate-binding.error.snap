@@ -8,15 +8,15 @@ BindingResolution(
             name: "x",
             span: SourceSpan {
                 offset: SourceOffset(
-                    225,
+                    229,
                 ),
-                length: 10,
+                length: 1,
             },
             original_span: SourceSpan {
                 offset: SourceOffset(
-                    215,
+                    219,
                 ),
-                length: 10,
+                length: 1,
             },
         },
     ],

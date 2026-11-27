@@ -86,6 +86,18 @@ fn format_type(ty: &Type) -> String {
     out
 }
 
+/// "`A` occurs in `A -> B`": the variable and the type share one naming table, so the
+/// variable's name is the one it has inside the type.
+pub(crate) fn format_occurs(var: TypeVarId, ty: &Type) -> String {
+    let mut names = Vec::new();
+    let mut out = String::from("`");
+    write_var(&mut out, &mut names, var);
+    out.push_str("` occurs in `");
+    write_type(&mut out, &mut names, ty, false);
+    out.push('`');
+    out
+}
+
 /// Names type variables `A`, `B`, … by order of first appearance in the type being printed
 /// (`A1`, `B1`, … past `Z`). `names` holds the variables seen so far; an index into it is a name.
 fn write_var(out: &mut String, names: &mut Vec<TypeVarId>, var: TypeVarId) {
@@ -197,7 +209,7 @@ mod tests {
         TypeCheckedLiteral, TypeVarId,
     };
 
-    use super::{format_type, format_value};
+    use super::{format_occurs, format_type, format_value};
 
     fn int() -> Type {
         Type::Literal(Literal::Int)
@@ -269,6 +281,16 @@ mod tests {
             }),
         };
         assert_eq!(format_type(&ty), "A -> B -> A");
+    }
+
+    /// The variable takes its name from the same table as the type, so the two line up.
+    #[test]
+    fn an_occurs_message_names_the_variable_as_the_type_does() {
+        let ty = Type::Fn {
+            parameter: Some(Box::new(Type::Var(TypeVarId(7)))),
+            return_type: Box::new(Type::Var(TypeVarId(3))),
+        };
+        assert_eq!(format_occurs(TypeVarId(7), &ty), "`A` occurs in `A -> B`");
     }
 
     #[test]

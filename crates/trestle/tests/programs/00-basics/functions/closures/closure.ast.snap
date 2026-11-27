@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "create_closure",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        4,
+                    ),
+                    length: 14,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -19,6 +25,12 @@ ParsedProgram {
                                         Expression {
                                             kind: Let {
                                                 name: "my_value",
+                                                name_span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        37,
+                                                    ),
+                                                    length: 8,
+                                                },
                                                 type_dec: None,
                                                 value: Expression {
                                                     kind: Literal(
@@ -95,6 +107,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "closure",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        77,
+                    ),
+                    length: 7,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {

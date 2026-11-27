@@ -153,6 +153,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "base",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        726,
+                    ),
+                    length: 4,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -284,6 +290,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "withName",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        858,
+                    ),
+                    length: 8,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -427,6 +439,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "withAddress",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        981,
+                    ),
+                    length: 11,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -626,6 +644,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "withRetry",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        1137,
+                    ),
+                    length: 9,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -825,6 +849,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "shiftPort",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        1494,
+                    ),
+                    length: 9,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -1059,6 +1089,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "server",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        1675,
+                    ),
+                    length: 6,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Binary(

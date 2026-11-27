@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "selfWrap",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        590,
+                    ),
+                    length: 8,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(

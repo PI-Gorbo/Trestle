@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "value",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        4,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Literal(

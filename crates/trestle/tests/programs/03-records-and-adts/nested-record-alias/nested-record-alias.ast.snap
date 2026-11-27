@@ -97,6 +97,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "nestedValue",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        420,
+                    ),
+                    length: 11,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(

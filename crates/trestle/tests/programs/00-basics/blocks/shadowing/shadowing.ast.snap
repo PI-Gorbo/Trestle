@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "x",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        240,
+                    ),
+                    length: 1,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Literal(
@@ -32,6 +38,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "inner",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        250,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Block(
@@ -39,6 +51,12 @@ ParsedProgram {
                             Expression {
                                 kind: Let {
                                     name: "x",
+                                    name_span: SourceSpan {
+                                        offset: SourceOffset(
+                                            268,
+                                        ),
+                                        length: 1,
+                                    },
                                     type_dec: None,
                                     value: Expression {
                                         kind: Literal(

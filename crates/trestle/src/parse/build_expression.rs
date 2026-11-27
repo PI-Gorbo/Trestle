@@ -217,12 +217,18 @@ fn build_list_of_expressions(pair: Pair<Rule>) -> Result<Expression, BuildError>
 fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
     let span = pair.as_span();
 
-    let (name, type_dec, value) = pair.into_inner().try_fold(
-        (String::new(), None, None),
-        |(mut name, mut type_dec, mut value), p| {
+    let (name, name_span, type_dec, value) = pair.into_inner().try_fold(
+        (String::new(), source_span_from_pest_span(span), None, None),
+        |(mut name, mut name_span, mut type_dec, mut value), p| {
             match p.as_rule() {
                 Rule::let_kw => {}
                 Rule::identifier_with_optional_type_declaration => {
+                    // Just the identifier, without its `: Type`, for errors about the name.
+                    if let Some(identifier) =
+                        p.clone().into_inner().find(|i| i.as_rule() == Rule::identifier)
+                    {
+                        name_span = source_span_from_pest_span(identifier.as_span());
+                    }
                     (name, type_dec) = build_binding_target(p)?;
                 }
                 Rule::expr => value = Some(build_expr(p)?),
@@ -234,7 +240,7 @@ fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
                     ));
                 }
             }
-            Ok((name, type_dec, value))
+            Ok((name, name_span, type_dec, value))
         },
     )?;
 
@@ -243,6 +249,7 @@ fn build_let(pair: Pair<Rule>) -> Result<Expression, BuildError> {
             span,
             ExpressionKind::Let {
                 name,
+                name_span,
                 type_dec,
                 value: Box::new(expr),
             },

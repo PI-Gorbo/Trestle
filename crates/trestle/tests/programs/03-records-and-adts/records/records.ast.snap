@@ -52,6 +52,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "origin",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        37,
+                    ),
+                    length: 6,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -116,6 +122,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "p",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        73,
+                    ),
+                    length: 1,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(

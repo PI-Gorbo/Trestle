@@ -90,7 +90,7 @@ pub enum TypeCheckError {
         span: SourceSpan,
     },
 
-    #[error("cannot construct an infinite type: `_{}` occurs in `{}`", .var.0, .ty)]
+    #[error("cannot construct an infinite type: {}", crate::render::format_occurs(*.var, .ty))]
     #[diagnostic(code(trestle::infinite_type))]
     InfiniteType {
         var: TypeVarId,

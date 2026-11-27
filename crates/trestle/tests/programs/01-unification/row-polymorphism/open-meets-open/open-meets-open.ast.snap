@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "pick",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        402,
+                    ),
+                    length: 4,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -44,6 +50,12 @@ ParsedProgram {
                                                                 Expression {
                                                                     kind: Let {
                                                                         name: "ax",
+                                                                        name_span: SourceSpan {
+                                                                            offset: SourceOffset(
+                                                                                435,
+                                                                            ),
+                                                                            length: 2,
+                                                                        },
                                                                         type_dec: None,
                                                                         value: Expression {
                                                                             kind: FieldAccess {
@@ -78,6 +90,12 @@ ParsedProgram {
                                                                 Expression {
                                                                     kind: Let {
                                                                         name: "by",
+                                                                        name_span: SourceSpan {
+                                                                            offset: SourceOffset(
+                                                                                452,
+                                                                            ),
+                                                                            length: 2,
+                                                                        },
                                                                         type_dec: None,
                                                                         value: Expression {
                                                                             kind: FieldAccess {
@@ -201,6 +219,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "chosen",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        491,
+                    ),
+                    length: 6,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {

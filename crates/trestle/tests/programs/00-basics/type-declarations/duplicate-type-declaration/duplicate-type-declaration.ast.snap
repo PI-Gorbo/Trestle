@@ -51,6 +51,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "value",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        758,
+                    ),
+                    length: 5,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(

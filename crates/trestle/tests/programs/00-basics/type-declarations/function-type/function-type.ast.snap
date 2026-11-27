@@ -144,6 +144,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "double",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        682,
+                    ),
+                    length: 6,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -222,6 +228,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "triple",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        719,
+                    ),
+                    length: 6,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -300,6 +312,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "answer",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        757,
+                    ),
+                    length: 6,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(

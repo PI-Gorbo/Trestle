@@ -509,11 +509,6 @@ impl UnificationMap {
                     },
                 ))?;
 
-        // let root_concrete_type = match root_node {
-        //     RootUnionNode::Concrete(ty) => Some(ty.clone()),
-        //     RootUnionNode::FreeTypeVariable(_) => None,
-        // };
-
         match root_node {
             RootUnionNode::Concrete(root_concrete_type) => {
                 self.unify_inner(concrete_type, &root_concrete_type.clone())
@@ -620,16 +615,7 @@ impl UnificationMap {
 
             // Concrete <-> Concrete
             // This doesn't make sense. Can't unify two concrete types
-            (
-                RootUnionNode::Concrete(first_concrete_type_var),
-                RootUnionNode::Concrete(second_concrete_type_var),
-            ) => match first_concrete_type_var == second_concrete_type_var {
-                true => Ok(()),
-                false => Err(UnifyError::TypeMismatch(TypeMismatch {
-                    expected: first_concrete_type_var.clone(),
-                    found: second_concrete_type_var.clone(),
-                })),
-            },
+            (RootUnionNode::Concrete(_), RootUnionNode::Concrete(_)) => unreachable!(),
         }
     }
 }

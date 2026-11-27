@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "sum4",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        348,
+                    ),
+                    length: 4,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(

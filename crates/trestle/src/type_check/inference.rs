@@ -503,6 +503,8 @@ impl<'a> InferenceCtx<'a> {
     ) -> Result<(ExpressionKind, Type), TypeCheckError> {
         self.increment_let_level();
 
+        // Bind the binding Id to a new free type variable before resolving RHS of the expr
+
         let inferred_type = self.infer(*value)?;
 
         let bound_type_from_declaration = resolve_type_dec(type_dec, self)?;

@@ -52,6 +52,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "takesPoint",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        257,
+                    ),
+                    length: 10,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -117,6 +123,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "f",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        293,
+                    ),
+                    length: 1,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -134,6 +146,12 @@ ParsedProgram {
                                         Expression {
                                             kind: Let {
                                                 name: "z",
+                                                name_span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        314,
+                                                    ),
+                                                    length: 1,
+                                                },
                                                 type_dec: None,
                                                 value: Expression {
                                                     kind: FieldAccess {

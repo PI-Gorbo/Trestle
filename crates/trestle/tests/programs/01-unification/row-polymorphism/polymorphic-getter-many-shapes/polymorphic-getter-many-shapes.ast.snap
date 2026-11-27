@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "getX",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        258,
+                    ),
+                    length: 4,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -60,6 +66,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "a",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        281,
+                    ),
+                    length: 1,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
@@ -122,6 +134,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "b",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        304,
+                    ),
+                    length: 1,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
@@ -197,6 +215,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "c",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        337,
+                    ),
+                    length: 1,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
@@ -285,6 +309,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "s",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        377,
+                    ),
+                    length: 1,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {

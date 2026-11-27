@@ -1,6 +1,5 @@
 ---
 source: crates/trestle/tests/corpus.rs
-assertion_line: 129
 expression: program
 ---
 ParsedProgram {
@@ -8,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "same",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        299,
+                    ),
+                    length: 4,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -25,6 +30,12 @@ ParsedProgram {
                                         Expression {
                                             kind: Let {
                                                 name: "ax",
+                                                name_span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        323,
+                                                    ),
+                                                    length: 2,
+                                                },
                                                 type_dec: None,
                                                 value: Expression {
                                                     kind: FieldAccess {

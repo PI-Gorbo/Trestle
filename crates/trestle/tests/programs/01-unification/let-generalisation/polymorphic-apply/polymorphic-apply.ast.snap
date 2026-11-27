@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "apply",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        227,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -91,6 +97,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "double",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        254,
+                    ),
+                    length: 6,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -157,6 +169,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "stringIdentity",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        280,
+                    ),
+                    length: 14,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(

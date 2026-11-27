@@ -51,6 +51,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "freezing",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        277,
+                    ),
+                    length: 8,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -88,6 +94,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "boiling",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        303,
+                    ),
+                    length: 7,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -125,6 +137,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "range",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        335,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Binary(

@@ -60,15 +60,18 @@ pub fn resolve(
     let mut declared: HashMap<String, SourceSpan> = HashMap::new();
 
     for expression in program.expressions {
-        if let ExpressionKind::Let { name, .. } = &expression.kind {
+        if let ExpressionKind::Let {
+            name, name_span, ..
+        } = &expression.kind
+        {
             match declared.get(name.as_str()) {
                 Some(&original_span) => errors.push(BindingResolutionError::DuplicateBinding {
                     name: name.clone(),
-                    span: expression.span,
+                    span: *name_span,
                     original_span,
                 }),
                 None => {
-                    declared.insert(name.clone(), expression.span);
+                    declared.insert(name.clone(), *name_span);
                 }
             }
         }
@@ -220,6 +223,7 @@ fn resolve_expression(
             name,
             type_dec,
             value,
+            ..
         } => {
             let (optional_resolved_type_dec, annotation_scope) = type_dec
                 .map(|type_dec| resolve_type_expression(type_dec, scope, ctx))
@@ -228,6 +232,7 @@ fn resolve_expression(
             let updated_scope = annotation_scope.unwrap_or_else(|| scope.clone());
             let (value, _) = resolve_expression(*value, &updated_scope, ctx)?;
             let (binding, updated_scope) = bind_let(name, span, &updated_scope, ctx);
+
             outgoing_scope = updated_scope;
             ResolvedExpressionKind::Let(ResolvedLetExpression {
                 binding,

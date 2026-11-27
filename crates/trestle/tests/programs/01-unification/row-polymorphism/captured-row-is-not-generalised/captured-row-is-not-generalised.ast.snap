@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "outer",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        393,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -24,6 +30,12 @@ ParsedProgram {
                                         Expression {
                                             kind: Let {
                                                 name: "getY",
+                                                name_span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        418,
+                                                    ),
+                                                    length: 4,
+                                                },
                                                 type_dec: None,
                                                 value: Expression {
                                                     kind: Lambda(
@@ -77,6 +89,12 @@ ParsedProgram {
                                         Expression {
                                             kind: Let {
                                                 name: "a",
+                                                name_span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        444,
+                                                    ),
+                                                    length: 1,
+                                                },
                                                 type_dec: Some(
                                                     TypeExpression {
                                                         kind: Named(
@@ -137,6 +155,12 @@ ParsedProgram {
                                         Expression {
                                             kind: Let {
                                                 name: "b",
+                                                name_span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        469,
+                                                    ),
+                                                    length: 1,
+                                                },
                                                 type_dec: Some(
                                                     TypeExpression {
                                                         kind: Named(

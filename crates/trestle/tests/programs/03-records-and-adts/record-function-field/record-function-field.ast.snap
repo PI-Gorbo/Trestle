@@ -82,6 +82,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "len",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        393,
+                    ),
+                    length: 3,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -138,6 +144,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "nestedThing",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        421,
+                    ),
+                    length: 11,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(

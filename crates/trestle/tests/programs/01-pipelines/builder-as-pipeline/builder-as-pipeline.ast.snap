@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "withHost",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        226,
+                    ),
+                    length: 8,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -92,6 +98,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "withPort",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        319,
+                    ),
+                    length: 8,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -177,6 +189,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "build",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        372,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -231,6 +249,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "emptyConfig",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        415,
+                    ),
+                    length: 11,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Literal(
@@ -256,6 +280,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "server",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        471,
+                    ),
+                    length: 6,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Binary(

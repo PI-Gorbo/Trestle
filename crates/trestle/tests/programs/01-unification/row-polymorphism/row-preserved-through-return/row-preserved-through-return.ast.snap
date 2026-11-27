@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "touch",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        328,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -24,6 +30,12 @@ ParsedProgram {
                                         Expression {
                                             kind: Let {
                                                 name: "seen",
+                                                name_span: SourceSpan {
+                                                    offset: SourceOffset(
+                                                        353,
+                                                    ),
+                                                    length: 4,
+                                                },
                                                 type_dec: None,
                                                 value: Expression {
                                                     kind: FieldAccess {

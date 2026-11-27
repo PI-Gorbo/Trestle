@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "double",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        148,
+                    ),
+                    length: 6,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -85,6 +91,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "add",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        179,
+                    ),
+                    length: 3,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -192,6 +204,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "result",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        216,
+                    ),
+                    length: 6,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Binary(

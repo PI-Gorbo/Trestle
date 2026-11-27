@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "getX",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        226,
+                    ),
+                    length: 4,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -60,6 +66,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "apply",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        248,
+                    ),
+                    length: 5,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -144,6 +156,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "run",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        275,
+                    ),
+                    length: 3,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -231,6 +249,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "five",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        305,
+                    ),
+                    length: 4,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {
@@ -317,6 +341,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "doubled",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        356,
+                    ),
+                    length: 7,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {

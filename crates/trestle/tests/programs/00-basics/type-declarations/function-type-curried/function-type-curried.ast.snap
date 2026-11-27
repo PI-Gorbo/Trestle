@@ -171,6 +171,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "add",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        704,
+                    ),
+                    length: 3,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -266,6 +272,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "add2",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        735,
+                    ),
+                    length: 4,
+                },
                 type_dec: Some(
                     TypeExpression {
                         kind: Named(
@@ -361,6 +373,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "increment",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        769,
+                    ),
+                    length: 9,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: FunctionInvocation {

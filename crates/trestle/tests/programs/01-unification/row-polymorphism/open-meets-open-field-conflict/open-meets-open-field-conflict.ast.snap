@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "pick",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        241,
+                    ),
+                    length: 4,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: Lambda(
@@ -34,6 +40,12 @@ ParsedProgram {
                                                     Expression {
                                                         kind: Let {
                                                             name: "n",
+                                                            name_span: SourceSpan {
+                                                                offset: SourceOffset(
+                                                                    268,
+                                                                ),
+                                                                length: 1,
+                                                            },
                                                             type_dec: Some(
                                                                 TypeExpression {
                                                                     kind: Named(
@@ -80,6 +92,12 @@ ParsedProgram {
                                                     Expression {
                                                         kind: Let {
                                                             name: "s",
+                                                            name_span: SourceSpan {
+                                                                offset: SourceOffset(
+                                                                    289,
+                                                                ),
+                                                                length: 1,
+                                                            },
                                                             type_dec: Some(
                                                                 TypeExpression {
                                                                     kind: Named(

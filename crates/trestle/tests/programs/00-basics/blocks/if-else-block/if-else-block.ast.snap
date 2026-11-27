@@ -7,6 +7,12 @@ ParsedProgram {
         Expression {
             kind: Let {
                 name: "bigger",
+                name_span: SourceSpan {
+                    offset: SourceOffset(
+                        159,
+                    ),
+                    length: 6,
+                },
                 type_dec: None,
                 value: Expression {
                     kind: If {
@@ -53,6 +59,12 @@ ParsedProgram {
                                     Expression {
                                         kind: Let {
                                             name: "a",
+                                            name_span: SourceSpan {
+                                                offset: SourceOffset(
+                                                    197,
+                                                ),
+                                                length: 1,
+                                            },
                                             type_dec: None,
                                             value: Expression {
                                                 kind: Literal(
