@@ -1,0 +1,6 @@
+// Recursive let: `fact` refers to itself inside its own body.
+//
+// Should analyse cleanly and evaluate to `120`.
+
+let fact = (n: Int) => if (n <= 1) 1 else n * fact(n - 1)
+fact(5)

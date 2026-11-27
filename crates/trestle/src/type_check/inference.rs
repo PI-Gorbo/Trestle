@@ -503,11 +503,19 @@ impl<'a> InferenceCtx<'a> {
     ) -> Result<(ExpressionKind, Type), TypeCheckError> {
         self.increment_let_level();
 
-        // Bind the binding Id to a new free type variable before resolving RHS of the expr
-
-        let inferred_type = self.infer(*value)?;
-
+        // TO SUPPORT RECURSION:
+        // 1. We resolve the type dec first
         let bound_type_from_declaration = resolve_type_dec(type_dec, self)?;
+
+        // 2. Set the type as monomorphic
+        self.variable_env.set(
+            binding,
+            Scheme::monomorphic(bound_type_from_declaration.clone()),
+        );
+
+        // 3. When we infer, we since we set in the variable env BEFORE
+        // we can refer to it.
+        let inferred_type = self.infer(*value)?;
 
         // We try to unify the inferred type with the bound type.
         self.unification_map

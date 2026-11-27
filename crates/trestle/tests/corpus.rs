@@ -701,6 +701,18 @@ trsl_test!(
     [ast, error]
 );
 
+// Recursive let: a `let`-bound function can refer to itself in its own body.
+trsl_test!(
+    unification_recursive_let_factorial,
+    "01-unification/recursive-let/factorial/factorial.trsl",
+    [ast, analyse, eval]
+);
+trsl_test!(
+    unification_recursive_let_fibonacci,
+    "01-unification/recursive-let/fibonacci/fibonacci.trsl",
+    [ast, analyse, eval]
+);
+
 // Row polymorphism: a field access on an unknown type opens a row `{ f: a | r }`, and
 // unification extends, closes, or merges tails. Success cases first, then one error
 // program per rejection the row unifier makes.

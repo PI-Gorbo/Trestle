@@ -1,0 +1,7 @@
+// Recursive let without annotations: `fib`'s type is inferred through its own
+// recursive calls.
+//
+// Should analyse cleanly and evaluate to `55`.
+
+let fib = (n) => if (n < 2) n else fib(n - 1) + fib(n - 2)
+fib(10)

@@ -229,9 +229,10 @@ fn resolve_expression(
                 .map(|type_dec| resolve_type_expression(type_dec, scope, ctx))
                 .transpose()?
                 .unzip();
+
             let updated_scope = annotation_scope.unwrap_or_else(|| scope.clone());
-            let (value, _) = resolve_expression(*value, &updated_scope, ctx)?;
             let (binding, updated_scope) = bind_let(name, span, &updated_scope, ctx);
+            let (value, _) = resolve_expression(*value, &updated_scope, ctx)?;
 
             outgoing_scope = updated_scope;
             ResolvedExpressionKind::Let(ResolvedLetExpression {
