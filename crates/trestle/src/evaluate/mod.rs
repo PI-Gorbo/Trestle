@@ -24,6 +24,7 @@ pub enum Value {
     Closure {
         lambda: Rc<typed_ast::Lambda>,
         env: Environment,
+        self_binding: Option<BindingId>,
     },
 }
 
@@ -107,7 +108,16 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
         }
 
         ExpressionKind::Let { binding, value } => {
-            let bound = eval_expr(env, value)?;
+            let mut bound = eval_expr(env, value)?;
+
+            // If the RHS of the expression is a lambda, then when we evaluate it, it will be a closure.
+            if let (ExpressionKind::Lambda(_), Value::Closure { self_binding, .. }) =
+                (&value.kind, &mut bound)
+            {
+                // We then 'inject' the binding
+                *self_binding = Some(*binding);
+            }
+
             *env = env.extend(*binding, bound);
             Ok(Value::Unit)
         }
@@ -138,6 +148,7 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
         ExpressionKind::Lambda(lambda) => Ok(Value::Closure {
             lambda: Rc::new(lambda.clone()),
             env: env.clone(),
+            self_binding: None,
         }),
 
         ExpressionKind::FunctionInvocation {
@@ -204,12 +215,31 @@ fn eval_expr(env: &mut Environment, expr: &TypeCheckedExpression) -> Result<Valu
 }
 
 fn apply(closure: Value, arg: Option<Value>, span: SourceSpan) -> Result<Value, EvalError> {
-    let Value::Closure { lambda, env } = closure else {
+    let Value::Closure {
+        lambda,
+        env,
+        self_binding,
+    } = closure
+    else {
         return Err(EvalError::invariant_due_to_type_check(
             span,
             "callee did not evaluate to a closure",
         ));
     };
+
+    // Register the self_binding in the environment, BEFORE we apply.
+    let env = match self_binding {
+        Some(binding_id) => env.extend(
+            binding_id,
+            Value::Closure {
+                lambda: lambda.clone(),
+                env: env.clone(),
+                self_binding,
+            },
+        ),
+        None => todo!(),
+    };
+
     let mut env = match (arg, &lambda.parameter) {
         (Some(arg), Some(param)) => env.extend(param.binding, arg),
         (None, None) => env,

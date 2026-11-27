@@ -233,6 +233,7 @@ mod tests {
                 body: Box::new(body),
             }),
             env: Environment::empty(),
+            self_binding: None,
         }
     }
 
