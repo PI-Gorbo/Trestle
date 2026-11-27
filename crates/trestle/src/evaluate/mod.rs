@@ -237,7 +237,7 @@ fn apply(closure: Value, arg: Option<Value>, span: SourceSpan) -> Result<Value, 
                 self_binding,
             },
         ),
-        None => todo!(),
+        None => env,
     };
 
     let mut env = match (arg, &lambda.parameter) {
