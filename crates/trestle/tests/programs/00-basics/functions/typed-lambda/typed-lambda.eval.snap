@@ -96,4 +96,5 @@ Closure {
     env: Environment(
         None,
     ),
+    self_binding: None,
 }
