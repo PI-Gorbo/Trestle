@@ -19,7 +19,7 @@
 //! - `parse::build_expression` holds `expect`s that encode grammar invariants. Each is correct
 //!   against today's `trestle.pest`; a grammar edit that makes a child optional turns one into
 //!   a trap.
-//! - `evaluate::eval_expr` and `render`'s formatters recurse without a depth limit, and the
+//! - `evaluate::eval_expr` and the `Display` impls for `Value` and `Type` recurse without a depth limit, and the
 //!   wasm stack is smaller than a native thread's — so deeply nested source overflows here
 //!   sooner than it does under `cargo test`.
 //!
@@ -32,7 +32,6 @@ mod diagnostics;
 /// playground type-checks against. It is the wire format; nothing here is an implementation
 /// detail.
 pub mod dto;
-mod render;
 
 use miette::{LabeledSpan, MietteDiagnostic};
 use pest::Parser as _;
@@ -47,7 +46,6 @@ use trestle::type_check::typed_ast::TypedBinding;
 
 use crate::diagnostics::{LineIndex, from_miette};
 use crate::dto::{Binding, CheckResult, Diagnostic, Phase};
-use crate::render::{format_type, format_value};
 
 #[wasm_bindgen(start)]
 pub fn start() {
@@ -89,11 +87,11 @@ pub fn run(source: &str) -> Result<JsValue, JsValue> {
     let value_type = program
         .expressions
         .last()
-        .map(|expression| format_type(&expression.ty))
+        .map(|expression| expression.ty.to_string())
         .unwrap_or_else(|| "Unit".to_owned());
 
     let result = match trestle::evaluate::evaluate(program) {
-        Ok(value) => dto::RunResult::ok(format_value(&value), value_type, bindings),
+        Ok(value) => dto::RunResult::ok(value.to_string(), value_type, bindings),
 
         Err(error) => dto::RunResult::failed(vec![from_miette(error, Phase::Evaluate, &index)]),
     };
@@ -182,7 +180,7 @@ fn binding_of(binding: &TypedBinding, index: &LineIndex<'_>) -> Binding {
 
     Binding {
         name: binding.name.clone(),
-        ty: format_type(&binding.ty),
+        ty: binding.ty.to_string(),
         start_line: label.start_line,
         start_column: label.start_column,
         end_line: label.end_line,

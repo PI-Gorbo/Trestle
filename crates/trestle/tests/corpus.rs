@@ -698,8 +698,7 @@ trsl_test!(
 trsl_test!(
     unification_let_generalisation_captured_function_result_is_not_generalised,
     "01-unification/let-generalisation/captured-function-result-is-not-generalised/captured-function-result-is-not-generalised.trsl",
-    [ast, error],
-    ignore = "binding a variable to a type must raise the levels of the variables inside it"
+    [ast, error]
 );
 
 // Row polymorphism: a field access on an unknown type opens a row `{ f: a | r }`, and
@@ -819,7 +818,7 @@ trsl_test!(
     unification_row_captured_tail_is_not_generalised,
     "01-unification/row-polymorphism/captured-tail-is-not-generalised/captured-tail-is-not-generalised.trsl",
     [ast, error]
-); 
+);
 trsl_test!(
     unification_row_open_meets_open_same_row,
     "01-unification/row-polymorphism/open-meets-open-same-row/open-meets-open-same-row.trsl",

@@ -1,15 +1,26 @@
 //! Display formatting for `Value` and `Type`.
 //!
-//! Neither implements `Display` upstream — the conformance corpus snapshots `Debug`, which
-//! is fine for `.snap` files but reads badly in a UI (`Int(15)` rather than `15`). These
-//! formatters exist purely for the playground, so they live here rather than in `trestle`.
+//! The conformance corpus snapshots `Debug`, which is fine for `.snap` files but reads badly
+//! to a person (`Int(15)` rather than `15`). `Display` is what the CLI and the playground show.
 
-use std::fmt::Write as _;
+use std::fmt::{self, Write as _};
 
-use trestle::evaluate::Value;
-use trestle::type_check::typed_ast::{Literal, RecordTail, Type, TypeVarId};
+use crate::evaluate::Value;
+use crate::type_check::typed_ast::{Literal, RecordTail, Type, TypeVarId};
 
-pub fn format_value(value: &Value) -> String {
+impl fmt::Display for Value {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&format_value(self))
+    }
+}
+
+impl fmt::Display for Type {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&format_type(self))
+    }
+}
+
+fn format_value(value: &Value) -> String {
     let mut out = String::new();
     write_value(&mut out, value);
     out
@@ -69,7 +80,7 @@ fn write_value(out: &mut String, value: &Value) {
     }
 }
 
-pub fn format_type(ty: &Type) -> String {
+fn format_type(ty: &Type) -> String {
     let mut out = String::new();
     write_type(&mut out, &mut Vec::new(), ty, false);
     out
@@ -179,9 +190,9 @@ mod tests {
     use std::collections::BTreeMap;
     use std::rc::Rc;
 
-    use trestle::binding_resolution::BindingId;
-    use trestle::evaluate::{Environment, Value};
-    use trestle::type_check::typed_ast::{
+    use crate::binding_resolution::BindingId;
+    use crate::evaluate::{Environment, Value};
+    use crate::type_check::typed_ast::{
         ExpressionKind, Lambda, Literal, Param, RecordTail, Type, TypeCheckedExpression,
         TypeCheckedLiteral, TypeVarId,
     };

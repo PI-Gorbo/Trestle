@@ -2,6 +2,7 @@ pub mod binding_resolution;
 pub mod evaluate;
 pub mod parse;
 pub mod prelude;
+mod render;
 pub mod type_check;
 pub use parse::parse;
 

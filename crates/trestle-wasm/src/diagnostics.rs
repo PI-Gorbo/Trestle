@@ -19,7 +19,7 @@
 //!    TypeScript. This is why every diagnostic is wrapped in a `Report` with the source
 //!    attached: the leaf errors deliberately carry no `#[source_code]` (see
 //!    `parse::build_program::BuildError`), so the excerpt has to be supplied at this boundary,
-//!    exactly as `trestle::parse` and the conformance corpus already do.
+//!    exactly as the CLI and the conformance corpus already do.
 
 use miette::{GraphicalReportHandler, GraphicalTheme, LabeledSpan, NamedSource, Report};
 
