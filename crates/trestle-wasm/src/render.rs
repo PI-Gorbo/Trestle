@@ -137,7 +137,7 @@ fn write_type(
                 if !fields.is_empty() {
                     out.push_str(", ");
                 }
-                out.push_str("..");
+                out.push_str("...");
                 write_var(out, names, *row);
             }
             out.push_str(" }");
@@ -290,7 +290,7 @@ mod tests {
             fields: BTreeMap::from([("x".to_owned(), Box::new(Type::Var(TypeVarId(5))))]),
             tail: RecordTail::Open(TypeVarId(2)),
         };
-        assert_eq!(format_type(&ty), "{ x: A, ..B }");
+        assert_eq!(format_type(&ty), "{ x: A, ...B }");
     }
 
     #[test]
@@ -299,7 +299,7 @@ mod tests {
             fields: BTreeMap::new(),
             tail: RecordTail::Open(TypeVarId(2)),
         };
-        assert_eq!(format_type(&ty), "{ ..A }");
+        assert_eq!(format_type(&ty), "{ ...A }");
     }
 
     /// Also pins the field order: `x` was inserted first, but `BTreeMap` sorts by name.
